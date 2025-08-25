@@ -1,0 +1,45 @@
+<idea-plugin>
+    <id>one.pkg.modpublish</id>
+    <name>Minecraft Mod Publish Utils</name>
+    <version>${version}</version>
+    <vendor url="https://github.com/404Setup">404Setup</vendor>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <description>
+        <![CDATA[
+      Help developers publish mods faster and publish mods to multiple supported platforms with just a few clicks.
+    ]]>
+    </description>
+    <change-notes>
+        <![CDATA[
+      <ul>
+        <li><b>0.0.1</b> Release.</li>
+      </ul>
+    ]]>
+    </change-notes>
+    <resource-bundle>messages.ModPublish</resource-bundle>
+    <actions>
+        <action id="modpublish.action.publish" class="one.pkg.modpublish.ui.action.PublishModAction"
+        icon="com.intellij.platform.vcs.impl.icons.PlatformVcsImplIcons.CommitInline">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CutCopyPasteGroup"/>
+        </action>
+        <action
+                id="modpublish.action.config"
+                class="one.pkg.modpublish.ui.action.ConfigProjectAction"
+                icon="com.intellij.platform.vcs.impl.icons.PlatformVcsImplIcons.AmendInline">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="one.pkg.modpublish.settings.ModPublishSettings"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="one.pkg.modpublish.settings.ModPublishSettingsConfigurable"
+                id="org.intellij.sdk.settings.AppSettingsConfigurable"
+                displayName="ModPublish: Global Settings"/>
+    </extensions>
+
+</idea-plugin>
