@@ -1,0 +1,78 @@
+package one.pkg.modpublish.api;
+
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import one.pkg.modpublish.data.internel.ModInfo;
+import one.pkg.modpublish.data.internel.PublishData;
+import one.pkg.modpublish.data.internel.PublishResult;
+import one.pkg.modpublish.resources.Lang;
+
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+public interface API {
+    Logger LOG = Logger.getInstance(API.class);
+    OkHttpClient client = new OkHttpClient.Builder()/*.proxy(ProxyConfigReader.getProxy(Proxy.NO_PROXY))*/
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+            .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
+            .build();
+
+    Request.Builder getRequestBuilder(String url, Project project);
+
+    void updateABServer();
+
+    boolean getABServer();
+
+    default Request.Builder getJsonRequest(Request.Builder builder) {
+        return builder.header("Accept", "application/json");
+    }
+
+    default Request.Builder getFormRequest(Request.Builder builder) {
+        return builder.header("Content-Type", "multipart/form-data");
+    }
+
+    default Optional<String> getContentType(Response response) {
+        return Optional.ofNullable(response.header("Content-Type"));
+    }
+
+    default Optional<String> getStatus(Response response) {
+        if (response.code() == 403) {
+            LOG.warn("403 Forbidden");
+            return Optional.of(Lang.get("api.curseforge.err.403"));
+        }
+        if (response.code() == 404) {
+            LOG.warn("404 Not Found");
+            return Optional.of(Lang.get("api.common.err.404"));
+        }
+        if (response.code() == 500) {
+            LOG.warn("500 Internal Server Error");
+            return Optional.of(Lang.get("api.common.err.500"));
+        }
+        Optional<String> ct = getContentType(response);
+        if (ct.isEmpty() || !ct.get().contains("application/json")) {
+            LOG.warn("Unexpected Content-Type: " + ct.orElse("null"));
+            String body;
+            try {
+                body = response.body().string();
+            } catch (Exception e) {
+                body = "null";
+            }
+            LOG.info("Request URL: " + response.request().url());
+            LOG.info("Request Headers: " + response.request().headers());
+            LOG.info("Response Body: " + body);
+            LOG.info("Response Code: " + response.code());
+            return Optional.of(Lang.get("api.common.err.format", ct.orElse("Unknown")));
+        }
+        return Optional.empty();
+    }
+
+    PublishResult createVersion(PublishData data, Project project);
+
+    ModInfo getModInfo(String modid, Project project);
+}

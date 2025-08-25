@@ -1,0 +1,269 @@
+package one.pkg.modpublish.data.network.modrinth;
+
+import com.google.gson.annotations.SerializedName;
+import one.pkg.modpublish.data.internel.ReleaseType;
+import one.pkg.modpublish.data.internel.RequestStatus;
+import one.pkg.modpublish.data.local.LauncherInfo;
+import one.pkg.modpublish.data.local.MinecraftVersion;
+import one.pkg.modpublish.util.JsonParser;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ModrinthFileData {
+    private String name;
+    @SerializedName("version_number")
+    private String versionNumber;
+    private String changelog;
+    private List<ProjectRelation> dependencies;
+    @SerializedName("game_versions")
+    private List<String> gameVersions;
+    /**
+     * The release channel for this version
+     * <p>
+     * Allowed values: release, beta, alpha
+     */
+    @SerializedName("version_type")
+    private String versionType;
+    private List<String> loaders;
+    private boolean featured = true;
+    /**
+     * Allowed values: listed, archived, draft, unlisted, scheduled
+     */
+    private String status;
+    /**
+     * Allowed values: listed, archived, draft, unlisted
+     */
+    @SerializedName("requested_status")
+    private String requestedStatus;
+    @SerializedName("project_id")
+    private String projectId;
+    /**
+     * An array of the multipart field names of each file that goes with this version
+     */
+    @SerializedName("file_parts")
+    private List<String> fileParts;
+    /**
+     * The multipart field name of the primary file
+     */
+    @SerializedName("primary_file")
+    private String primaryFile;
+
+    public ModrinthFileData() {
+    }
+
+    public static ModrinthFileData fromJson(String json) {
+        return JsonParser.fromJson(json, ModrinthFileData.class);
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public ModrinthFileData name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String versionNumber() {
+        return versionNumber;
+    }
+
+    public ModrinthFileData versionNumber(String versionNumber) {
+        this.versionNumber = versionNumber;
+        return this;
+    }
+
+    public String changelog() {
+        return changelog;
+    }
+
+    public ModrinthFileData changelog(String changelog) {
+        this.changelog = changelog;
+        return this;
+    }
+
+    public List<ProjectRelation> dependencies() {
+        return dependencies;
+    }
+
+    public ModrinthFileData dependencies(List<ProjectRelation> dependencies) {
+        this.dependencies = dependencies;
+        return this;
+    }
+
+    public ModrinthFileData dependency(ProjectRelation dependency) {
+        if (dependencies == null)
+            dependencies = new ArrayList<>();
+        for (ProjectRelation rel : dependencies)
+            if (rel.getProjectID().equals(dependency.getProjectID())) return this;
+        dependencies.add(dependency);
+        return this;
+    }
+
+    public List<String> gameVersions() {
+        return gameVersions;
+    }
+
+    public ModrinthFileData gameVersions(List<String> gameVersions) {
+        this.gameVersions = gameVersions;
+        return this;
+    }
+
+    public ModrinthFileData gameVersion(String gameVersion) {
+        if (gameVersions == null) gameVersions = new ArrayList<>();
+        if (!gameVersions.isEmpty() && gameVersions.contains(gameVersion)) return this;
+        gameVersions.add(gameVersion);
+        return this;
+    }
+
+    public ModrinthFileData gameVersion(MinecraftVersion gameVersion) {
+        if (gameVersions == null) gameVersions = new ArrayList<>();
+        if (!gameVersions.isEmpty() && gameVersions.contains(gameVersion.getVersion())) return this;
+        gameVersions.add(gameVersion.getVersion());
+        return this;
+    }
+
+    public String versionType() {
+        return versionType;
+    }
+
+    public ModrinthFileData versionType(String versionType) {
+        this.versionType = versionType;
+        return this;
+    }
+
+    public ModrinthFileData versionType(ReleaseType type) {
+        this.versionType = type.getType();
+        return this;
+    }
+
+    public List<String> loaders() {
+        return loaders;
+    }
+
+    public ModrinthFileData loaders(List<String> loaders) {
+        this.loaders = loaders;
+        return this;
+    }
+
+    public ModrinthFileData addLoader(String loader) {
+        if (loaders == null) loaders = new ArrayList<>();
+        if (!loaders.isEmpty() && loaders.contains(loader)) return this;
+        loaders.add(loader);
+        return this;
+    }
+
+    public ModrinthFileData addLoader(LauncherInfo info) {
+        return addLoader(info.getId());
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
+    }
+
+    public String status() {
+        return status;
+    }
+
+    public ModrinthFileData status(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public ModrinthFileData status(RequestStatus type) {
+        return status(type.getStatus());
+    }
+
+    public String requestedStatus() {
+        return requestedStatus;
+    }
+
+    public ModrinthFileData requestedStatus(String requestedStatus) {
+        this.requestedStatus = requestedStatus;
+        return this;
+    }
+
+    public ModrinthFileData requestedStatus(RequestStatus type) {
+        if (type.equals(RequestStatus.Scheduled)) return this;
+        return requestedStatus(type.getStatus());
+    }
+
+    public String projectId() {
+        return projectId;
+    }
+
+    public ModrinthFileData projectId(String projectId) {
+        this.projectId = projectId;
+        return this;
+    }
+
+    public List<String> fileParts() {
+        return fileParts;
+    }
+
+    public ModrinthFileData fileParts(List<String> fileParts) {
+        this.fileParts = fileParts;
+        return this;
+    }
+
+    public ModrinthFileData filePart(String filePart) {
+        if (fileParts == null) fileParts = new ArrayList<>();
+        if (!fileParts.isEmpty() && fileParts.contains(filePart)) return this;
+        fileParts.add(filePart);
+        return this;
+    }
+
+    public ModrinthFileData filePart(File file) {
+        return filePart(file.getName());
+    }
+
+    public String primaryFile() {
+        return primaryFile;
+    }
+
+    public ModrinthFileData primaryFile(String primaryFile) {
+        this.primaryFile = primaryFile;
+        return this;
+    }
+
+    public ModrinthFileData primaryFile(File primaryFile) {
+        return primaryFile(primaryFile.getName());
+    }
+
+    public boolean isValid() {
+        return projectId != null && !projectId.trim().isEmpty() ||
+                versionNumber != null && !versionNumber.trim().isEmpty() ||
+                name != null && !name.trim().isEmpty() ||
+                fileParts != null && !fileParts.isEmpty() ||
+                primaryFile != null && !primaryFile.trim().isEmpty();
+    }
+
+    public String build() {
+        return JsonParser.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return "ModrinthFileData{" +
+                "name='" + name + '\'' +
+                ", versionNumber='" + versionNumber + '\'' +
+                ", changelog='" + changelog + '\'' +
+                ", dependencies=" + dependencies +
+                ", gameVersions=" + gameVersions +
+                ", versionType='" + versionType + '\'' +
+                ", loaders=" + loaders +
+                ", featured=" + featured +
+                ", status='" + status + '\'' +
+                ", requestedStatus='" + requestedStatus + '\'' +
+                ", projectId='" + projectId + '\'' +
+                ", fileParts=" + fileParts +
+                ", primaryFile='" + primaryFile + '\'' +
+                '}';
+    }
+}
