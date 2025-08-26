@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
-import one.pkg.modpublish.data.properties.Properties;
-import one.pkg.modpublish.data.properties.Property;
+import one.pkg.modpublish.settings.properties.Properties;
+import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import org.jetbrains.annotations.Nullable;
 

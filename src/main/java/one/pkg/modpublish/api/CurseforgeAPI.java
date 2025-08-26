@@ -16,8 +16,8 @@ import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.curseforge.CurseforgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
-import one.pkg.modpublish.data.properties.Info;
-import one.pkg.modpublish.data.properties.Properties;
+import one.pkg.modpublish.settings.properties.Info;
+import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.IOException;

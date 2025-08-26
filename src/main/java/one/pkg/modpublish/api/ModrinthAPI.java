@@ -7,7 +7,7 @@ import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
-import one.pkg.modpublish.data.properties.Properties;
+import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.IOException;

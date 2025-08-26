@@ -1,4 +1,4 @@
-package one.pkg.modpublish.data.properties;
+package one.pkg.modpublish.settings.properties;
 
 import com.intellij.ide.util.PropertiesComponent;
 

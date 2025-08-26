@@ -1,4 +1,4 @@
-package one.pkg.modpublish.data.properties;
+package one.pkg.modpublish.settings.properties;
 
 public record Info(String data, boolean globalData) {
     public static final Info INSTANCE = new Info("", false);

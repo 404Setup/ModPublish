@@ -1,4 +1,4 @@
-package one.pkg.modpublish.data.properties;
+package one.pkg.modpublish.settings.properties;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
@@ -35,6 +35,10 @@ public class Properties {
         }
         String r = Protect.decryptString(properties.getValue(dataKey), HardwareFingerprint.generateSecureProjectKey());
         return r == null || r.isBlank() ? Info.INSTANCE : Info.of(r);
+    }
+
+    public static void setProtectValue(@NotNull Project project, @NotNull String dataKey, @NotNull String data) {
+        setProtectValue(getPropertiesComponent(project), dataKey, data);
     }
 
     public static void setProtectValue(@NotNull PropertiesComponent properties, @NotNull String dataKey, @NotNull String data) {
