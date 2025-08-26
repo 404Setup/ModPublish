@@ -10,13 +10,9 @@ public enum TargetType {
     Modrinth(new ModrinthAPI()), CurseForge(new CurseForgeAPI()),
     Github(new GithubAPI()), Gitlab(new GitlabAPI());
 
-    private final API api;
+    public final API api;
 
     TargetType(API api) {
         this.api = api;
-    }
-
-    public API getApi() {
-        return api;
     }
 }

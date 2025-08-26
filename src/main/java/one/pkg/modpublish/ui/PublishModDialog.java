@@ -376,11 +376,12 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
 
         if (curseforgeCheckBox.isSelected()) {
-            PublishResult cfResult = TargetType.CurseForge.getApi().createVersion(data, project);
+            PublishResult cfResult = TargetType.CurseForge.api.createVersion(data, project);
             if (cfResult.isFailure()) return cfResult;
         }
 
         try {
+            // This is not finished, it's a placeholder
             Thread.sleep(2000);
             return new PublishResult("");
         } catch (InterruptedException e) {
