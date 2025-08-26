@@ -152,6 +152,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         abstract void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper);
     }
 
-    public record FieldConfig(String label, Supplier<JBTextField> fieldSupplier) {
+    public record FieldConfig(String label, Supplier<JComponent> fieldSupplier) {
     }
 }
