@@ -18,7 +18,7 @@ import java.awt.*;
 
 public class AddDependencyDialog extends BaseDialogWrapper {
     private final boolean[] publishTargets; // [github, gitlab, modrinth, modrinthTest, curseforge]
-    private Project project;
+    private final Project project;
     private JBTextField projectIdField;
     private JComboBox<DependencyType> dependencyTypeCombo;
     private boolean isDone = false;
