@@ -376,7 +376,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
 
         if (curseforgeCheckBox.isSelected()) {
-            PublishResult cfResult = TargetType.Curseforge.getApi().createVersion(data, project);
+            PublishResult cfResult = TargetType.CurseForge.getApi().createVersion(data, project);
             if (cfResult.isFailure()) return cfResult;
         }
 

@@ -23,7 +23,7 @@ import one.pkg.modpublish.util.JsonParser;
 import java.io.IOException;
 import java.util.Optional;
 
-public class CurseforgeAPI implements API {
+public class CurseForgeAPI implements API {
     private static final String A_URL = "https://minecraft.curseforge.com/api/";
     private static final String B_URL = "https://api.curseforge.com/v1/";
     private boolean ab = false;

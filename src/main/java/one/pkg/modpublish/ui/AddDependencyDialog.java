@@ -142,7 +142,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
                 infos[0] = modInfo;
             }
             if (publishTargets[3] && !parts[1].trim().isEmpty()) {
-                ModInfo modInfo = TargetType.Curseforge.getApi().getModInfo(parts[1], project);
+                ModInfo modInfo = TargetType.CurseForge.getApi().getModInfo(parts[1], project);
                 if (modInfo.failed() != null) return ModInfo.of(modInfo);
                 infos[1] = modInfo;
             }
@@ -151,7 +151,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
 
         ModInfo[] infos = new ModInfo[2];
         API modrinthApi = TargetType.Modrinth.getApi();
-        API curseforgeApi = TargetType.Curseforge.getApi();
+        API curseforgeApi = TargetType.CurseForge.getApi();
         if (publishTargets[2]) { // Modrinth
             if (modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
