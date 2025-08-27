@@ -16,10 +16,13 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 ## TODO
 
-- Upload multiple files simultaneously
-- Select release channels
-- Publish to GitHub/GitLab
-- Optimization
+> Priority order from top to bottom, smaller numbers indicate higher priority
+
+1. Select release channels
+2. Auto generate title based on mod name/version/loader or user-customized format
+3. Upload multiple files simultaneously
+4. Code Optimization
+5. Publish to GitHub/GitLab
 
 ## Usage
 
