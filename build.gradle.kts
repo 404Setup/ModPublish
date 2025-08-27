@@ -5,12 +5,28 @@ plugins {
 
 group = "one.pkg"
 version = "0.0.1"
+val targetJavaVersion = 17
 
 repositories {
     mavenCentral()
 
     intellijPlatform {
         defaultRepositories()
+    }
+}
+
+java {
+    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
+        options.release.set(targetJavaVersion)
     }
 }
 

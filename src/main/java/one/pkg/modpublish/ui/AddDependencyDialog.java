@@ -68,7 +68,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 1;
-        panel.add(getJBLabel("component.name-depend-status"), gbc);
+        panel.add(getJBLabel("component.name.depend-status"), gbc);
 
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
