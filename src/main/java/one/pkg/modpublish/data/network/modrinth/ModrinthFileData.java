@@ -54,6 +54,10 @@ public class ModrinthFileData {
     public ModrinthFileData() {
     }
 
+    public static ModrinthFileData create() {
+        return new ModrinthFileData();
+    }
+
     public static ModrinthFileData fromJson(String json) {
         return JsonParser.fromJson(json, ModrinthFileData.class);
     }

@@ -7,7 +7,9 @@ import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
-import one.pkg.modpublish.settings.properties.Properties;
+import one.pkg.modpublish.data.internel.RequestStatus;
+import one.pkg.modpublish.data.network.modrinth.ModrinthFileData;
+import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.IOException;
@@ -33,6 +35,19 @@ public class ModrinthAPI implements API {
         return null;
     }
 
+    public String createJsonBody(PublishData data, Project project) {
+        return ModrinthFileData.create().release()
+                .projectId(ab ? PID.ModrinthTestModID.get(project) : PID.ModrinthModID.get(project))
+                .changelog(data.changelog())
+                .status(RequestStatus.Listed)
+                .featured(true)
+                .filePart(data.file())
+                .primaryFile(data.file())
+                .name(data.versionName())
+                .versionNumber(data.versionNumber())
+                .toJson();
+    }
+
     @Override
     public ModInfo getModInfo(String modid, Project project) {
         Request req = getJsonRequest(getRequestBuilder("project/" + modid, project)).get().build();
@@ -50,8 +65,8 @@ public class ModrinthAPI implements API {
     public Request.Builder getRequestBuilder(String url, Project project) {
         return API.super.getRequestBuilder(url, project)
                 .header("Authorization",
-                        ab ? Properties.getProtectValue(project,"modpublish.modrinth.testToken").data() :
-                                Properties.getProtectValue(project,"modpublish.modrinth.token").data())
+                        ab ? PID.ModrinthTestToken.getProtect(project).data() :
+                                PID.ModrinthToken.getProtect(project).data())
                 .url(ab ? B_URL : A_URL + url);
     }
 }

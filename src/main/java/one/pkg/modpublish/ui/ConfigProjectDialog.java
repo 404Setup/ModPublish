@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
+import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
@@ -115,8 +116,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     }
 
     private void loadPersistedData() {
-        PropertiesComponent p = PropertiesComponent.getInstance(project);
-        Property p1 = Properties.getProperties(p);
+        Property p1 = Properties.getProperties(project);
 
         if (p1.modrinth().token().globalData()) setToolTipText("dialog.modpublish.config-project.global", modrinthTokenField);
         else modrinthTokenField.setText(p1.modrinth().token().data());
@@ -133,14 +133,14 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         } else curseforgeStudioTokenField.setText(p1.curseforge().studioToken().data());
         curseforgeModIDField.setText(p1.curseforge().modid());
 
-        githubTokenField.setText(p1.github().globalData() ? "" : p1.github().token());
-        if (p1.github().globalData())
+        githubTokenField.setText(p1.github().token().globalData() ? "" : p1.github().token().data());
+        if (p1.github().token().globalData())
             setToolTipText("dialog.modpublish.config-project.global", githubTokenField);
         githubRepoField.setText(p1.github().repo());
         githubBranchField.setText(p1.github().branch());
 
-        gitlabTokenField.setText(p1.gitlab().globalData() ? "" : p1.gitlab().token());
-        if (p1.gitlab().globalData() && gitlabTokenField.isEnabled())
+        gitlabTokenField.setText(p1.gitlab().token().globalData() ? "" : p1.gitlab().token().data());
+        if (p1.gitlab().token().globalData() && gitlabTokenField.isEnabled())
             setToolTipText("dialog.modpublish.config-project.global", gitlabTokenField);
         gitlabRepoField.setText(p1.gitlab().repo());
         gitlabBranchField.setText(p1.gitlab().branch());
@@ -149,18 +149,18 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private void savePersistedData() {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
 
-        Properties.setProtectValue(properties, "modpublish.modrinth.token", modrinthTokenField.getText());
-        Properties.setProtectValue(properties, "modpublish.modrinth.testToken", modrinthTestTokenField.getText());
-        properties.setValue("modpublish.modrinth.modid", modrinthModIDField.getText());
-        properties.setValue("modpublish.modrinth.testModId", modrinthTestModIDField.getText());
-        Properties.setProtectValue(properties, "modpublish.curseforge.token", curseforgeTokenField.getText());
-        Properties.setProtectValue(properties, "modpublish.curseforge.studioToken", curseforgeStudioTokenField.getText());
-        properties.setValue("modpublish.curseforge.modid", curseforgeModIDField.getText());
-        Properties.setProtectValue(properties, "modpublish.github.token", githubTokenField.getText());
-        properties.setValue("modpublish.github.repo", githubRepoField.getText());
-        properties.setValue("modpublish.github.branch", githubBranchField.getText());
-        properties.setValue("modpublish.gitlab.token", gitlabTokenField.getText());
-        properties.setValue("modpublish.gitlab.repo", gitlabRepoField.getText());
-        properties.setValue("modpublish.gitlab.branch", gitlabBranchField.getText());
+        PID.ModrinthToken.set(properties, modrinthTokenField);
+        PID.ModrinthTestToken.set(properties, modrinthTestTokenField);
+        PID.ModrinthModID.set(properties, modrinthModIDField);
+        PID.ModrinthTestModID.set(properties, modrinthTestModIDField);
+        PID.CurseForgeToken.set(properties, curseforgeTokenField);
+        PID.CurseForgeStudioToken.set(properties, curseforgeStudioTokenField);
+        PID.CurseForgeModID.set(properties, curseforgeModIDField);
+        PID.GithubToken.set(properties, githubTokenField);
+        PID.GithubRepo.set(properties, githubRepoField);
+        PID.GithubBranch.set(properties, githubBranchField);
+        PID.GitlabToken.set(properties, gitlabTokenField);
+        PID.GitlabRepo.set(properties, gitlabRepoField);
+        PID.GitlabBranch.set(properties, gitlabBranchField);
     }
 }

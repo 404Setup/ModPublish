@@ -16,7 +16,7 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
-import one.pkg.modpublish.settings.properties.Properties;
+import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class CurseForgeAPI implements API {
     @Override
     public PublishResult createVersion(PublishData data, Project project) {
         if (ab) ab = false;
-        String modid = Properties.getPropertiesComponent(project).getValue("modpublish.curseforge.modid");
+        String modid = PID.CurseForgeModID.get(project);
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("projects/" + modid + "/upload-file", project));
         RequestBody file = RequestBody.create(data.file(), MediaType.get("application/java-archive"));
 
@@ -102,12 +102,11 @@ public class CurseForgeAPI implements API {
     @Override
     public Request.Builder getRequestBuilder(String url, Project project) {
         Request.Builder builder = API.super.getRequestBuilder(url, project);
-        builder = ab ? builder.header("x-api-key",
-                        Properties.getProtectValue(project, "modpublish.curseforge.studioToken").data())
+        return ab ? builder.header("x-api-key",
+                        PID.CurseForgeStudioToken.getProtect(project).data())
                 .url(B_URL + url)
                 : builder.header("X-Api-Token",
-                        Properties.getProtectValue(project, "modpublish.curseforge.token").data())
+                        PID.CurseForgeToken.getProtect(project).data())
                 .url(A_URL + url);
-        return builder;
     }
 }
