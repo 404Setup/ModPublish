@@ -8,7 +8,8 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 ## Unsupported Features
 
-> These features will never be actively supported
+> These features will never be supported unless someone submits a pull request, 
+> or I suddenly want to implement them
 
 - Publishing to custom Git servers
 - Publishing to Hangar/SpigotMC
@@ -23,6 +24,8 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 3. Upload multiple files simultaneously
 4. Code Optimization
 5. Publish to GitHub/GitLab
+6. Validate Token/ModID/Repo/Branch validity
+7. Allow syncing README to Modrinth and CurseForge
 
 ## Usage
 
@@ -103,9 +106,9 @@ Build steps:
 
 1. Run `./version_processor.py` to download latest Minecraft versions from network
 2. Run `./version_processor_curseforge.py` to download Curseforge Minecraft version ID mappings
-3. Copy generated json files to `./src/main/resources/META-INF` directory
-4. Run ./gradlew buildPlugin
-5. Final output is located in ./build/distributions directory
+3. Copy generated json files to `./src/main/resources/META-INF` directory (`minecraft.version.json`)
+4. Run `./gradlew buildPlugin`
+5. Final output is located in `./build/distributions` directory
 
 ## Contribution
 
