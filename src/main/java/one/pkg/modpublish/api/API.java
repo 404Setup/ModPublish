@@ -9,7 +9,6 @@ import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
 import one.pkg.modpublish.resources.Lang;
-import one.pkg.modpublish.settings.properties.Properties;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +25,7 @@ public interface API {
 
     default Request.Builder getRequestBuilder(String url, Project project) {
         return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
-    };
+    }
 
     void updateABServer();
 

@@ -1,5 +1,6 @@
 package one.pkg.modpublish.data.local;
 
+@SuppressWarnings("unused")
 public class MinecraftVersion {
     public String v;  // version
     public String t;  // type (release/snapshot)

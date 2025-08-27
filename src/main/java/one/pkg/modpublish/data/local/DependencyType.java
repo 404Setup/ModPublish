@@ -7,19 +7,19 @@ public enum DependencyType {
     INCOMPATIBLE("Incompatible", "incompatible");
 
     private final String displayName;
-    private final String curseforgeName;
+    private final String curseForgeName;
 
-    DependencyType(String displayName, String curseforgeName) {
+    DependencyType(String displayName, String curseForgeName) {
         this.displayName = displayName;
-        this.curseforgeName = curseforgeName;
+        this.curseForgeName = curseForgeName;
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
-    public String getCurseforgeName() {
-        return curseforgeName;
+    public String getCurseForgeName() {
+        return curseForgeName;
     }
 
     public String getModrinthName() {

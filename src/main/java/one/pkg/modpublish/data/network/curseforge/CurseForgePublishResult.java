@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class CurseForgePublishResult {
     /**
      * The uploaded file ID

@@ -8,6 +8,7 @@ import one.pkg.modpublish.util.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class CurseForgeFileData {
 
     /**

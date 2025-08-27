@@ -44,11 +44,7 @@ public class ModVersion {
             lastMatch = matcher.group(1);
         }
 
-        if (lastMatch != null && isValidVersionPattern(lastMatch)) {
-            return lastMatch;
-        }
-
-        return null;
+        return isValidVersionPattern(lastMatch) ?  lastMatch : null;
     }
 
     private static boolean isValidVersionPattern(String version) {

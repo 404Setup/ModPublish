@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class Properties {
     public static PropertiesComponent getPropertiesComponent(Project project) {
         return PropertiesComponent.getInstance(project);

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,13 +136,8 @@ public enum ModType {
     }
 
     @Nullable
-    public InputStream getStream(JarFile jar) {
-        try {
-            VirtualFileAPI.open(jar, getEntry(jar));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public InputStream getStream(JarFile jar) throws IOException {
+        return VirtualFileAPI.open(jar, getEntry(jar));
     }
 
     public String getFileName() {

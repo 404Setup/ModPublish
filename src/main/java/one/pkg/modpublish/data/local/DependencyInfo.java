@@ -3,6 +3,7 @@ package one.pkg.modpublish.data.local;
 import one.pkg.modpublish.data.internel.ModInfo;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class DependencyInfo {
     private String projectId;
     private ModInfo modrinthModInfo;

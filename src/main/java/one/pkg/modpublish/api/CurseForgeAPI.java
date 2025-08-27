@@ -16,7 +16,6 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
-import one.pkg.modpublish.settings.properties.Info;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.util.JsonParser;
 

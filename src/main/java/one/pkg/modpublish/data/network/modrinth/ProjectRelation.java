@@ -3,6 +3,7 @@ package one.pkg.modpublish.data.network.modrinth;
 import com.google.gson.annotations.SerializedName;
 import one.pkg.modpublish.data.local.DependencyType;
 
+@SuppressWarnings("unused")
 public class ProjectRelation {
     @SerializedName("version_id")
     private String versionID;

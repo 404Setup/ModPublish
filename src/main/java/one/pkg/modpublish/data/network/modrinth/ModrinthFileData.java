@@ -5,13 +5,13 @@ import one.pkg.modpublish.data.internel.ReleaseType;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ModrinthFileData {
     private String name;
     @SerializedName("version_number")
