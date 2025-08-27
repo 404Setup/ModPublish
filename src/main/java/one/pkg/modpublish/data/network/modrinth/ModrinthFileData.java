@@ -5,6 +5,7 @@ import one.pkg.modpublish.data.internel.ReleaseType;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
+import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
 import one.pkg.modpublish.util.JsonParser;
 
 import java.io.File;
@@ -102,6 +103,22 @@ public class ModrinthFileData {
         return this;
     }
 
+    public ModrinthFileData requiredDependency(String slug) {
+        return dependency(ProjectRelation.createRequired(slug));
+    }
+
+    public ModrinthFileData optionalDependency(String slug) {
+        return dependency(ProjectRelation.createOptional(slug));
+    }
+
+    public ModrinthFileData embeddedLibrary(String slug) {
+        return dependency(ProjectRelation.createEmbedded(slug));
+    }
+
+    public ModrinthFileData incompatible(String slug) {
+        return dependency(ProjectRelation.createIncompatible(slug));
+    }
+
     public List<String> gameVersions() {
         return gameVersions;
     }
@@ -129,14 +146,21 @@ public class ModrinthFileData {
         return versionType;
     }
 
-    public ModrinthFileData versionType(String versionType) {
-        this.versionType = versionType;
-        return this;
-    }
-
     public ModrinthFileData versionType(ReleaseType type) {
         this.versionType = type.getType();
         return this;
+    }
+
+    public ModrinthFileData release() {
+        return versionType(ReleaseType.Release);
+    }
+
+    public ModrinthFileData beta() {
+        return versionType(ReleaseType.Beta);
+    }
+
+    public ModrinthFileData alpha() {
+        return versionType(ReleaseType.Alpha);
     }
 
     public List<String> loaders() {
@@ -148,23 +172,24 @@ public class ModrinthFileData {
         return this;
     }
 
-    public ModrinthFileData addLoader(String loader) {
+    public ModrinthFileData loader(String loader) {
         if (loaders == null) loaders = new ArrayList<>();
         if (!loaders.isEmpty() && loaders.contains(loader)) return this;
         loaders.add(loader);
         return this;
     }
 
-    public ModrinthFileData addLoader(LauncherInfo info) {
-        return addLoader(info.getId());
+    public ModrinthFileData loader(LauncherInfo info) {
+        return loader(info.getId());
     }
 
-    public boolean isFeatured() {
+    public boolean featured() {
         return featured;
     }
 
-    public void setFeatured(boolean featured) {
+    public ModrinthFileData featured(boolean featured) {
         this.featured = featured;
+        return this;
     }
 
     public String status() {
@@ -239,12 +264,13 @@ public class ModrinthFileData {
     public boolean isValid() {
         return projectId != null && !projectId.trim().isEmpty() ||
                 versionNumber != null && !versionNumber.trim().isEmpty() ||
+                gameVersions != null && !gameVersions.isEmpty() ||
                 name != null && !name.trim().isEmpty() ||
                 fileParts != null && !fileParts.isEmpty() ||
                 primaryFile != null && !primaryFile.trim().isEmpty();
     }
 
-    public String build() {
+    public String toJson() {
         return JsonParser.toJson(this);
     }
 

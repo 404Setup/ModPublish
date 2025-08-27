@@ -7,14 +7,14 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import one.pkg.modpublish.data.builder.CurseForgeFileDataBuilder;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.data.network.curseforge.CurseforgePublishResult;
+import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
+import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
 import one.pkg.modpublish.settings.properties.Info;
 import one.pkg.modpublish.settings.properties.Properties;
@@ -56,7 +56,7 @@ public class CurseForgeAPI implements API {
             Optional<String> status = getStatus(resp);
             if (status.isPresent()) return PublishResult.of(status.get());
             String bs = resp.body().string();
-            CurseforgePublishResult result = JsonParser.fromJson(bs, CurseforgePublishResult.class);
+            CurseForgePublishResult result = JsonParser.fromJson(bs, CurseForgePublishResult.class);
             if (result != null && result.isSuccess())
                 return new PublishResult("");
             return new PublishResult(bs);
@@ -66,27 +66,23 @@ public class CurseForgeAPI implements API {
     }
 
     public String createJsonBody(PublishData data) {
-        CurseForgeFileDataBuilder builder = CurseForgeFileDataBuilder.create().release()
+        CurseForgeFileData builder = CurseForgeFileData.create().release()
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
-        for (MinecraftVersion v : data.minecraftVersions())
-            if (v.canReleaseToCurseForge()) builder.addGameVersion(v.i);
+        for (MinecraftVersion v : data.minecraftVersions()) builder.gameVersion(v);
         if (data.supportedInfo().getClient().isEnabled())
-            builder.addGameVersion(data.supportedInfo().getClient().getCfid());
+            builder.gameVersion(data.supportedInfo().getClient().getCfid());
         if (data.supportedInfo().getServer().isEnabled())
-            builder.addGameVersion(data.supportedInfo().getServer().getCfid());
-        for (LauncherInfo l : data.loaders())
-            builder.addGameVersion(l.getCfid());
+            builder.gameVersion(data.supportedInfo().getServer().getCfid());
+        for (LauncherInfo l : data.loaders()) builder.gameVersion(l.getCfid());
         for (DependencyInfo d : data.dependencies()) {
-            ModInfo curseforgeInfo = d.getCurseforgeInfo();
-            if (curseforgeInfo == null || curseforgeInfo.modid() == null || curseforgeInfo.modid().isBlank() ||
-                    curseforgeInfo.slug() == null || curseforgeInfo.slug().isBlank()) continue;
-            ProjectRelation relation = ProjectRelation.create(curseforgeInfo.slug(), Integer.parseInt(curseforgeInfo.modid()), d.getType());
-            builder.addRelation(relation);
+            ModInfo info = d.getCurseforgeInfo();
+            if (info == null || info.modid() == null || info.modid().isBlank() ||
+                    info.slug() == null || info.slug().isBlank()) continue;
+            ProjectRelation relation = ProjectRelation.create(info.slug(), Integer.parseInt(info.modid()), d.getType());
+            builder.dependency(relation);
         }
-        String body = JsonParser.toJson(builder.build());
-        LOG.info("createBody: " + body);
-        return body;
+        return builder.toJson();
     }
 
     @Override
@@ -106,16 +102,12 @@ public class CurseForgeAPI implements API {
 
     @Override
     public Request.Builder getRequestBuilder(String url, Project project) {
-        Request.Builder builder = new Request.Builder()
-                .header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
-        Info i = Properties.getProtectValue(project, "modpublish.curseforge.token");
-        Info j = Properties.getProtectValue(project, "modpublish.curseforge.studioToken");
-        LOG.debug("token: {}, studioToken: {}", i.data(), j.data());
+        Request.Builder builder = API.super.getRequestBuilder(url, project);
         builder = ab ? builder.header("x-api-key",
-                        j.data())
+                        Properties.getProtectValue(project, "modpublish.curseforge.studioToken").data())
                 .url(B_URL + url)
                 : builder.header("X-Api-Token",
-                        i.data())
+                        Properties.getProtectValue(project, "modpublish.curseforge.token").data())
                 .url(A_URL + url);
         return builder;
     }

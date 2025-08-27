@@ -232,9 +232,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
 
         Property p2 = Properties.getProperties(properties);
-        if (!p2.modrinth().isEnabled()) {
+        if (!p2.modrinth().isModEnabled()) {
             modrinthCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
+        }
+        if (!p2.modrinth().isTestEnabled()) {
             modrinthTestCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthTestCheckBox);
         }

@@ -48,11 +48,10 @@ public class ModrinthAPI implements API {
 
     @Override
     public Request.Builder getRequestBuilder(String url, Project project) {
-        return new Request.Builder()
+        return API.super.getRequestBuilder(url, project)
                 .header("Authorization",
                         ab ? Properties.getProtectValue(project,"modpublish.modrinth.testToken").data() :
                                 Properties.getProtectValue(project,"modpublish.modrinth.token").data())
-                .header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)")
                 .url(ab ? B_URL : A_URL + url);
     }
 }

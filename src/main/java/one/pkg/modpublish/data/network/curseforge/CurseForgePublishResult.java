@@ -2,17 +2,19 @@ package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CurseforgePublishResult {
+import java.util.Objects;
+
+public class CurseForgePublishResult {
     /**
      * The uploaded file ID
      */
     @SerializedName("id")
     private Integer id;
 
-    public CurseforgePublishResult() {
+    public CurseForgePublishResult() {
     }
 
-    public CurseforgePublishResult(Integer id) {
+    public CurseForgePublishResult(Integer id) {
         this.id = id;
     }
 
@@ -56,24 +58,24 @@ public class CurseforgePublishResult {
      * Creates a successful response object
      *
      * @param fileId the file ID
-     * @return CurseforgePublishResult object
+     * @return CurseForgePublishResult object
      */
-    public static CurseforgePublishResult success(Integer fileId) {
-        return new CurseforgePublishResult(fileId);
+    public static CurseForgePublishResult success(Integer fileId) {
+        return new CurseForgePublishResult(fileId);
     }
 
     /**
      * Creates a failure response object
      *
-     * @return CurseforgePublishResult object with null ID
+     * @return CurseForgePublishResult object with null ID
      */
-    public static CurseforgePublishResult failure() {
-        return new CurseforgePublishResult();
+    public static CurseForgePublishResult failure() {
+        return new CurseForgePublishResult();
     }
 
     @Override
     public String toString() {
-        return "CurseforgePublishResult{" +
+        return "CurseForgePublishResult{" +
                 "id=" + id +
                 '}';
     }
@@ -82,8 +84,8 @@ public class CurseforgePublishResult {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        CurseforgePublishResult that = (CurseforgePublishResult) obj;
-        return id != null ? id.equals(that.id) : that.id == null;
+        CurseForgePublishResult that = (CurseForgePublishResult) obj;
+        return Objects.equals(id, that.id);
     }
 
     @Override

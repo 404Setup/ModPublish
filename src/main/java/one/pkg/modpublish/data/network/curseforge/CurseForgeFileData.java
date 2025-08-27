@@ -1,6 +1,9 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
+import one.pkg.modpublish.data.internel.ReleaseType;
+import one.pkg.modpublish.data.local.MinecraftVersion;
+import one.pkg.modpublish.util.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,46 +15,39 @@ public class CurseForgeFileData {
      */
     @SerializedName("changelog")
     private String changelog;
-
     /**
      * Changelog type - Optional, defaults to text
      * Valid values: text, html, markdown
      */
     @SerializedName("changelogType")
     private String changelogType;
-
     /**
      * Display name - Optional, friendly name shown on website
      */
     @SerializedName("displayName")
     private String displayName;
-
     /**
      * Parent file ID - Optional, parent file of this file
      */
     @SerializedName("parentFileID")
     private Integer parentFileID;
-
     /**
      * List of supported game versions
      * Not supported if parentFileID is provided
      */
     @SerializedName("gameVersions")
     private List<Integer> gameVersions;
-
     /**
      * Release type: one of alpha, beta, release
      */
     @SerializedName("releaseType")
     private String releaseType;
-
     /**
      * Whether marked for manual release - Optional
      * If true, file won't publish immediately after approval, can choose when to publish
      */
     @SerializedName("isMarkedForManualRelease")
     private Boolean isMarkedForManualRelease;
-
     /**
      * Project relations - Optional
      * Array of project relationships by slug and dependency type
@@ -68,6 +64,10 @@ public class CurseForgeFileData {
         this.changelogType = "text";
     }
 
+    public static CurseForgeFileData create() {
+        return new CurseForgeFileData();
+    }
+
     /**
      * Creates a basic file data object
      *
@@ -78,79 +78,143 @@ public class CurseForgeFileData {
      */
     public static CurseForgeFileData createBasic(String changelog, String releaseType, List<Integer> gameVersions) {
         CurseForgeFileData data = new CurseForgeFileData(changelog, releaseType);
-        data.setGameVersions(gameVersions);
+        data.gameVersions(gameVersions);
         return data;
     }
 
-    public String getChangelog() {
+    public String changelog() {
         return changelog;
     }
 
-    public void setChangelog(String changelog) {
+    public CurseForgeFileData changelog(String changelog) {
         this.changelog = changelog;
+        this.changelogType = "text";
+        return this;
     }
 
-    public String getChangelogType() {
+    public String changelogType() {
         return changelogType;
     }
 
-    public void setChangelogType(String changelogType) {
+    public CurseForgeFileData changelogType(String changelogType) {
         this.changelogType = changelogType;
+        return this;
     }
 
-    public String getDisplayName() {
+    public String displayName() {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    public CurseForgeFileData displayName(String displayName) {
         this.displayName = displayName;
+        return this;
     }
 
-    public Integer getParentFileID() {
+    public Integer parentFileID() {
         return parentFileID;
     }
 
-    public void setParentFileID(Integer parentFileID) {
+    public CurseForgeFileData parentFileID(Integer parentFileID) {
         this.parentFileID = parentFileID;
+        return this;
     }
 
-    public List<Integer> getGameVersions() {
+    public List<Integer> gameVersions() {
         return gameVersions;
     }
 
-    public void setGameVersions(List<Integer> gameVersions) {
+    public CurseForgeFileData gameVersions(List<Integer> gameVersions) {
         this.gameVersions = gameVersions;
+        return this;
     }
 
-    public void addGameVersion(Integer gameVersion) {
-        if (gameVersions == null)
-            gameVersions = new ArrayList<>();
-        if (!gameVersions.isEmpty() && gameVersions.contains(gameVersion)) return;
+    public CurseForgeFileData gameVersion(MinecraftVersion version) {
+       return version.canReleaseToCurseForge() ? gameVersion(version.i) : this;
+    }
+
+    public CurseForgeFileData gameVersion(Integer gameVersion) {
+        if (gameVersions == null) gameVersions = new ArrayList<>();
+        if (!gameVersions.isEmpty() && gameVersions.contains(gameVersion)) return this;
         gameVersions.add(gameVersion);
+        return this;
     }
 
-    public String getReleaseType() {
+    public CurseForgeFileData alpha() {
+        return releaseType(ReleaseType.Alpha);
+    }
+
+    public CurseForgeFileData beta() {
+        return releaseType(ReleaseType.Beta);
+    }
+
+    public CurseForgeFileData release() {
+        return releaseType(ReleaseType.Release);
+    }
+
+    public String releaseType() {
         return releaseType;
     }
 
-    public void setReleaseType(String releaseType) {
-        this.releaseType = releaseType;
+    public CurseForgeFileData releaseType(ReleaseType releaseType) {
+        this.releaseType = releaseType.getType();
+        return this;
     }
 
-    public Boolean getIsMarkedForManualRelease() {
+    public CurseForgeFileData dependency(ProjectRelation relation) {
+        if (this.relations == null) this.relations = new Relations();
+        if (this.relations.getProjects() == null) this.relations.setProjects(new ArrayList<>());
+        this.relations.addProject(relation);
+        return this;
+    }
+
+    public CurseForgeFileData requiredDependency(String slug) {
+        return dependency(ProjectRelation.createRequired(slug));
+    }
+
+    public CurseForgeFileData requiredDependency(String slug, int projectID) {
+        return dependency(ProjectRelation.createRequired(slug, projectID));
+    }
+
+    public CurseForgeFileData optionalDependency(String slug) {
+        return dependency(ProjectRelation.createOptional(slug));
+    }
+
+    public CurseForgeFileData optionalDependency(String slug, int projectID) {
+        return dependency(ProjectRelation.createOptional(slug, projectID));
+    }
+
+    public CurseForgeFileData embeddedLibrary(String slug) {
+        return dependency(ProjectRelation.createEmbedded(slug));
+    }
+
+    public CurseForgeFileData embeddedLibrary(String slug, int projectID) {
+        return dependency(ProjectRelation.createEmbedded(slug, projectID));
+    }
+
+    public CurseForgeFileData incompatible(String slug) {
+        return dependency(ProjectRelation.createIncompatible(slug));
+    }
+
+    public CurseForgeFileData incompatible(String slug, int projectID) {
+        return dependency(ProjectRelation.createIncompatible(slug, projectID));
+    }
+
+    public boolean isMarkedForManualRelease() {
         return isMarkedForManualRelease;
     }
 
-    public void setIsMarkedForManualRelease(Boolean isMarkedForManualRelease) {
+    public CurseForgeFileData isMarkedForManualRelease(boolean isMarkedForManualRelease) {
         this.isMarkedForManualRelease = isMarkedForManualRelease;
+        return this;
     }
 
-    public Relations getRelations() {
+    public Relations dependencies() {
         return relations;
     }
 
-    public void setRelations(Relations relations) {
+    public CurseForgeFileData dependencies(Relations relations) {
         this.relations = relations;
+        return this;
     }
 
     /**
@@ -158,9 +222,10 @@ public class CurseForgeFileData {
      *
      * @param htmlChangelog Changelog in HTML format
      */
-    public void setHtmlChangelog(String htmlChangelog) {
+    public CurseForgeFileData htmlChangelog(String htmlChangelog) {
         this.changelog = htmlChangelog;
         this.changelogType = "html";
+        return this;
     }
 
     /**
@@ -168,9 +233,10 @@ public class CurseForgeFileData {
      *
      * @param markdownChangelog Changelog in Markdown format
      */
-    public void setMarkdownChangelog(String markdownChangelog) {
+    public CurseForgeFileData markdownChangelog(String markdownChangelog) {
         this.changelog = markdownChangelog;
         this.changelogType = "markdown";
+        return this;
     }
 
     /**
@@ -178,7 +244,7 @@ public class CurseForgeFileData {
      *
      * @return true if there is a parent file
      */
-    public boolean hasParentFile() {
+    public boolean parentFile() {
         return parentFileID != null;
     }
 
@@ -187,8 +253,8 @@ public class CurseForgeFileData {
      *
      * @return true if marked for manual release
      */
-    public boolean isManualRelease() {
-        return Boolean.TRUE.equals(isMarkedForManualRelease);
+    public boolean manualRelease() {
+        return isMarkedForManualRelease;
     }
 
     /**
@@ -199,7 +265,11 @@ public class CurseForgeFileData {
     public boolean isValid() {
         return changelog != null && !changelog.trim().isEmpty() &&
                 releaseType != null && !releaseType.trim().isEmpty() &&
-                (hasParentFile() || (gameVersions != null && !gameVersions.isEmpty()));
+                (parentFile() || (gameVersions != null && !gameVersions.isEmpty()));
+    }
+
+    public String toJson() {
+        return JsonParser.toJson(this);
     }
 
     @Override

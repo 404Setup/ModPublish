@@ -19,6 +19,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private JBTextField modrinthTokenField;
     private JBTextField modrinthTestTokenField;
     private JBTextField modrinthModIDField;
+    private JBTextField modrinthTestModIDField;
 
     private JBTextField curseforgeTokenField;
     private JBTextField curseforgeStudioTokenField;
@@ -58,7 +59,8 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
                 new FieldConfig(token, () -> modrinthTokenField = createTextField()),
                 new FieldConfig("(Test) "+ token, () -> modrinthTestTokenField = createTextField()),
-                new FieldConfig(modIdLabel, () -> modrinthModIDField = createTextField()));
+                new FieldConfig(modIdLabel, () -> modrinthModIDField = createTextField()),
+                new FieldConfig("(Test) "+ modIdLabel, () -> modrinthTestModIDField = createTextField()));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
                 new FieldConfig(token, () -> curseforgeTokenField = createTextField()),
@@ -121,6 +123,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         if (p1.modrinth().testToken().globalData()) setToolTipText("dialog.modpublish.config-project.global", modrinthTestTokenField);
         else modrinthTestTokenField.setText(p1.modrinth().testToken().data());
         modrinthModIDField.setText(p1.modrinth().modid());
+        modrinthTestModIDField.setText(p1.modrinth().testModId());
 
         if (p1.curseforge().token().globalData()) {
             setToolTipText("dialog.modpublish.config-project.global", curseforgeTokenField);
@@ -149,6 +152,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         Properties.setProtectValue(properties, "modpublish.modrinth.token", modrinthTokenField.getText());
         Properties.setProtectValue(properties, "modpublish.modrinth.testToken", modrinthTestTokenField.getText());
         properties.setValue("modpublish.modrinth.modid", modrinthModIDField.getText());
+        properties.setValue("modpublish.modrinth.testModId", modrinthTestModIDField.getText());
         Properties.setProtectValue(properties, "modpublish.curseforge.token", curseforgeTokenField.getText());
         Properties.setProtectValue(properties, "modpublish.curseforge.studioToken", curseforgeStudioTokenField.getText());
         properties.setValue("modpublish.curseforge.modid", curseforgeModIDField.getText());
