@@ -47,7 +47,7 @@ public class CurseForgeAPI implements API {
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", data.file().getName(), file)
-                .addFormDataPart("metadata", createJsonBody(data))
+                .addFormDataPart("metadata", createJsonBody(data, project))
                 .build();
         Request request = requestBuilder.post(body).build();
 
@@ -64,7 +64,8 @@ public class CurseForgeAPI implements API {
         }
     }
 
-    public String createJsonBody(PublishData data) {
+    @Override
+    public String createJsonBody(PublishData data, Project project) {
         CurseForgeFileData builder = CurseForgeFileData.create().release()
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());

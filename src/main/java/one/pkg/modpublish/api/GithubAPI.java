@@ -24,6 +24,11 @@ public class GithubAPI implements API {
     }
 
     @Override
+    public String createJsonBody(PublishData data, Project project) {
+        return "";
+    }
+
+    @Override
     public PublishResult createVersion(PublishData data, Project project) {
         return null;
     }

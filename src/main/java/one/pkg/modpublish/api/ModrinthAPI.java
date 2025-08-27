@@ -35,6 +35,7 @@ public class ModrinthAPI implements API {
         return null;
     }
 
+    @Override
     public String createJsonBody(PublishData data, Project project) {
         return ModrinthFileData.create().release()
                 .projectId(ab ? PID.ModrinthTestModID.get(project) : PID.ModrinthModID.get(project))

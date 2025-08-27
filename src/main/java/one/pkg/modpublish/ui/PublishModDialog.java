@@ -346,9 +346,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         List<MinecraftVersion> selectedMinecraftVersions = new ArrayList<>();
         for (int i = 0; i < minecraftVersionModel.getSize(); i++) {
             MinecraftVersionItem item = minecraftVersionModel.getElementAt(i);
-            if (item.isSelected()) {
-                selectedMinecraftVersions.add(item.getVersion());
-            }
+            if (item.isSelected()) selectedMinecraftVersions.add(item.getVersion());
         }
         if (clientCheckBox.isSelected())
             supportedInfo.client.setEnabled(true);
@@ -358,11 +356,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         return new PublishData(
                 versionNameField.getText(),
                 versionNumberField.getText(),
-                githubCheckBox.isSelected(),
-                gitlabCheckBox.isSelected(),
-                modrinthCheckBox.isSelected(),
-                modrinthTestCheckBox.isSelected(),
-                curseforgeCheckBox.isSelected(),
+                PublishData.Enabled.getInstance(getPublishTargets()),
                 selectedLoaders,
                 supportedInfo,
                 selectedMinecraftVersions,
