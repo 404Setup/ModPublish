@@ -74,7 +74,7 @@ public class CurseForgeAPI implements API {
             builder.gameVersion(data.supportedInfo().getClient().getCfid());
         if (data.supportedInfo().getServer().isEnabled())
             builder.gameVersion(data.supportedInfo().getServer().getCfid());
-        for (LauncherInfo l : data.loaders()) builder.gameVersion(l.getCfid());
+        for (LauncherInfo l : data.loaders()) if (l.getCfid() > 0) builder.gameVersion(l.getCfid());
         for (DependencyInfo d : data.dependencies()) {
             ModInfo info = d.getCurseforgeInfo();
             if (info == null || info.modid() == null || info.modid().isBlank() ||
