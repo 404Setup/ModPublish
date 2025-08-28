@@ -17,8 +17,8 @@ public interface API {
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
-            .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
+            //.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+            //.sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
             .build();
 
     default Request.Builder getBaseRequestBuilder() {
