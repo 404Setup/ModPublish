@@ -6,18 +6,28 @@ import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.util.JsonParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Comment: Why are many parameters here inconsistent with the API docs?
+ * */
 @SuppressWarnings("unused")
 public class ModrinthFileData {
+    @SerializedName("version_title")
+    @NotNull
     private String name;
     @SerializedName("version_number")
+    @NotNull
     private String versionNumber;
-    private String changelog;
-    private List<ProjectRelation> dependencies;
+    @SerializedName("version_body")
+    private String versionBody;
+    @NotNull
+    private List<ProjectRelation> dependencies = new ArrayList<>();
     @SerializedName("game_versions")
     private List<String> gameVersions;
     /**
@@ -25,9 +35,11 @@ public class ModrinthFileData {
      * <p>
      * Allowed values: release, beta, alpha
      */
-    @SerializedName("version_type")
-    private String versionType;
-    private List<String> loaders;
+    @SerializedName("release_channel")
+    @NotNull
+    private String releaseChannel;
+    @NotNull
+    private List<String> loaders = new ArrayList<>();
     private boolean featured = true;
     /**
      * Allowed values: listed, archived, draft, unlisted, scheduled
@@ -39,6 +51,7 @@ public class ModrinthFileData {
     @SerializedName("requested_status")
     private String requestedStatus;
     @SerializedName("project_id")
+    @NotNull
     private String projectId;
     /**
      * An array of the multipart field names of each file that goes with this version
@@ -50,6 +63,10 @@ public class ModrinthFileData {
      */
     @SerializedName("primary_file")
     private String primaryFile;
+
+    @SerializedName("file_types")
+    @Nullable
+    private List<String> fileTypes;
 
     public ModrinthFileData() {
     }
@@ -80,12 +97,12 @@ public class ModrinthFileData {
         return this;
     }
 
-    public String changelog() {
-        return changelog;
+    public String versionBody() {
+        return versionBody;
     }
 
-    public ModrinthFileData changelog(String changelog) {
-        this.changelog = changelog;
+    public ModrinthFileData versionBody(String changelog) {
+        this.versionBody = changelog;
         return this;
     }
 
@@ -146,25 +163,25 @@ public class ModrinthFileData {
         return this;
     }
 
-    public String versionType() {
-        return versionType;
+    public String releaseChannel() {
+        return releaseChannel;
     }
 
-    public ModrinthFileData versionType(ReleaseType type) {
-        this.versionType = type.getType();
+    public ModrinthFileData releaseChannel(ReleaseType type) {
+        this.releaseChannel = type.getType();
         return this;
     }
 
     public ModrinthFileData release() {
-        return versionType(ReleaseType.Release);
+        return releaseChannel(ReleaseType.Release);
     }
 
     public ModrinthFileData beta() {
-        return versionType(ReleaseType.Beta);
+        return releaseChannel(ReleaseType.Beta);
     }
 
     public ModrinthFileData alpha() {
-        return versionType(ReleaseType.Alpha);
+        return releaseChannel(ReleaseType.Alpha);
     }
 
     public List<String> loaders() {
@@ -244,7 +261,11 @@ public class ModrinthFileData {
     public ModrinthFileData filePart(String filePart) {
         if (fileParts == null) fileParts = new ArrayList<>();
         if (!fileParts.isEmpty() && fileParts.contains(filePart)) return this;
-        fileParts.add(filePart);
+        if (fileParts.isEmpty()) fileParts.add(filePart + "-primary");
+        else {
+            int i = fileParts.size() - 1;
+            fileParts.add(filePart + "-" + i);
+        }
         return this;
     }
 
@@ -252,18 +273,18 @@ public class ModrinthFileData {
         return filePart(file.getName());
     }
 
-    public String primaryFile() {
+    /*public String primaryFile() {
         return primaryFile;
     }
 
     public ModrinthFileData primaryFile(String primaryFile) {
-        this.primaryFile = primaryFile;
+        this.primaryFile = primaryFile + "-primary";
         return this;
     }
 
     public ModrinthFileData primaryFile(File primaryFile) {
         return primaryFile(primaryFile.getName());
-    }
+    }*/
 
     public boolean isValid() {
         return projectId != null && !projectId.trim().isEmpty() ||
@@ -283,10 +304,10 @@ public class ModrinthFileData {
         return "ModrinthFileData{" +
                 "name='" + name + '\'' +
                 ", versionNumber='" + versionNumber + '\'' +
-                ", changelog='" + changelog + '\'' +
+                ", changelog='" + versionBody + '\'' +
                 ", dependencies=" + dependencies +
                 ", gameVersions=" + gameVersions +
-                ", versionType='" + versionType + '\'' +
+                ", versionType='" + releaseChannel + '\'' +
                 ", loaders=" + loaders +
                 ", featured=" + featured +
                 ", status='" + status + '\'' +

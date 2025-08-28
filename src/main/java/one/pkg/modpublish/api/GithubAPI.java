@@ -7,8 +7,6 @@ import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
 
 public class GithubAPI implements API {
-
-    @Override
     public Request.Builder getRequestBuilder(String url, Project project) {
         return null;
     }

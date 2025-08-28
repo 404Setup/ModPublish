@@ -21,10 +21,10 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
 import one.pkg.modpublish.data.modinfo.ModType;
 import one.pkg.modpublish.data.modinfo.ModVersion;
-import one.pkg.modpublish.settings.properties.Properties;
-import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.resources.Lang;
 import one.pkg.modpublish.resources.LocalResources;
+import one.pkg.modpublish.settings.properties.Properties;
+import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
@@ -371,18 +371,30 @@ public class PublishModDialog extends BaseDialogWrapper {
             return PublishResult.of("failed.4");
         }
 
+        //try {
+        var modrinthApi = TargetType.Modrinth.api;
+        var curseforgeApi = TargetType.CurseForge.api;
         if (curseforgeCheckBox.isSelected()) {
-            PublishResult cfResult = TargetType.CurseForge.api.createVersion(data, project);
+            PublishResult cfResult = curseforgeApi.createVersion(data, project);
             if (cfResult.isFailure()) return cfResult;
         }
 
-        try {
-            // This is not finished, it's a placeholder
-            Thread.sleep(2000);
-            return new PublishResult("");
-        } catch (InterruptedException e) {
-            return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
+        if (modrinthCheckBox.isSelected()) {
+            if (modrinthApi.getABServer()) modrinthApi.updateABServer();
+            PublishResult mrResult = modrinthApi.createVersion(data, project);
+            if (mrResult.isFailure()) return mrResult;
         }
+
+        if (modrinthTestCheckBox.isSelected()) {
+            if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
+            PublishResult mrResult = modrinthApi.createVersion(data, project);
+            if (mrResult.isFailure()) return mrResult;
+        }
+
+        return PublishResult.empty();
+        /*} catch (InterruptedException e) {
+            return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
+        }*/
     }
 
     public boolean[] getPublishTargets() {

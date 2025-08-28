@@ -17,11 +17,11 @@ public interface API {
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            //.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
-            //.sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
+            .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+            .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
             .build();
 
-    default Request.Builder getRequestBuilder(String url, Project project) {
+    default Request.Builder getBaseRequestBuilder() {
         return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
     }
 
@@ -50,6 +50,12 @@ public interface API {
             return Optional.of(Lang.get("api.common.err.404"));
         if (response.code() == 500)
             return Optional.of(Lang.get("api.common.err.500"));
+        try {
+            if (response.code() == 400 || response.code() == 401)
+                return Optional.of(response.body().string());
+        } catch (Exception ignored) {
+            return Optional.of("HTTP "+ response.code());
+        }
         Optional<String> ct = getContentType(response);
         if (ct.isEmpty() || !ct.get().contains("application/json"))
             return Optional.of(Lang.get("api.common.err.format", ct.orElse("Unknown")));

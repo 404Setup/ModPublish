@@ -100,9 +100,8 @@ public class CurseForgeAPI implements API {
         }
     }
 
-    @Override
     public Request.Builder getRequestBuilder(String url, Project project) {
-        Request.Builder builder = API.super.getRequestBuilder(url, project);
+        Request.Builder builder = getBaseRequestBuilder();
         return ab ? builder.header("x-api-key",
                         PID.CurseForgeStudioToken.getProtect(project).data())
                 .url(B_URL + url)
