@@ -43,3 +43,7 @@ bin/
 
 .idea
 .intellijPlatform
+*.crt
+*.pem
+*.ps1
+*.txt

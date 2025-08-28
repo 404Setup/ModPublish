@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
+
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform") version "2.7.2"
@@ -61,4 +63,10 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("META-INF/plugin.xml") {
         expand(props)
     }
+}
+
+tasks.named<SignPluginTask>("signPlugin") {
+    certificateChain.set(file("chain.crt").readText())
+    privateKey.set(file("private.pem").readText())
+    password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
 }
