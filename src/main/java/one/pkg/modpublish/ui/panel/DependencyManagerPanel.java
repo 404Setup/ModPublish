@@ -17,7 +17,6 @@ public class DependencyManagerPanel extends JPanel {
     private final PublishModDialog parentDialog;
     private final List<DependencyInfo> dependencies;
     private final JPanel dependencyListPanel;
-    private final JButton addButton;
 
     public DependencyManagerPanel(PublishModDialog parentDialog) {
         super(new BorderLayout());
@@ -27,7 +26,7 @@ public class DependencyManagerPanel extends JPanel {
         JBLabel titleLabel = new JBLabel(Lang.get("component.name.depend-manager"));
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f));
 
-        addButton = new JButton(Lang.get("title.add-dependency"));
+        JButton addButton = new JButton(Lang.get("title.add-dependency"));
         addButton.addActionListener(this::onAddDependency);
 
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -105,9 +104,7 @@ public class DependencyManagerPanel extends JPanel {
 
     public void setDependencies(List<DependencyInfo> dependencies) {
         this.dependencies.clear();
-        if (dependencies != null) {
-            this.dependencies.addAll(dependencies);
-        }
+        if (dependencies != null) this.dependencies.addAll(dependencies);
         refreshDependencyList();
     }
 }

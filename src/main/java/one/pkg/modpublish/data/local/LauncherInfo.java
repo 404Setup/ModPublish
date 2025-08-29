@@ -1,5 +1,6 @@
 package one.pkg.modpublish.data.local;
 
+@SuppressWarnings("unused")
 public class LauncherInfo {
     public String n;    // name
     public String id;   // id

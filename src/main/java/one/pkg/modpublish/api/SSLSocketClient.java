@@ -11,6 +11,14 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
+/**
+ * This is a test class for disabling SSL verification in okhttp.
+ * It should not be enabled in release versions.
+ * <p>
+ * I need to use Fiddler to capture packets for debugging to check what went wrong with ModPublish.
+ * It helped me fix several constructor-related bugs.
+ *
+ */
 public class SSLSocketClient {
     public static SSLSocketFactory getSSLSocketFactory() {
         try {

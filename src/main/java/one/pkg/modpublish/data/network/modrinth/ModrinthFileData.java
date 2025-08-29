@@ -1,22 +1,33 @@
 package one.pkg.modpublish.data.network.modrinth;
 
 import com.google.gson.annotations.SerializedName;
-import one.pkg.modpublish.data.internel.ReleaseType;
+import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.util.JsonParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Comment: Why are many parameters here inconsistent with the API docs?
+ * */
+@SuppressWarnings("unused")
 public class ModrinthFileData {
+    @SerializedName("version_title")
+    @NotNull
     private String name;
     @SerializedName("version_number")
+    @NotNull
     private String versionNumber;
-    private String changelog;
-    private List<ProjectRelation> dependencies;
+    @SerializedName("version_body")
+    private String versionBody;
+    @NotNull
+    private List<ProjectRelation> dependencies = new ArrayList<>();
     @SerializedName("game_versions")
     private List<String> gameVersions;
     /**
@@ -24,9 +35,11 @@ public class ModrinthFileData {
      * <p>
      * Allowed values: release, beta, alpha
      */
-    @SerializedName("version_type")
-    private String versionType;
-    private List<String> loaders;
+    @SerializedName("release_channel")
+    @NotNull
+    private String releaseChannel;
+    @NotNull
+    private List<String> loaders = new ArrayList<>();
     private boolean featured = true;
     /**
      * Allowed values: listed, archived, draft, unlisted, scheduled
@@ -38,6 +51,7 @@ public class ModrinthFileData {
     @SerializedName("requested_status")
     private String requestedStatus;
     @SerializedName("project_id")
+    @NotNull
     private String projectId;
     /**
      * An array of the multipart field names of each file that goes with this version
@@ -50,7 +64,15 @@ public class ModrinthFileData {
     @SerializedName("primary_file")
     private String primaryFile;
 
+    @SerializedName("file_types")
+    @Nullable
+    private List<String> fileTypes;
+
     public ModrinthFileData() {
+    }
+
+    public static ModrinthFileData create() {
+        return new ModrinthFileData();
     }
 
     public static ModrinthFileData fromJson(String json) {
@@ -75,12 +97,12 @@ public class ModrinthFileData {
         return this;
     }
 
-    public String changelog() {
-        return changelog;
+    public String versionBody() {
+        return versionBody;
     }
 
-    public ModrinthFileData changelog(String changelog) {
-        this.changelog = changelog;
+    public ModrinthFileData versionBody(String changelog) {
+        this.versionBody = changelog;
         return this;
     }
 
@@ -100,6 +122,22 @@ public class ModrinthFileData {
             if (rel.getProjectID().equals(dependency.getProjectID())) return this;
         dependencies.add(dependency);
         return this;
+    }
+
+    public ModrinthFileData requiredDependency(String slug) {
+        return dependency(ProjectRelation.createRequired(slug));
+    }
+
+    public ModrinthFileData optionalDependency(String slug) {
+        return dependency(ProjectRelation.createOptional(slug));
+    }
+
+    public ModrinthFileData embeddedLibrary(String slug) {
+        return dependency(ProjectRelation.createEmbedded(slug));
+    }
+
+    public ModrinthFileData incompatible(String slug) {
+        return dependency(ProjectRelation.createIncompatible(slug));
     }
 
     public List<String> gameVersions() {
@@ -125,18 +163,25 @@ public class ModrinthFileData {
         return this;
     }
 
-    public String versionType() {
-        return versionType;
+    public String releaseChannel() {
+        return releaseChannel;
     }
 
-    public ModrinthFileData versionType(String versionType) {
-        this.versionType = versionType;
+    public ModrinthFileData releaseChannel(ReleaseChannel type) {
+        this.releaseChannel = type.getType();
         return this;
     }
 
-    public ModrinthFileData versionType(ReleaseType type) {
-        this.versionType = type.getType();
-        return this;
+    public ModrinthFileData release() {
+        return releaseChannel(ReleaseChannel.Release);
+    }
+
+    public ModrinthFileData beta() {
+        return releaseChannel(ReleaseChannel.Beta);
+    }
+
+    public ModrinthFileData alpha() {
+        return releaseChannel(ReleaseChannel.Alpha);
     }
 
     public List<String> loaders() {
@@ -148,23 +193,24 @@ public class ModrinthFileData {
         return this;
     }
 
-    public ModrinthFileData addLoader(String loader) {
+    public ModrinthFileData loader(String loader) {
         if (loaders == null) loaders = new ArrayList<>();
         if (!loaders.isEmpty() && loaders.contains(loader)) return this;
         loaders.add(loader);
         return this;
     }
 
-    public ModrinthFileData addLoader(LauncherInfo info) {
-        return addLoader(info.getId());
+    public ModrinthFileData loader(LauncherInfo info) {
+        return loader(info.getId());
     }
 
-    public boolean isFeatured() {
+    public boolean featured() {
         return featured;
     }
 
-    public void setFeatured(boolean featured) {
+    public ModrinthFileData featured(boolean featured) {
         this.featured = featured;
+        return this;
     }
 
     public String status() {
@@ -215,7 +261,11 @@ public class ModrinthFileData {
     public ModrinthFileData filePart(String filePart) {
         if (fileParts == null) fileParts = new ArrayList<>();
         if (!fileParts.isEmpty() && fileParts.contains(filePart)) return this;
-        fileParts.add(filePart);
+        if (fileParts.isEmpty()) fileParts.add(filePart + "-primary");
+        else {
+            int i = fileParts.size() - 1;
+            fileParts.add(filePart + "-" + i);
+        }
         return this;
     }
 
@@ -223,28 +273,29 @@ public class ModrinthFileData {
         return filePart(file.getName());
     }
 
-    public String primaryFile() {
+    /*public String primaryFile() {
         return primaryFile;
     }
 
     public ModrinthFileData primaryFile(String primaryFile) {
-        this.primaryFile = primaryFile;
+        this.primaryFile = primaryFile + "-primary";
         return this;
     }
 
     public ModrinthFileData primaryFile(File primaryFile) {
         return primaryFile(primaryFile.getName());
-    }
+    }*/
 
     public boolean isValid() {
         return projectId != null && !projectId.trim().isEmpty() ||
                 versionNumber != null && !versionNumber.trim().isEmpty() ||
+                gameVersions != null && !gameVersions.isEmpty() ||
                 name != null && !name.trim().isEmpty() ||
                 fileParts != null && !fileParts.isEmpty() ||
                 primaryFile != null && !primaryFile.trim().isEmpty();
     }
 
-    public String build() {
+    public String toJson() {
         return JsonParser.toJson(this);
     }
 
@@ -253,10 +304,10 @@ public class ModrinthFileData {
         return "ModrinthFileData{" +
                 "name='" + name + '\'' +
                 ", versionNumber='" + versionNumber + '\'' +
-                ", changelog='" + changelog + '\'' +
+                ", changelog='" + versionBody + '\'' +
                 ", dependencies=" + dependencies +
                 ", gameVersions=" + gameVersions +
-                ", versionType='" + versionType + '\'' +
+                ", versionType='" + releaseChannel + '\'' +
                 ", loaders=" + loaders +
                 ", featured=" + featured +
                 ", status='" + status + '\'' +

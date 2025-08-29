@@ -1,5 +1,6 @@
 package one.pkg.modpublish.data.local;
 
+@SuppressWarnings("unused")
 public class SupportedInfo {
     public SupportTarget client;
     public SupportTarget server;

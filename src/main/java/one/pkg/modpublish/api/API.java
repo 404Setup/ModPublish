@@ -1,6 +1,5 @@
 package one.pkg.modpublish.api;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -14,16 +13,17 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public interface API {
-    Logger LOG = Logger.getInstance(API.class);
     OkHttpClient client = new OkHttpClient.Builder()/*.proxy(ProxyConfigReader.getProxy(Proxy.NO_PROXY))*/
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
-            .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
+            //.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+            //.sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
             .build();
 
-    Request.Builder getRequestBuilder(String url, Project project);
+    default Request.Builder getBaseRequestBuilder() {
+        return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
+    }
 
     void updateABServer();
 
@@ -41,34 +41,24 @@ public interface API {
         return Optional.ofNullable(response.header("Content-Type"));
     }
 
+    String createJsonBody(PublishData data, Project project);
+
     default Optional<String> getStatus(Response response) {
-        if (response.code() == 403) {
-            LOG.warn("403 Forbidden");
+        if (response.code() == 403)
             return Optional.of(Lang.get("api.curseforge.err.403"));
-        }
-        if (response.code() == 404) {
-            LOG.warn("404 Not Found");
+        if (response.code() == 404)
             return Optional.of(Lang.get("api.common.err.404"));
-        }
-        if (response.code() == 500) {
-            LOG.warn("500 Internal Server Error");
+        if (response.code() == 500)
             return Optional.of(Lang.get("api.common.err.500"));
+        try {
+            if (response.code() == 400 || response.code() == 401)
+                return Optional.of(response.body().string());
+        } catch (Exception ignored) {
+            return Optional.of("HTTP "+ response.code());
         }
         Optional<String> ct = getContentType(response);
-        if (ct.isEmpty() || !ct.get().contains("application/json")) {
-            LOG.warn("Unexpected Content-Type: " + ct.orElse("null"));
-            String body;
-            try {
-                body = response.body().string();
-            } catch (Exception e) {
-                body = "null";
-            }
-            LOG.info("Request URL: " + response.request().url());
-            LOG.info("Request Headers: " + response.request().headers());
-            LOG.info("Response Body: " + body);
-            LOG.info("Response Code: " + response.code());
+        if (ct.isEmpty() || !ct.get().contains("application/json"))
             return Optional.of(Lang.get("api.common.err.format", ct.orElse("Unknown")));
-        }
         return Optional.empty();
     }
 

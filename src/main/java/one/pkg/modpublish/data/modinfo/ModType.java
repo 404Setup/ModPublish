@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,16 @@ public enum ModType {
         public String getModVersion(@NotNull File file) {
             return getForgeModVersion(file);
         }
+    }, Rift("riftmod.json", "rift") {
+        @Override
+        @Nullable
+        public String getModVersion(@NotNull File file) {
+            // RiftMod version reading not supported
+            return null;
+        }
     };
 
+    private static final ModType[] VALUES = values();
     private final String fileName;
     private final String name;
 
@@ -65,10 +74,8 @@ public enum ModType {
 
     @Nullable
     public static ModType of(JarFile jar) {
-        if (Fabric.getEntry(jar) != null) return Fabric;
-        if (Quilt.getEntry(jar) != null) return Quilt;
-        if (Forge.getEntry(jar) != null) return Forge;
-        if (NeoForge.getEntry(jar) != null) return NeoForge;
+        for (ModType type : VALUES)
+            if (type.getEntry(jar) != null) return type;
         return null;
     }
 
@@ -79,10 +86,8 @@ public enum ModType {
     public static List<ModType> getAll(File file) {
         List<ModType> types = new ArrayList<>();
         try (JarFile jar = new JarFile(file)) {
-            if (Fabric.getEntry(jar) != null) types.add(Fabric);
-            if (Quilt.getEntry(jar) != null) types.add(Quilt);
-            if (Forge.getEntry(jar) != null) types.add(Forge);
-            if (NeoForge.getEntry(jar) != null) types.add(NeoForge);
+            for (ModType type : VALUES)
+                if (type.getEntry(jar) != null) types.add(type);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,7 +96,7 @@ public enum ModType {
 
     @Nullable
     public static ModType of(String name) {
-        for (ModType type : values()) {
+        for (ModType type : VALUES) {
             if (type.name.equalsIgnoreCase(name)) return type;
         }
         return null;
@@ -135,13 +140,8 @@ public enum ModType {
     }
 
     @Nullable
-    public InputStream getStream(JarFile jar) {
-        try {
-            VirtualFileAPI.open(jar, getEntry(jar));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public InputStream getStream(JarFile jar) throws IOException {
+        return VirtualFileAPI.open(jar, getEntry(jar));
     }
 
     public String getFileName() {

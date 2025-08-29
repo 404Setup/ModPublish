@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBList;
@@ -14,6 +15,7 @@ import one.pkg.modpublish.PluginMain;
 import one.pkg.modpublish.data.internel.MinecraftVersionItem;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.internel.PublishResult;
+import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.internel.TargetType;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
@@ -21,13 +23,14 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
 import one.pkg.modpublish.data.modinfo.ModType;
 import one.pkg.modpublish.data.modinfo.ModVersion;
-import one.pkg.modpublish.data.properties.Properties;
-import one.pkg.modpublish.data.properties.Property;
 import one.pkg.modpublish.resources.Lang;
 import one.pkg.modpublish.resources.LocalResources;
+import one.pkg.modpublish.settings.properties.Properties;
+import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
+import one.pkg.modpublish.util.JsonParser;
 import one.pkg.modpublish.util.VirtualFileAPI;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +61,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     // Support targets
     private JBCheckBox clientCheckBox;
     private JBCheckBox serverCheckBox;
+    private JComboBox<ReleaseChannel> releaseType;
 
     // Loaders
     private List<JBCheckBox> loaderCheckBoxes;
@@ -150,6 +154,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
         formBuilder.addLabeledComponent(get("component.name.loaders"), loadersPanel);
 
+        JPanel releaseTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        releaseType = new ComboBox<>(ReleaseChannel.values());
+        releaseTypePanel.add(releaseType);
+        formBuilder.addLabeledComponent(get("component.name.release-channel"), releaseTypePanel);
+
         // Minecraft versions
         minecraftVersionModel = new DefaultListModel<>();
         minecraftVersionList = new JBList<>(minecraftVersionModel);
@@ -180,7 +189,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         JPanel minecraftPanel = new JPanel(new BorderLayout());
         minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
         minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
-        formBuilder.addLabeledComponent("Minecraft Target Versions:", minecraftPanel);
+        formBuilder.addLabeledComponent(get("component.name.mc-version"), minecraftPanel);
 
         // Changelog
         changelogArea = new JTextArea(8, 50);
@@ -232,9 +241,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
 
         Property p2 = Properties.getProperties(properties);
-        if (!p2.modrinth().isEnabled()) {
+        if (!p2.modrinth().isModEnabled()) {
             modrinthCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
+        }
+        if (!p2.modrinth().isTestEnabled()) {
             modrinthTestCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthTestCheckBox);
         }
@@ -258,9 +269,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         // Load dependencies
         String savedDependenciesJson = properties.getValue("modpublish.dependencies", "[]");
         try {
-            Type dependencyListType = new TypeToken<List<DependencyInfo>>() {
-            }.getType();
-            List<DependencyInfo> savedDependencies = new Gson().fromJson(savedDependenciesJson, dependencyListType);
+            List<DependencyInfo> savedDependencies = JsonParser.fromJson(savedDependenciesJson, LocalResources.dpType);
             if (savedDependencies != null) {
                 dependencyPanel.setDependencies(savedDependencies);
             }
@@ -277,7 +286,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
         properties.setValue("modpublish.changelog", changelogArea.getText());
         List<DependencyInfo> dependencies = dependencyPanel.getDependencies();
-        String dependenciesJson = new Gson().toJson(dependencies);
+        String dependenciesJson = JsonParser.toJson(dependencies);
         properties.setValue("modpublish.dependencies", dependenciesJson);
     }
 
@@ -344,10 +353,9 @@ public class PublishModDialog extends BaseDialogWrapper {
         List<MinecraftVersion> selectedMinecraftVersions = new ArrayList<>();
         for (int i = 0; i < minecraftVersionModel.getSize(); i++) {
             MinecraftVersionItem item = minecraftVersionModel.getElementAt(i);
-            if (item.isSelected()) {
-                selectedMinecraftVersions.add(item.getVersion());
-            }
+            if (item.isSelected()) selectedMinecraftVersions.add(item.getVersion());
         }
+        ReleaseChannel rT = this.releaseType.getItemAt(this.releaseType.getSelectedIndex());
         if (clientCheckBox.isSelected())
             supportedInfo.client.setEnabled(true);
         if (serverCheckBox.isSelected())
@@ -356,11 +364,8 @@ public class PublishModDialog extends BaseDialogWrapper {
         return new PublishData(
                 versionNameField.getText(),
                 versionNumberField.getText(),
-                githubCheckBox.isSelected(),
-                gitlabCheckBox.isSelected(),
-                modrinthCheckBox.isSelected(),
-                modrinthTestCheckBox.isSelected(),
-                curseforgeCheckBox.isSelected(),
+                PublishData.Enabled.getInstance(getPublishTargets()),
+                rT,
                 selectedLoaders,
                 supportedInfo,
                 selectedMinecraftVersions,
@@ -375,17 +380,30 @@ public class PublishModDialog extends BaseDialogWrapper {
             return PublishResult.of("failed.4");
         }
 
+        //try {
+        var modrinthApi = TargetType.Modrinth.api;
+        var curseforgeApi = TargetType.CurseForge.api;
         if (curseforgeCheckBox.isSelected()) {
-            PublishResult cfResult = TargetType.Curseforge.getApi().createVersion(data, project);
+            PublishResult cfResult = curseforgeApi.createVersion(data, project);
             if (cfResult.isFailure()) return cfResult;
         }
 
-        try {
-            Thread.sleep(2000);
-            return new PublishResult("");
-        } catch (InterruptedException e) {
-            return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
+        if (modrinthCheckBox.isSelected()) {
+            if (modrinthApi.getABServer()) modrinthApi.updateABServer();
+            PublishResult mrResult = modrinthApi.createVersion(data, project);
+            if (mrResult.isFailure()) return mrResult;
         }
+
+        if (modrinthTestCheckBox.isSelected()) {
+            if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
+            PublishResult mrResult = modrinthApi.createVersion(data, project);
+            if (mrResult.isFailure()) return mrResult;
+        }
+
+        return PublishResult.empty();
+        /*} catch (InterruptedException e) {
+            return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
+        }*/
     }
 
     public boolean[] getPublishTargets() {

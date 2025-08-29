@@ -1,8 +1,10 @@
 package one.pkg.modpublish.ui.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.vfs.VirtualFile;
 import one.pkg.modpublish.data.modinfo.ModType;
 import one.pkg.modpublish.resources.Lang;
@@ -25,11 +27,34 @@ public class PublishModAction extends AnAction {
         }
     }
 
-    /*@Override
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
+    @Override
     public void update(@NotNull AnActionEvent event) {
         VirtualFile file = event.getData(CommonDataKeys.VIRTUAL_FILE);
-        boolean isJarFile = file != null && file.getName().endsWith(".jar");
-        event.getPresentation().setVisible(isJarFile);
-        event.getPresentation().setEnabled(isJarFile);
-    }*/
+
+        boolean shouldShow = false;
+        boolean shouldEnable = false;
+
+        if (file != null && !file.isDirectory()) {
+            boolean isJarFile = file.getName().endsWith(".jar");
+            if (isJarFile) {
+                try {
+                    ModType modType = ModType.of(VirtualFileAPI.toFile(file));
+                    shouldShow = true;
+                    shouldEnable = modType != null;
+                } catch (Exception e) {
+                    shouldShow = true;
+                }
+            }
+        }
+
+        Presentation presentation = event.getPresentation();
+        presentation.setVisible(shouldShow);
+        presentation.setEnabled(shouldEnable);
+    }
+
 }

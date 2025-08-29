@@ -4,13 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.Strictness;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Type;
 
+@SuppressWarnings("unused")
 public class JsonParser {
     private static final Gson gson = new Gson();
 
@@ -41,6 +44,22 @@ public class JsonParser {
         return gson.fromJson(json, classOfT);
     }
 
+    public static <T> T fromJson(String json, TypeToken<T> typeToken) {
+        return gson.fromJson(json, typeToken.getType());
+    }
+
+    public static <T> T fromJson(String json, Type typeOfT) {
+        return gson.fromJson(json, typeOfT);
+    }
+
+    public static <T> T fromJson(Reader reader, TypeToken<T> typeToken) throws JsonParseException {
+        return gson.fromJson(reader, typeToken.getType());
+    }
+
+    public static <T> T fromJson(Reader reader, Type typeOfT) throws JsonParseException {
+        return gson.fromJson(reader, typeOfT);
+    }
+
     public static <T> T fromJson(Reader reader, Class<T> classOfT) throws JsonParseException {
         return gson.fromJson(reader, classOfT);
     }
@@ -48,4 +67,13 @@ public class JsonParser {
     public static <T> T fromJson(InputStream in, Class<T> classOfT) throws JsonParseException {
         return gson.fromJson(new InputStreamReader(in), classOfT);
     }
+
+    public static <T> T fromJson(InputStream in, Type typeOfT) throws JsonParseException {
+        return gson.fromJson(new InputStreamReader(in), typeOfT);
+    }
+
+    public static <T> T fromJson(InputStream in, TypeToken<T> typeToken) throws JsonParseException {
+        return gson.fromJson(new InputStreamReader(in), typeToken.getType());
+    }
+
 }

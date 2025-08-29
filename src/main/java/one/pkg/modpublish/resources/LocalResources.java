@@ -1,17 +1,19 @@
 package one.pkg.modpublish.resources;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
+import one.pkg.modpublish.util.JsonParser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
 public class LocalResources {
-    private static final Gson gson = new Gson();
+    public static final TypeToken<List<DependencyInfo>> dpType = new TypeToken<>() {
+    };
     private static final TypeToken<List<MinecraftVersion>> mvType = new TypeToken<>() {
     };
     private static final TypeToken<List<LauncherInfo>> liType = new TypeToken<>() {
@@ -26,7 +28,7 @@ public class LocalResources {
                 throw new Exception("supported.info.json not found");
             }
             try (InputStreamReader reader = new InputStreamReader(supportedStream)) {
-                return gson.fromJson(reader, SupportedInfo.class);
+                return JsonParser.fromJson(reader, SupportedInfo.class);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -39,7 +41,7 @@ public class LocalResources {
                 throw new Exception("launcher.info.json not found");
             }
             try (InputStreamReader reader = new InputStreamReader(launcherStream)) {
-                return gson.fromJson(reader, liType.getType());
+                return JsonParser.fromJson(reader, liType);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -52,7 +54,7 @@ public class LocalResources {
                 throw new Exception("minecraft.version.json not found");
             }
             try (InputStreamReader reader = new InputStreamReader(stream)) {
-                return new Gson().fromJson(reader, mvType.getType());
+                return JsonParser.fromJson(reader, mvType);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

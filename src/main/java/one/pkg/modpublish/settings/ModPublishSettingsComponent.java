@@ -1,54 +1,57 @@
 package one.pkg.modpublish.settings;
 
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import one.pkg.modpublish.protect.Protect;
 import one.pkg.modpublish.protect.HardwareFingerprint;
+import one.pkg.modpublish.protect.Protect;
 import one.pkg.modpublish.resources.Lang;
+import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class ModPublishSettingsComponent {
+
+public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private final JPanel panel;
-    private final JBTextField modrinthTokenText = new JBTextField();
-    private final JBTextField modrinthTestTokenText = new JBTextField();
-    private final JBTextField curseforgeTokenText = new JBTextField();
-    private final JBTextField curseforgeStudioTokenText = new JBTextField();
-    private final JBTextField githubTokenText = new JBTextField();
-    private final JBTextField gitlabTokenText = new JBTextField();
+    private JBTextField modrinthTokenText;
+    private JBTextField modrinthTestTokenText;
+    private JBTextField curseforgeTokenText;
+    private JBTextField curseforgeStudioTokenText;
+    private JBTextField githubTokenText;
+    private JBTextField gitlabTokenText;
 
     public ModPublishSettingsComponent() {
-        JBLabel mL = new JBLabel("Modrinth token:");
-        mL.setIcon(IconLoader.getIcon("/icons/modrinth.svg", getClass()));
-        JBLabel mL2 = new JBLabel("Modrinth test token:");
-        mL2.setIcon(IconLoader.getIcon("/icons/modrinth.svg", getClass()));
-        JBLabel cL = new JBLabel("Curseforge token:");
-        cL.setIcon(IconLoader.getIcon("/icons/curseforge.svg", getClass()));
-        JBLabel cL2 = new JBLabel("Curseforge Studio token:");
-        cL2.setIcon(IconLoader.getIcon("/icons/curseforge.svg", getClass()));
-        JBLabel gL = new JBLabel("Github token:");
-        gL.setIcon(IconLoader.getIcon("/icons/github.svg", getClass()));
-        JBLabel gL2 = new JBLabel("Gitlab token:");
-        gL2.setIcon(IconLoader.getIcon("/icons/gitlab.svg", getClass()));
+        super(null);
+        FormBuilder formBuilder = FormBuilder.createFormBuilder();
+
+        addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
+                new FieldConfig("Token", () -> modrinthTokenText = createTextField()),
+                new FieldConfig("(Test) Token", () -> modrinthTestTokenText = createTextField()));
+
+        addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
+                new FieldConfig("Token", () -> curseforgeTokenText = createTextField()),
+                new FieldConfig("Studio Token", () -> curseforgeStudioTokenText = createTextField()));
+
+        addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
+                new FieldConfig("Token", () -> githubTokenText = createTextField()));
+        addPlatformSection(formBuilder, "Gitlab", "/icons/gitlab.svg",
+                new FieldConfig("Token", () -> gitlabTokenText = createTextField()));
+
         gitlabTokenText.setEnabled(false);
         gitlabTokenText.setToolTipText(Lang.get("tooltip.gitlab.disable"));
 
-        panel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(mL, modrinthTokenText, 1, false)
-                .addLabeledComponent(mL2, modrinthTestTokenText, 1, false)
-                .addLabeledComponent(cL, curseforgeTokenText, 1, false)
-                .addLabeledComponent(cL2, curseforgeStudioTokenText, 1, false)
-                .addLabeledComponent(gL, githubTokenText, 1, false)
-                .addLabeledComponent(gL2, gitlabTokenText, 1, false)
-                .addComponentFillVertically(new JPanel(), 0)
+        panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
 
     public JPanel getPanel() {
         return panel;
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+        return null;
     }
 
     public JComponent getPreferredFocusedComponent() {

@@ -3,6 +3,7 @@ package one.pkg.modpublish.data.network.curseforge;
 import com.google.gson.annotations.SerializedName;
 import one.pkg.modpublish.data.local.DependencyType;
 
+@SuppressWarnings("unused")
 public class ProjectRelation {
     /**
      * Project slug identifier
@@ -44,11 +45,11 @@ public class ProjectRelation {
      * @return ProjectRelation object
      */
     public static ProjectRelation createRequired(String slug) {
-        return new ProjectRelation(slug, DependencyType.REQUIRED.getCurseforgeName());
+        return new ProjectRelation(slug, DependencyType.REQUIRED.getCurseForgeName());
     }
 
     public static ProjectRelation createRequired(String slug, int projectID) {
-        return new ProjectRelation(slug, projectID, DependencyType.REQUIRED.getCurseforgeName());
+        return new ProjectRelation(slug, projectID, DependencyType.REQUIRED.getCurseForgeName());
     }
 
     /**
@@ -58,11 +59,11 @@ public class ProjectRelation {
      * @return ProjectRelation object
      */
     public static ProjectRelation createOptional(String slug) {
-        return new ProjectRelation(slug, DependencyType.OPTIONAL.getCurseforgeName());
+        return new ProjectRelation(slug, DependencyType.OPTIONAL.getCurseForgeName());
     }
 
     public static ProjectRelation createOptional(String slug, int projectID) {
-        return new ProjectRelation(slug, projectID, DependencyType.OPTIONAL.getCurseforgeName());
+        return new ProjectRelation(slug, projectID, DependencyType.OPTIONAL.getCurseForgeName());
     }
 
     /**
@@ -72,11 +73,11 @@ public class ProjectRelation {
      * @return ProjectRelation object
      */
     public static ProjectRelation createEmbedded(String slug) {
-        return new ProjectRelation(slug, DependencyType.EMBEDDED.getCurseforgeName());
+        return new ProjectRelation(slug, DependencyType.EMBEDDED.getCurseForgeName());
     }
 
     public static ProjectRelation createEmbedded(String slug, int projectID) {
-        return new ProjectRelation(slug, projectID, DependencyType.EMBEDDED.getCurseforgeName());
+        return new ProjectRelation(slug, projectID, DependencyType.EMBEDDED.getCurseForgeName());
     }
 
     /**
@@ -86,11 +87,11 @@ public class ProjectRelation {
      * @return ProjectRelation object
      */
     public static ProjectRelation createIncompatible(String slug) {
-        return new ProjectRelation(slug, DependencyType.INCOMPATIBLE.getCurseforgeName());
+        return new ProjectRelation(slug, DependencyType.INCOMPATIBLE.getCurseForgeName());
     }
 
     public static ProjectRelation createIncompatible(String slug, int projectID) {
-        return new ProjectRelation(slug, projectID, DependencyType.INCOMPATIBLE.getCurseforgeName());
+        return new ProjectRelation(slug, projectID, DependencyType.INCOMPATIBLE.getCurseForgeName());
     }
 
     public static ProjectRelation create(String slug, DependencyType type) {
