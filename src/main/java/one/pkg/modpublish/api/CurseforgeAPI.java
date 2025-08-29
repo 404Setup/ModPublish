@@ -57,7 +57,7 @@ public class CurseForgeAPI implements API {
             String bs = resp.body().string();
             CurseForgePublishResult result = JsonParser.fromJson(bs, CurseForgePublishResult.class);
             if (result != null && result.isSuccess())
-                return new PublishResult("");
+                return PublishResult.empty();
             return new PublishResult(bs);
         } catch (IOException e) {
             return PublishResult.of(e.getMessage());
