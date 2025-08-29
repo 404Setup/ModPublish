@@ -18,9 +18,9 @@ public class ModJsonParser {
     }
 
     @Nullable
-    public String getVersion() {
+    public LocalModInfo get() {
         try {
-            return json.get("version").getAsString();
+            return new LocalModInfo(json.get("name").getAsString(), json.get("version").getAsString());
         } catch (Exception e) {
             return null;
         }

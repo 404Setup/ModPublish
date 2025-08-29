@@ -1,5 +1,6 @@
 package one.pkg.modpublish.data.modinfo;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
 import one.pkg.modpublish.util.VirtualFileAPI;
 import org.jetbrains.annotations.NotNull;
@@ -17,36 +18,38 @@ public enum ModType {
     Fabric("fabric.mod.json", "fabric") {
         @Override
         @Nullable
-        public String getModVersion(@NotNull File file) {
-            return getFabricModVersion(file);
+        public LocalModInfo getMod(@NotNull File file) {
+            return getFabricMod(file);
         }
     }, Quilt("quilt.mod.json", "quilt") {
         @Override
         @Nullable
-        public String getModVersion(@NotNull File file) {
-            return getFabricModVersion(file);
+        public LocalModInfo getMod(@NotNull File file) {
+            return getFabricMod(file);
         }
     },
     Forge("META-INF/mods.toml", "forge") {
         @Override
         @Nullable
-        public String getModVersion(@NotNull File file) {
-            return getForgeModVersion(file);
+        public LocalModInfo getMod(@NotNull File file) {
+            return getForgeMod(file);
         }
     }, NeoForge("META-INF/neoforge.mods.toml", "neoforge") {
         @Override
         @Nullable
-        public String getModVersion(@NotNull File file) {
-            return getForgeModVersion(file);
+        public LocalModInfo getMod(@NotNull File file) {
+            return getForgeMod(file);
         }
     }, Rift("riftmod.json", "rift") {
         @Override
         @Nullable
-        public String getModVersion(@NotNull File file) {
+        public LocalModInfo getMod(@NotNull File file) {
             // RiftMod version reading not supported
             return null;
         }
     };
+
+    private static final Logger LOG = Logger.getInstance(ModType.class);
 
     private static final ModType[] VALUES = values();
     private final String fileName;
@@ -103,11 +106,11 @@ public enum ModType {
     }
 
     @Nullable
-    String getFabricModVersion(@NotNull File file) {
+    LocalModInfo getFabricMod(@NotNull File file) {
         try (JarFile j = VirtualFileAPI.toJarFile(file);
              InputStream s = getStream(j)) {
             ModJsonParser parser = new ModJsonParser(s);
-            return parser.getVersion();
+            return parser.get();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -115,11 +118,11 @@ public enum ModType {
     }
 
     @Nullable
-    String getForgeModVersion(@NotNull File file) {
+    LocalModInfo getForgeMod(@NotNull File file) {
         try (JarFile j = VirtualFileAPI.toJarFile(file);
              InputStream s = getStream(j);
              ModTomlParser parser = ModTomlParser.of(s)) {
-            return parser.getVersion();
+            return parser.get();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -127,12 +130,12 @@ public enum ModType {
     }
 
     @Nullable
-    public String getModVersion(@NotNull VirtualFile file) {
-        return getModVersion(VirtualFileAPI.toFile(file));
+    public LocalModInfo getMod(@NotNull VirtualFile file) {
+        return getMod(VirtualFileAPI.toFile(file));
     }
 
     @Nullable
-    public abstract String getModVersion(@NotNull File file);
+    public abstract LocalModInfo getMod(@NotNull File file);
 
     @Nullable
     public ZipEntry getEntry(JarFile jar) {

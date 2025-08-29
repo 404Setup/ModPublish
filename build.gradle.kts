@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "one.pkg"
-version = "0.0.1"
+version = "0.0.2"
 val targetJavaVersion = 17
 
 repositories {
@@ -37,8 +37,6 @@ dependencies {
         intellijIdeaCommunity("2025.2")
         bundledPlugin("com.intellij.java")
     }
-
-    implementation("io.github.wasabithumb:jtoml:1.2.0")
 }
 
 intellijPlatform {

@@ -13,6 +13,17 @@
     <change-notes>
         <![CDATA[
       <ul>
+        <li><b>0.0.2</b>
+          <ul>
+            <li><strong>[Feat]</strong> Auto generate title based on mod name/version/loader or user-customized format</li>
+            <li><strong>[Feat]</strong> Support for selecting release channels</li>
+            <li><strong>[Optimize]</strong> Project configuration UI optimization</li>
+            <li><strong>[Optimize]</strong> Project structure optimization</li>
+            <li><strong>[Fix]</strong> Unable to read TOML</li>
+            <li><strong>[Fix]</strong> Some other bugs (my commit records were lost, so I don't remember)</li>
+            <li><strong>[Remove]</strong> No longer using JToml</li>
+          </ul>
+        </li>
         <li><b>0.0.1</b> Release.</li>
       </ul>
     ]]>

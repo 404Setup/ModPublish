@@ -1,7 +1,5 @@
 package one.pkg.modpublish.ui;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -21,10 +19,12 @@ import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
+import one.pkg.modpublish.data.modinfo.LocalModInfo;
 import one.pkg.modpublish.data.modinfo.ModType;
 import one.pkg.modpublish.data.modinfo.ModVersion;
 import one.pkg.modpublish.resources.Lang;
 import one.pkg.modpublish.resources.LocalResources;
+import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
@@ -38,11 +38,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PublishModDialog extends BaseDialogWrapper {
+
     private final Project project;
     private final VirtualFile jarFile;
     private final List<ModType> modTypes;
@@ -112,8 +112,8 @@ public class PublishModDialog extends BaseDialogWrapper {
         FormBuilder formBuilder = FormBuilder.createFormBuilder();
 
         // Version name and number
-        versionNameField = new JBTextField(extractVersionName(jarFile));
-        versionNumberField = new JBTextField(ModVersion.extractVersionNumber(jarFile));
+        versionNameField = new JBTextField();
+        versionNumberField = new JBTextField();
 
         formBuilder.addLabeledComponent(Lang.get("component.name.version-name"), versionNameField);
         formBuilder.addLabeledComponent(Lang.get("component.name.version-number"), versionNumberField);
@@ -227,7 +227,32 @@ public class PublishModDialog extends BaseDialogWrapper {
     private void autoFillFields() {
         autoFillMinecraftVersions();
 
+        loadModInfo();
         loadPersistedData();
+    }
+
+    private void loadModInfo() {
+        String version = null;
+        String versionName = extractVersionName(jarFile);
+        String versionNameFormat = PID.CommonVersionFormat.get(project);
+
+        ModType t = ModType.of(jarFile);
+        if (t != null) {
+            LocalModInfo lmInfo = t.getMod(jarFile);
+            if (lmInfo != null) {
+                version = lmInfo.version();
+                if (!versionNameFormat.isEmpty())
+                    versionName =
+                            versionNameFormat.replace("{version}", version)
+                                    .replace("{name}", lmInfo.name())
+                                    .replace("{loader}", t.getName());
+            }
+        }
+
+        if (version == null) version = ModVersion.extractVersionNumber(jarFile);
+
+        versionNameField.setText(versionName);
+        versionNumberField.setText(version);
     }
 
     private void autoFillMinecraftVersions() {

@@ -8,12 +8,6 @@ import java.util.regex.Pattern;
 
 public class ModVersion {
     public static String extractVersionNumber(VirtualFile file) {
-        ModType t = ModType.of(file);
-        if (t != null) {
-            String version = t.getModVersion(file);
-            if (version != null) return version;
-        }
-
         String name = file.getNameWithoutExtension();
         String extractedVersion = extractVersionFromPattern(name);
         return validateAndNormalizeVersion(extractedVersion);

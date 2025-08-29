@@ -2,6 +2,7 @@ package one.pkg.modpublish.ui;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
@@ -16,6 +17,8 @@ import java.awt.*;
 
 public class ConfigProjectDialog extends BaseDialogWrapper {
     private final Project project;
+
+    private JBTextField commonVersionFormatField;
 
     private JBTextField modrinthTokenField;
     private JBTextField modrinthTestTokenField;
@@ -44,7 +47,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         init();
         setText("button.save", TextType.OKButton);
         setText("button.cancel", TextType.CancelButton);
-        getContentPanel().setPreferredSize(new Dimension(500, -1));
+        //getContentPanel().setPreferredSize(new Dimension(500, 400));
     }
 
     @Override
@@ -57,11 +60,14 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         String repoLabel = get("dialog.modpublish.config-project.repo");
         String branchLabel = get("dialog.modpublish.config-project.branch");
 
+        addPlatformSection(formBuilder, "Common", null,
+                new FieldConfig(get("component.name.common.version-format"), () -> commonVersionFormatField = createTextField()));
+
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
                 new FieldConfig(token, () -> modrinthTokenField = createTextField()),
-                new FieldConfig("(Test) "+ token, () -> modrinthTestTokenField = createTextField()),
+                new FieldConfig("(Test) " + token, () -> modrinthTestTokenField = createTextField()),
                 new FieldConfig(modIdLabel, () -> modrinthModIDField = createTextField()),
-                new FieldConfig("(Test) "+ modIdLabel, () -> modrinthTestModIDField = createTextField()));
+                new FieldConfig("(Test) " + modIdLabel, () -> modrinthTestModIDField = createTextField()));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
                 new FieldConfig(token, () -> curseforgeTokenField = createTextField()),
@@ -102,7 +108,14 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
 
         JPanel panel = formBuilder.getPanel();
         panel.setBorder(JBUI.Borders.empty(20, 20, 15, 20));
-        return panel;
+
+        JBScrollPane scrollPane = new JBScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(600, 360));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        return scrollPane;
     }
 
     @Override
@@ -118,9 +131,13 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private void loadPersistedData() {
         Property p1 = Properties.getProperties(project);
 
-        if (p1.modrinth().token().globalData()) setToolTipText("dialog.modpublish.config-project.global", modrinthTokenField);
+        commonVersionFormatField.setText(p1.common().versionFormat());
+
+        if (p1.modrinth().token().globalData())
+            setToolTipText("dialog.modpublish.config-project.global", modrinthTokenField);
         else modrinthTokenField.setText(p1.modrinth().token().data());
-        if (p1.modrinth().testToken().globalData()) setToolTipText("dialog.modpublish.config-project.global", modrinthTestTokenField);
+        if (p1.modrinth().testToken().globalData())
+            setToolTipText("dialog.modpublish.config-project.global", modrinthTestTokenField);
         else modrinthTestTokenField.setText(p1.modrinth().testToken().data());
         modrinthModIDField.setText(p1.modrinth().modid());
         modrinthTestModIDField.setText(p1.modrinth().testModId());
@@ -149,16 +166,21 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private void savePersistedData() {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
 
+        PID.CommonVersionFormat.set(properties, commonVersionFormatField);
+
         PID.ModrinthToken.set(properties, modrinthTokenField);
         PID.ModrinthTestToken.set(properties, modrinthTestTokenField);
         PID.ModrinthModID.set(properties, modrinthModIDField);
         PID.ModrinthTestModID.set(properties, modrinthTestModIDField);
+
         PID.CurseForgeToken.set(properties, curseforgeTokenField);
         PID.CurseForgeStudioToken.set(properties, curseforgeStudioTokenField);
         PID.CurseForgeModID.set(properties, curseforgeModIDField);
+
         PID.GithubToken.set(properties, githubTokenField);
         PID.GithubRepo.set(properties, githubRepoField);
         PID.GithubBranch.set(properties, githubBranchField);
+
         PID.GitlabToken.set(properties, gitlabTokenField);
         PID.GitlabRepo.set(properties, gitlabRepoField);
         PID.GitlabBranch.set(properties, gitlabBranchField);

@@ -19,12 +19,11 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
-1. Auto generate title based on mod name/version/loader or user-customized format
-2. Upload multiple files simultaneously
-3. Code Optimization
-4. Publish to GitHub/GitLab
-5. Validate Token/ModID/Repo/Branch validity
-6. Allow syncing README to Modrinth and CurseForge
+1. Upload multiple files simultaneously
+2. Code Optimization
+3. Publish to GitHub/GitLab
+4. Validate Token/ModID/Repo/Branch validity
+5. Allow syncing README to Modrinth and CurseForge
 
 ## Usage
 
@@ -93,6 +92,24 @@ If you believe your API Tokens have been leaked, please revoke them immediately 
 
 If they support fine-grained permission configuration, please do so and do not add extra permissions.
 
+### Version Name Formatting
+
+You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric` instead of something like
+`my-mod-1.0.0+fabric.jar`.
+
+Modrinth usually generates titles automatically, but CurseForge does not, and you don't want to manually copy it every
+time.
+
+ModPublish provides this feature since version 0.0.2. You need to configure the final formatted name template in
+`Project | Tools | Configure ModPublish for Project`.
+Currently supported variables:
+
+- `{version}`
+- `{name}`
+- `{loader}`
+
+If not configured, ModPublish will still use the default name generation rules
+
 ## Build
 
 Building ModPublish requires the following tools
@@ -118,7 +135,6 @@ Feel free to contribute
 #### Dependencies
 
 - [Gson](https://github.com/google/gson) - License [Apache 2.0](https://github.com/google/gson/blob/main/LICENSE)
-- [JToml](https://github.com/WasabiThumb/jtoml) - License [Apache 2.0](https://github.com/WasabiThumb/jtoml/blob/master/LICENSE.txt)
 - [OKHttp](https://github.com/square/okhttp) - License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
 
 #### Resource Files
