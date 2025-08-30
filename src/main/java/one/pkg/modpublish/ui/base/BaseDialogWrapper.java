@@ -3,6 +3,7 @@ package one.pkg.modpublish.ui.base;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -11,6 +12,7 @@ import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import one.pkg.modpublish.resources.Lang;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.PropertyKey;
 
@@ -26,24 +28,24 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         this.project = project;
     }
 
-    public BaseDialogWrapper(Project project, boolean canBeParent) {
+    public BaseDialogWrapper(@NotNull Project project, boolean canBeParent) {
         super(project, canBeParent);
         this.project = project;
     }
 
-    public JLabel createFieldLabel(String text) {
+    public @NotNull JLabel createFieldLabel(@NotNull String text) {
         JLabel label = new JLabel(text);
         label.setFont(UIUtil.getFont(UIUtil.FontSize.NORMAL, null));
         return label;
     }
 
-    public JBTextField createTextField() {
+    public @NotNull JBTextField createTextField() {
         JBTextField field = new JBTextField();
         field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
         return field;
     }
 
-    public JLabel createSectionLabel(String text) {
+    public @NotNull JLabel createSectionLabel(@NotNull String text) {
         JLabel label = new JLabel(text);
         Font currentFont = UIUtil.getFont(UIUtil.FontSize.NORMAL, null);
         label.setFont(currentFont.deriveFont(Font.BOLD));
@@ -51,11 +53,32 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         return label;
     }
 
-    public JLabel createSectionLabel(String text, Icon icon) {
+    public @NotNull JLabel createSectionLabel(@NotNull String text, @Nullable Icon icon) {
         JLabel label = createSectionLabel(text);
-        if (icon != null)
-            label.setIcon(icon);
+        if (icon != null) label.setIcon(icon);
         return label;
+    }
+
+    // This is the only way, slightly ugly but better than direct setting or no setting at all
+    public void setErrorStyle(@NotNull JBCheckBox checkBox) {
+        JPanel errorPanel = new JPanel(new BorderLayout());
+        errorPanel.setBackground(new Color(255, 200, 200));
+        errorPanel.setBorder(BorderFactory.createLineBorder(JBColor.RED, 2));
+
+        Container parent = checkBox.getParent();
+        if (parent != null) {
+            Component[] components = parent.getComponents();
+            for (int i = 0; i < components.length; i++) {
+                if (components[i] == checkBox) {
+                    parent.remove(checkBox);
+                    errorPanel.add(checkBox, BorderLayout.CENTER);
+                    parent.add(errorPanel, i);
+                    parent.revalidate();
+                    parent.repaint();
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -72,13 +95,11 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     public void setToolTipText(@PropertyKey(resourceBundle = Lang.File) String key, JComponent jComponent) {
-        if (jComponent.isEnabled())
-            jComponent.setToolTipText(get(key));
+        jComponent.setToolTipText(get(key));
     }
 
     public void setToolTipText(@PropertyKey(resourceBundle = Lang.File) String key, JComponent jComponent, Object... params) {
-        if (jComponent.isEnabled())
-            jComponent.setToolTipText(get(key, params));
+        jComponent.setToolTipText(get(key, params));
     }
 
     public JBLabel getJBLabel(@PropertyKey(resourceBundle = Lang.File) String key) {
@@ -98,7 +119,7 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     @SuppressWarnings("all")
-    public void showMessageDialogRaw(String message, String title, int messageType
+    public void showMessageDialogRaw(@NotNull String message, @NotNull String title, int messageType
     ) throws HeadlessException {
         JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType);
     }
@@ -111,7 +132,7 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         return Lang.get(key, params);
     }
 
-    protected void addPlatformSection(FormBuilder formBuilder, String platformName,
+    protected void addPlatformSection(@NotNull FormBuilder formBuilder, @NotNull String platformName,
                                       @Nullable String iconPath, FieldConfig... fields) {
         formBuilder.addComponent(createSectionLabel(platformName,
                 iconPath == null ? null : IconLoader.getIcon(iconPath, getClass())
@@ -122,11 +143,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
             formBuilder.addLabeledComponent(createFieldLabel(field.label), field.fieldSupplier.get());
 
         formBuilder.addVerticalGap(JBUI.scale(15));
-    }
-
-    public void setDisabledWithTooltip(JBTextField field) {
-        field.setEnabled(false);
-        field.setToolTipText(get("tooltip.gitlab.disable"));
     }
 
     public enum TextType {

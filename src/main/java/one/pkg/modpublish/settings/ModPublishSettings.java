@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import one.pkg.modpublish.data.internel.Info;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public final class ModPublishSettings
         @NonNls
         public String gitlabToken = "";
 
-        public String getModrinthToken() {
+        public Info getModrinthToken() {
             return getDecryptedToken(modrinthToken);
         }
 
@@ -53,7 +54,7 @@ public final class ModPublishSettings
             this.modrinthToken = encryptToken(token);
         }
 
-        public String getModrinthTestToken() {
+        public Info getModrinthTestToken() {
             return getDecryptedToken(modrinthTestToken);
         }
 
@@ -61,7 +62,7 @@ public final class ModPublishSettings
             this.modrinthTestToken = encryptToken(token);
         }
 
-        public String getCurseforgeToken() {
+        public Info getCurseforgeToken() {
             return getDecryptedToken(curseforgeToken);
         }
 
@@ -69,7 +70,7 @@ public final class ModPublishSettings
             this.curseforgeToken = encryptToken(token);
         }
 
-        public String getCurseforgeStudioToken() {
+        public Info getCurseforgeStudioToken() {
             return getDecryptedToken(curseforgeStudioToken);
         }
 
@@ -77,7 +78,7 @@ public final class ModPublishSettings
             this.curseforgeStudioToken = encryptToken(token);
         }
 
-        public String getGithubToken() {
+        public Info getGithubToken() {
             return getDecryptedToken(githubToken);
         }
 
@@ -85,7 +86,7 @@ public final class ModPublishSettings
             this.githubToken = encryptToken(token);
         }
 
-        public String getGitlabToken() {
+        public Info getGitlabToken() {
             return getDecryptedToken(gitlabToken);
         }
 

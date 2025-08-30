@@ -37,7 +37,6 @@ public enum PID {
     }
 
     public Info getProtect(PropertiesComponent properties) {
-        if (!protect) return Info.of(get(properties));
         return Properties.getProtectValue(properties, this);
     }
 

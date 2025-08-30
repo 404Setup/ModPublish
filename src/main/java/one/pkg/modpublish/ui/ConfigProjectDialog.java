@@ -10,6 +10,7 @@ import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -184,5 +185,10 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         PID.GitlabToken.set(properties, gitlabTokenField);
         PID.GitlabRepo.set(properties, gitlabRepoField);
         PID.GitlabBranch.set(properties, gitlabBranchField);
+    }
+
+    public void setDisabledWithTooltip(@NotNull JBTextField field) {
+        field.setEnabled(false);
+        field.setToolTipText(get("tooltip.gitlab.disable"));
     }
 }

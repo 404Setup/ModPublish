@@ -33,12 +33,12 @@ public class ModPublishSettingsConfigurable implements Configurable {
     public boolean isModified() {
         ModPublishSettings.State state =
                 Objects.requireNonNull(ModPublishSettings.getInstance().getState());
-        return !component.getModrinthTokenText().equals(state.getModrinthToken()) ||
-                !component.getModrinthTestTokenText().equals(state.getModrinthTestToken()) ||
-                !component.getCurseforgeTokenText().equals(state.getCurseforgeToken()) ||
-                !component.getCurseforgeStudioTokenText().equals(state.getCurseforgeStudioToken()) ||
-                !component.getGithubTokenText().equals(state.getGithubToken()) ||
-                !component.getGitlabTokenText().equals(state.getGitlabToken());
+        return !component.getModrinthTokenText().equals(state.getModrinthToken().data()) ||
+                !component.getModrinthTestTokenText().equals(state.getModrinthTestToken().data()) ||
+                !component.getCurseforgeTokenText().equals(state.getCurseforgeToken().data()) ||
+                !component.getCurseforgeStudioTokenText().equals(state.getCurseforgeStudioToken().data()) ||
+                !component.getGithubTokenText().equals(state.getGithubToken().data()) ||
+                !component.getGitlabTokenText().equals(state.getGitlabToken().data());
     }
 
     @Override
@@ -57,12 +57,12 @@ public class ModPublishSettingsConfigurable implements Configurable {
     public void reset() {
         ModPublishSettings.State state =
                 Objects.requireNonNull(ModPublishSettings.getInstance().getState());
-        component.setModrinthTokenText(state.getModrinthToken());
-        component.setModrinthTestTokenText(state.getModrinthTestToken());
-        component.setCurseforgeTokenText(state.getCurseforgeToken());
-        component.setCurseforgeStudioTokenText(state.getCurseforgeStudioToken());
-        component.setGithubTokenText(state.getGithubToken());
-        component.setGitlabTokenText(state.getGitlabToken());
+        component.setModrinthTokenText(state.getModrinthToken().data());
+        component.setModrinthTestTokenText(state.getModrinthTestToken().data());
+        component.setCurseforgeTokenText(state.getCurseforgeToken().data());
+        component.setCurseforgeStudioTokenText(state.getCurseforgeStudioToken().data());
+        component.setGithubTokenText(state.getGithubToken().data());
+        component.setGitlabTokenText(state.getGitlabToken().data());
     }
 
     @Override

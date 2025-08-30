@@ -10,11 +10,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import one.pkg.modpublish.PluginMain;
-import one.pkg.modpublish.data.internel.MinecraftVersionItem;
-import one.pkg.modpublish.data.internel.PublishData;
-import one.pkg.modpublish.data.internel.PublishResult;
-import one.pkg.modpublish.data.internel.ReleaseChannel;
-import one.pkg.modpublish.data.internel.TargetType;
+import one.pkg.modpublish.data.internel.*;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
@@ -269,22 +265,42 @@ public class PublishModDialog extends BaseDialogWrapper {
         if (!p2.modrinth().isModEnabled()) {
             modrinthCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
+        } else if (p2.modrinth().token().failed()) {
+            modrinthCheckBox.setEnabled(false);
+            setErrorStyle(modrinthCheckBox);
+            setToolTipText("tooltip.decrypt.failed", modrinthCheckBox);
         }
         if (!p2.modrinth().isTestEnabled()) {
             modrinthTestCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthTestCheckBox);
+        } else if (p2.modrinth().testToken().failed()) {
+            modrinthTestCheckBox.setEnabled(false);
+            setErrorStyle(modrinthTestCheckBox);
+            setToolTipText("tooltip.decrypt.failed", modrinthTestCheckBox);
         }
         if (!p2.curseforge().isEnabled()) {
             curseforgeCheckBox.setEnabled(false);
             setToolTipText("tooltip.curseforge.disable", curseforgeCheckBox);
+        } else if (p2.curseforge().token().failed() || p2.curseforge().studioToken().failed()) {
+            curseforgeCheckBox.setEnabled(false);
+            setErrorStyle(curseforgeCheckBox);
+            setToolTipText("tooltip.decrypt.failed", curseforgeCheckBox);
         }
         if (!p2.github().isEnabled()) {
             githubCheckBox.setEnabled(false);
             setToolTipText("tooltip.git.disable", githubCheckBox, "Github");
+        } else if (p2.github().token().failed()) {
+            githubCheckBox.setEnabled(false);
+            setErrorStyle(githubCheckBox);
+            setToolTipText("tooltip.decrypt.failed", githubCheckBox, "Github");
         }
         if (!p2.gitlab().isEnabled()) {
             gitlabCheckBox.setEnabled(false);
             setToolTipText("tooltip.git.disable", gitlabCheckBox, "Gitlab");
+        } else if (p2.gitlab().token().failed()) {
+            gitlabCheckBox.setEnabled(false);
+            setErrorStyle(gitlabCheckBox);
+            setToolTipText("tooltip.decrypt.failed", gitlabCheckBox, "Gitlab");
         }
 
         // Load changelog

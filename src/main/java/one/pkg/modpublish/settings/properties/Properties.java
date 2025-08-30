@@ -22,21 +22,22 @@ public class Properties {
 
     public static @NotNull Info getProtectValue(@NotNull PropertiesComponent properties, @NotNull PID dataKey) {
         String v = dataKey.get(properties);
-        if (v == null || v.isBlank()) {
+        if (v.isBlank()) {
             ModPublishSettings.State state =
                     Objects.requireNonNull(ModPublishSettings.getInstance().getState());
             return switch (dataKey) {
-                case ModrinthToken -> Info.of(state.getModrinthToken(), true);
-                case ModrinthTestToken -> Info.of(state.getModrinthTestToken(), true);
-                case CurseForgeToken -> Info.of(state.getCurseforgeToken(), true);
-                case CurseForgeStudioToken -> Info.of(state.getCurseforgeStudioToken(), true);
-                case GithubToken -> Info.of(state.getGithubToken(), true);
-                case GitlabToken -> Info.of(state.getGitlabToken(), true);
+                case ModrinthToken -> state.getModrinthToken();
+                case ModrinthTestToken -> state.getModrinthTestToken();
+                case CurseForgeToken -> state.getCurseforgeToken();
+                case CurseForgeStudioToken -> state.getCurseforgeStudioToken();
+                case GithubToken -> state.getGithubToken();
+                case GitlabToken -> state.getGitlabToken();
                 default -> Info.INSTANCE;
             };
         }
         String r = Protect.decryptString(v, HardwareFingerprint.generateSecureProjectKey());
-        return r == null || r.isBlank() ? Info.INSTANCE : Info.of(r);
+        if (r.isBlank() || r.equals(v)) return Info.of(r, true, false);
+        return Info.of(r);
     }
 
     public static void setProtectValue(@NotNull Project project, @NotNull String dataKey, @NotNull String data) {

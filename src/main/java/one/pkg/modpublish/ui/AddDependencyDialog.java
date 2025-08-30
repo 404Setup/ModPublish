@@ -158,7 +158,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;
         }
-        if (publishTargets[3]) {// Modrinth Test
+        if (publishTargets[3]) { // Modrinth Test
             if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);

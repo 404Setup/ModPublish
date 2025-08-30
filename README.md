@@ -1,12 +1,16 @@
 # ModPublish
 
-> ModPublish is currently in the Alpha version with incomplete functionality.
-
 Quickly publish your Minecraft mods to multiple mod hosting sites using Jetbrains IDEA.
 
 It may not be as convenient as some Gradle plugins, but I want to do it.
 
-## Unsupported Features
+## Feature
+
+- Fully GUI-based operation
+- Quick saving of last operation records (dependencies, changelog)
+- One click publishing of mods to Modrinth and CurseForge
+
+### Unsupported Features
 
 > These features will never be supported unless someone submits a pull request, 
 > or I suddenly want to implement them
@@ -15,7 +19,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 - Publishing to Hangar/SpigotMC
 - Publishing plugins/resource packs/data packs
 
-## TODO
+### TODO
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
@@ -24,6 +28,13 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 3. Publish to GitHub/GitLab
 4. Validate Token/ModID/Repo/Branch validity
 5. Allow syncing README to Modrinth and CurseForge
+6. Allow customizing mod upload targets
+
+## Installation
+
+ModPublish can be found in the Jetbrains plugin marketplace. You can install it by searching for "Minecraft Mod Publish
+Utils" in IDEA's `Plugin` module,
+or download it through [this link](https://plugins.jetbrains.com/plugin/28320-minecraft-mod-publish-utils).
 
 ## Usage
 
@@ -128,7 +139,24 @@ Build steps:
 
 ## Contribution
 
-Feel free to contribute
+> These restrictions are just to ensure it doesn't become too messy
+
+- Avoid excessive use of syntactic sugar
+- Do not introduce third party dependencies unless necessary
+- Do not write duplicate code
+- Ensure code has good readability
+- Only use Java
+- Tests are optional, but functionality must be manually verified before submission
+- Comments are not mandatory. But if there are any, please use English.
+- Variable/method/parameter names should not be too long
+
+### For Translations
+
+- Do not use machine translation services like Google, DeepL, etc.
+- If using AI translation, ensure it does not cause major ambiguity
+- Do not use discriminatory language
+- Do not use dialects
+- Do not use unnatural or confusing language
 
 ## Credits
 

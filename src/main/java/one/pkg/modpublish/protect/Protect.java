@@ -1,5 +1,7 @@
 package one.pkg.modpublish.protect;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -66,7 +68,7 @@ public class Protect {
         }
     }
 
-    public static String decryptString(String encryptedData, String hash) {
+    public static @NotNull String decryptString(String encryptedData, String hash) {
         if (true) {
             try {
                 SecretKey key = deriveKey(hash);
