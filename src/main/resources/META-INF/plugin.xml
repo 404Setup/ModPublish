@@ -17,6 +17,7 @@
           <ul>
             <li><strong>[Feat]</strong> Detect token decryption status on release page</li>
             <li><strong>[Fix]</strong> Do not display tooltip for disabled release targets on release page</li>
+            <li><strong>[Change]</strong> ModType name should be capitalized</li>
         </li>
         <li><b>0.0.2</b>
           <ul>

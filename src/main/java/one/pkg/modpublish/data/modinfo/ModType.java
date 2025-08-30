@@ -15,32 +15,32 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 public enum ModType {
-    Fabric("fabric.mod.json", "fabric") {
+    Fabric("fabric.mod.json", "Fabric") {
         @Override
         @Nullable
         public LocalModInfo getMod(@NotNull File file) {
             return getFabricMod(file);
         }
-    }, Quilt("quilt.mod.json", "quilt") {
+    }, Quilt("quilt.mod.json", "Quilt") {
         @Override
         @Nullable
         public LocalModInfo getMod(@NotNull File file) {
             return getFabricMod(file);
         }
     },
-    Forge("META-INF/mods.toml", "forge") {
+    Forge("META-INF/mods.toml", "Forge") {
         @Override
         @Nullable
         public LocalModInfo getMod(@NotNull File file) {
             return getForgeMod(file);
         }
-    }, NeoForge("META-INF/neoforge.mods.toml", "neoforge") {
+    }, NeoForge("META-INF/neoforge.mods.toml", "NeoForge") {
         @Override
         @Nullable
         public LocalModInfo getMod(@NotNull File file) {
             return getForgeMod(file);
         }
-    }, Rift("riftmod.json", "rift") {
+    }, Rift("riftmod.json", "Rift") {
         @Override
         @Nullable
         public LocalModInfo getMod(@NotNull File file) {
