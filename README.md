@@ -138,7 +138,7 @@ Build steps:
 
 ## Contribution
 
-> These restrictions are just to ensure it doesn't become too messy
+> This is not mandatory, just a suggestion
 
 - Avoid excessive use of syntactic sugar
 - Do not introduce third party dependencies unless necessary
