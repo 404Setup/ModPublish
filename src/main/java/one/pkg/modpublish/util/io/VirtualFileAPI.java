@@ -1,4 +1,4 @@
-package one.pkg.modpublish.util;
+package one.pkg.modpublish.util.io;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;

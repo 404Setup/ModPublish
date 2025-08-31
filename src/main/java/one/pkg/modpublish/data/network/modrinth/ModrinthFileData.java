@@ -5,7 +5,7 @@ import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

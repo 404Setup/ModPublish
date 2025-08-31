@@ -13,7 +13,7 @@ import one.pkg.modpublish.data.result.BackResult;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.data.result.Result;
 import one.pkg.modpublish.settings.properties.PID;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 import java.io.IOException;
 import java.util.Optional;

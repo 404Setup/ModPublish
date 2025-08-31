@@ -3,7 +3,7 @@ package one.pkg.modpublish.ui.panel;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import one.pkg.modpublish.data.local.DependencyInfo;
-import one.pkg.modpublish.resources.Lang;
+import one.pkg.modpublish.util.resources.Lang;
 import one.pkg.modpublish.ui.AddDependencyDialog;
 import one.pkg.modpublish.ui.PublishModDialog;
 

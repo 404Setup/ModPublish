@@ -17,7 +17,7 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.modrinth.ModrinthFileData;
 import one.pkg.modpublish.data.network.modrinth.ProjectRelation;
 import one.pkg.modpublish.settings.properties.PID;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 import java.io.IOException;
 import java.util.Optional;

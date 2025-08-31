@@ -1,6 +1,6 @@
 package one.pkg.modpublish.data.result;
 
-import one.pkg.modpublish.resources.Lang;
+import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.PropertyKey;
 
 public record PublishResult(String result) implements Result {

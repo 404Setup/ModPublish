@@ -3,7 +3,7 @@ package one.pkg.modpublish.data.network.curseforge;
 import com.google.gson.annotations.SerializedName;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,9 @@
-package one.pkg.modpublish.data.modinfo;
+package one.pkg.modpublish.data.internel;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.VirtualFile;
-import one.pkg.modpublish.util.VirtualFileAPI;
+import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.metadata.ModJsonParser;
+import one.pkg.modpublish.util.metadata.ModTomlParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,8 +49,6 @@ public enum ModType {
             return null;
         }
     };
-
-    private static final Logger LOG = Logger.getInstance(ModType.class);
 
     private static final ModType[] VALUES = values();
     private final String fileName;

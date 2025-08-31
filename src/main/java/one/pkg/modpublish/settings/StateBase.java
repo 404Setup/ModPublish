@@ -1,8 +1,8 @@
 package one.pkg.modpublish.settings;
 
 import one.pkg.modpublish.data.internel.Info;
-import one.pkg.modpublish.protect.HardwareFingerprint;
-import one.pkg.modpublish.protect.Protect;
+import one.pkg.modpublish.util.protect.HardwareFingerprint;
+import one.pkg.modpublish.util.protect.Protect;
 import org.jetbrains.annotations.NotNull;
 
 public class StateBase {

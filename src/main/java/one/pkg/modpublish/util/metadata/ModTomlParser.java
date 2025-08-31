@@ -1,6 +1,7 @@
-package one.pkg.modpublish.data.modinfo;
+package one.pkg.modpublish.util.metadata;
 
 import com.intellij.openapi.diagnostic.Logger;
+import one.pkg.modpublish.data.internel.LocalModInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

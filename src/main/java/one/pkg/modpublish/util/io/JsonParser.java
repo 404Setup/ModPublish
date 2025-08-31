@@ -1,4 +1,4 @@
-package one.pkg.modpublish.util;
+package one.pkg.modpublish.util.io;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

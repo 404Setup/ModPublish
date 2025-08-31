@@ -1,4 +1,4 @@
-package one.pkg.modpublish.protect;
+package one.pkg.modpublish.util.protect;
 
 import org.jetbrains.annotations.NotNull;
 

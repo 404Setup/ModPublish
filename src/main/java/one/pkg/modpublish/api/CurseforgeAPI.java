@@ -17,7 +17,7 @@ import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
 import one.pkg.modpublish.settings.properties.PID;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 import java.io.IOException;
 import java.util.Optional;

@@ -2,7 +2,7 @@ package one.pkg.modpublish.data.network.github;
 
 import com.google.gson.annotations.SerializedName;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 @SuppressWarnings("unused")
 public class GithubData {

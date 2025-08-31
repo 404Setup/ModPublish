@@ -1,7 +1,8 @@
-package one.pkg.modpublish.data.modinfo;
+package one.pkg.modpublish.util.metadata;
 
 import com.google.gson.JsonObject;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.data.internel.LocalModInfo;
+import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;

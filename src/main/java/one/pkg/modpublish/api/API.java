@@ -7,7 +7,7 @@ import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.result.PublishResult;
-import one.pkg.modpublish.resources.Lang;
+import one.pkg.modpublish.util.resources.Lang;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

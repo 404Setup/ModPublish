@@ -1,11 +1,11 @@
-package one.pkg.modpublish.resources;
+package one.pkg.modpublish.util.resources;
 
 import com.google.gson.reflect.TypeToken;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
-import one.pkg.modpublish.util.JsonParser;
+import one.pkg.modpublish.util.io.JsonParser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

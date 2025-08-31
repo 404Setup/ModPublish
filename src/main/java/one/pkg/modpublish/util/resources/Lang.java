@@ -1,4 +1,4 @@
-package one.pkg.modpublish.resources;
+package one.pkg.modpublish.util.resources;
 
 import com.intellij.DynamicBundle;
 import org.jetbrains.annotations.NonNls;

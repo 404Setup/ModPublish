@@ -1,4 +1,4 @@
-package one.pkg.modpublish.data.modinfo;
+package one.pkg.modpublish.data.internel;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
