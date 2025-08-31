@@ -25,10 +25,9 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 1. Upload multiple files simultaneously
 2. Code Optimization
-3. Publish to GitHub/GitLab
-4. Validate Token/ModID/Repo/Branch validity
-5. Allow syncing README to Modrinth and CurseForge
-6. Allow customizing mod upload targets
+3. Publish to GitLab
+4. Allow syncing README to Modrinth and CurseForge
+5. Allow customizing mod upload targets
 
 ## Installation
 
