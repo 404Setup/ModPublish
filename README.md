@@ -8,7 +8,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 - Fully GUI-based operation
 - Quick saving of last operation records (dependencies, changelog)
-- One click publishing of mods to Modrinth and CurseForge
+- One click publishing of mods to Modrinth, CurseForge and Github
 
 ### Unsupported Features
 
