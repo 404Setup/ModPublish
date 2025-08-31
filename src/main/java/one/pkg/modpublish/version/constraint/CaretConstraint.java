@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public class CaretConstraint implements VersionConstraint {
     private final Version baseVersion;
     private final String original;

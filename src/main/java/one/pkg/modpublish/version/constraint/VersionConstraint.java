@@ -16,6 +16,7 @@ import java.util.List;
  * or complex logical combinations of multiple constraints.
  */
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public interface VersionConstraint {
     /**
      * Determines if the given version satisfies the constraints defined by this implementation.

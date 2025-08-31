@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public class VersionConstraintParser {
     private static final String VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+(?:-(?:pre|rc)\\d+)?|b\\d+\\.\\d+\\.\\d+|\\d{2}w\\d{2}[a-z](?:_or_[a-z])?|[\\w.-]+";
 

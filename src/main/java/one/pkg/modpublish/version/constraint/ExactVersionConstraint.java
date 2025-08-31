@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public class ExactVersionConstraint implements VersionConstraint {
     private final Version targetVersion;
     private final String original;

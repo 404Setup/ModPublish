@@ -9,7 +9,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
-import one.pkg.modpublish.data.internel.PublishResult;
+import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;

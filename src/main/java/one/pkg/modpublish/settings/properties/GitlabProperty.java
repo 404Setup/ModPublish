@@ -13,7 +13,6 @@ public record GitlabProperty(@NotNull Info token, @NotNull String repo, @NotNull
 
     @Override
     public boolean isEnabled() {
-        return !token.data().trim().isEmpty() && !repo.trim().isEmpty() &&
-                !branch.trim().isEmpty();
+        return !token.data().trim().isEmpty() && !repo.trim().isEmpty();
     }
 }

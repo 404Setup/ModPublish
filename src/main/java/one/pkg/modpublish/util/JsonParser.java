@@ -40,6 +40,10 @@ public class JsonParser {
         return gson.toJson(obj);
     }
 
+    public static JsonObject fromJson(String json) {
+        return gson.fromJson(json, JsonObject.class);
+    }
+
     public static <T> T fromJson(String json, Class<T> classOfT) {
         return gson.fromJson(json, classOfT);
     }
@@ -52,6 +56,10 @@ public class JsonParser {
         return gson.fromJson(json, typeOfT);
     }
 
+    public static JsonObject fromJson(Reader reader) throws JsonParseException {
+        return gson.fromJson(reader, JsonObject.class);
+    }
+
     public static <T> T fromJson(Reader reader, TypeToken<T> typeToken) throws JsonParseException {
         return gson.fromJson(reader, typeToken.getType());
     }
@@ -62,6 +70,10 @@ public class JsonParser {
 
     public static <T> T fromJson(Reader reader, Class<T> classOfT) throws JsonParseException {
         return gson.fromJson(reader, classOfT);
+    }
+
+    public static JsonObject fromJson(InputStream in) throws JsonParseException {
+        return gson.fromJson(new InputStreamReader(in), JsonObject.class);
     }
 
     public static <T> T fromJson(InputStream in, Class<T> classOfT) throws JsonParseException {

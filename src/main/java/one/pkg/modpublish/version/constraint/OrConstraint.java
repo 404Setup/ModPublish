@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public class OrConstraint implements VersionConstraint {
     private final List<VersionConstraint> constraints;
     private final String original;

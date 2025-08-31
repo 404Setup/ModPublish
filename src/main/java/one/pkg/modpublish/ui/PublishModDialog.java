@@ -18,6 +18,7 @@ import one.pkg.modpublish.data.local.SupportedInfo;
 import one.pkg.modpublish.data.modinfo.LocalModInfo;
 import one.pkg.modpublish.data.modinfo.ModType;
 import one.pkg.modpublish.data.modinfo.ModVersion;
+import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.resources.Lang;
 import one.pkg.modpublish.resources.LocalResources;
 import one.pkg.modpublish.settings.properties.PID;
@@ -424,6 +425,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         //try {
         var modrinthApi = TargetType.Modrinth.api;
         var curseforgeApi = TargetType.CurseForge.api;
+        var githubApi = TargetType.Github.api;
         if (curseforgeCheckBox.isSelected()) {
             PublishResult cfResult = curseforgeApi.createVersion(data, project);
             if (cfResult.isFailure()) return cfResult;
@@ -439,6 +441,11 @@ public class PublishModDialog extends BaseDialogWrapper {
             if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             PublishResult mrResult = modrinthApi.createVersion(data, project);
             if (mrResult.isFailure()) return mrResult;
+        }
+
+        if (githubCheckBox.isSelected()) {
+            PublishResult ghResult = githubApi.createVersion(data, project);
+            if (ghResult.isFailure()) return ghResult;
         }
 
         return PublishResult.empty();

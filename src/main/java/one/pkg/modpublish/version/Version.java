@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @ApiStatus.Experimental
+@SuppressWarnings("unused")
 public class Version implements Comparable<Version> {
     private static final Pattern RELEASE_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)$");
     private static final Pattern PRE_RELEASE_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)-(pre|rc)(\\d+)$");
@@ -18,6 +19,7 @@ public class Version implements Comparable<Version> {
     private int minor;
     private int patch;
     private String preRelease;
+
     public Version(String version) {
         this.original = version.trim();
 

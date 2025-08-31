@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Comment: Why are many parameters here inconsistent with the API docs?
- * */
+ */
 @SuppressWarnings("unused")
 public class ModrinthFileData {
     @SerializedName("version_title")
@@ -287,12 +287,9 @@ public class ModrinthFileData {
     }*/
 
     public boolean isValid() {
-        return projectId != null && !projectId.trim().isEmpty() ||
-                versionNumber != null && !versionNumber.trim().isEmpty() ||
-                gameVersions != null && !gameVersions.isEmpty() ||
-                name != null && !name.trim().isEmpty() ||
-                fileParts != null && !fileParts.isEmpty() ||
-                primaryFile != null && !primaryFile.trim().isEmpty();
+        return !projectId.trim().isEmpty() || !versionNumber.trim().isEmpty() || gameVersions != null
+                && !gameVersions.isEmpty() || !name.trim().isEmpty() || fileParts != null &&
+                !fileParts.isEmpty() || primaryFile != null && !primaryFile.trim().isEmpty();
     }
 
     public String toJson() {

@@ -6,7 +6,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
-import one.pkg.modpublish.data.internel.PublishResult;
+import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.resources.Lang;
 
 import java.util.Optional;
@@ -45,13 +45,15 @@ public interface API {
 
     default Optional<String> getStatus(Response response) {
         if (response.code() == 403)
-            return Optional.of(Lang.get("api.curseforge.err.403"));
+            return Optional.of(Lang.get("api.common.err.403"));
         if (response.code() == 404)
             return Optional.of(Lang.get("api.common.err.404"));
         if (response.code() == 500)
             return Optional.of(Lang.get("api.common.err.500"));
+        if (response.code() == 302)
+            return Optional.of("Duplicate resource");
         try {
-            if (response.code() == 400 || response.code() == 401)
+            if (response.code() == 400 || response.code() == 401 || response.code() == 422)
                 return Optional.of(response.body().string());
         } catch (Exception ignored) {
             return Optional.of("HTTP "+ response.code());

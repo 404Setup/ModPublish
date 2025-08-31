@@ -14,7 +14,6 @@ public record GithubProperty(@NotNull Info token, @NotNull String repo,
 
     @Override
     public boolean isEnabled() {
-        return !token.data().trim().isEmpty() && !repo.trim().isEmpty() &&
-                !branch.trim().isEmpty();
+        return !token.data().trim().isEmpty() && !repo.trim().isEmpty();
     }
 }

@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class HardwareFingerprint {
@@ -23,9 +25,8 @@ public class HardwareFingerprint {
     private static String getKeyBase() {
         try {
             String platformInfo = getPlatformBindingInfo();
-            String secureIdentifier = String.join("|", platformInfo);
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(secureIdentifier.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest(platformInfo.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -46,9 +47,8 @@ public class HardwareFingerprint {
 
         try {
             String osName = System.getProperty("os.name", "unknown");
-            String osVersion = System.getProperty("os.version", "unknown");
             String osArch = System.getProperty("os.arch", "unknown");
-            platformInfo.append("OS:").append(osName).append("-").append(osVersion).append("-").append(osArch);
+            platformInfo.append("OS:").append(osName).append("-").append(osArch);
 
             String userName = System.getProperty("user.name", "unknown");
             String userHome = System.getProperty("user.home", "unknown");
@@ -60,13 +60,13 @@ public class HardwareFingerprint {
             }
 
             String javaVersion = System.getProperty("java.version", "unknown");
-            String javaVendor = System.getProperty("java.vendor", "unknown");
-            platformInfo.append("|JAVA:").append(javaVersion).append("-").append(javaVendor.hashCode());
+            String javaMajorVersion = extractMajorVersion(javaVersion);
+            platformInfo.append("|JAVA:").append(javaMajorVersion);
 
-            String tempDir = System.getProperty("java.io.tmpdir", "");
-            platformInfo.append("|MACHINE:").append(tempDir.hashCode());
+            String machineId = getStableMachineId();
+            platformInfo.append("|MACHINE:").append(machineId);
         } catch (Exception e) {
-            platformInfo.append("FALLBACK:").append(System.currentTimeMillis() / (1000L * 60 * 60 * 24));
+            platformInfo.append("FALLBACK:").append(getStableFallback());
         }
 
         return platformInfo.toString();
@@ -74,9 +74,27 @@ public class HardwareFingerprint {
 
     private static String getMacAddress() {
         try {
+            List<String> macAddresses = new ArrayList<>();
+
             for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (!ni.isLoopback() && ni.isUp() && ni.getHardwareAddress() != null) {
+                if (!ni.isLoopback() && ni.getHardwareAddress() != null) {
                     byte[] mac = ni.getHardwareAddress();
+
+                    String displayName = ni.getDisplayName().toLowerCase();
+                    String name = ni.getName().toLowerCase();
+
+                    if (displayName.contains("virtual") || displayName.contains("vmware") ||
+                            displayName.contains("virtualbox") || displayName.contains("hyper-v") ||
+                            displayName.contains("bluetooth") || displayName.contains("loopback") ||
+                            name.startsWith("veth") || name.startsWith("docker") ||
+                            name.startsWith("br-") || name.startsWith("virbr")) {
+                        continue;
+                    }
+
+                    if ((mac[0] & 0x02) != 0) {
+                        continue;
+                    }
+
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < mac.length; i++) {
                         sb.append(String.format("%02X", mac[i]));
@@ -84,12 +102,66 @@ public class HardwareFingerprint {
                             sb.append(":");
                         }
                     }
-                    return sb.toString();
+                    macAddresses.add(sb.toString());
                 }
             }
-        } catch (Exception e) {
+
+            if (!macAddresses.isEmpty()) {
+                Collections.sort(macAddresses);
+                return macAddresses.get(0);
+            }
+        } catch (Exception ignored) {
         }
         return null;
+    }
+
+    private static String extractMajorVersion(String javaVersion) {
+        try {
+            String[] parts = javaVersion.split("\\.");
+            if (javaVersion.startsWith("1.")) {
+                if (parts.length >= 2) {
+                    return "1." + parts[1];
+                }
+            } else {
+                if (parts.length >= 1) {
+                    return parts[0];
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return javaVersion;
+    }
+
+    private static String getStableMachineId() {
+        try {
+            List<String> identifiers = new ArrayList<>();
+
+            String userHome = System.getProperty("user.home", "");
+            if (!userHome.isEmpty()) {
+                identifiers.add("HOME:" + userHome.hashCode());
+            }
+
+            int processors = Runtime.getRuntime().availableProcessors();
+            identifiers.add("CPU:" + processors);
+
+            String osArch = System.getProperty("os.arch", "unknown");
+            identifiers.add("ARCH:" + osArch);
+
+            String fileSeparator = System.getProperty("file.separator", "/");
+            identifiers.add("SEP:" + fileSeparator.hashCode());
+
+            return String.join("-", identifiers);
+        } catch (Exception e) {
+            return "UNKNOWN";
+        }
+    }
+
+    private static String getStableFallback() {
+        String userName = System.getProperty("user.name", "unknown");
+        String userHome = System.getProperty("user.home", "unknown");
+        String osName = System.getProperty("os.name", "unknown");
+
+        return String.valueOf(Objects.hash(userName, userHome.hashCode(), osName));
     }
 
     public static boolean validateEnvironmentBinding(@NotNull String expectedKey) {
@@ -102,9 +174,9 @@ public class HardwareFingerprint {
     }
 
     private static String generateFallbackKey() {
-        String userName = System.getProperty("user.name", "unknown");
-
-        int hash = Objects.hash(userName);
-        return String.format("%032d", Math.abs(hash)).substring(0, 32);
+        String fallback = getStableFallback();
+        int hash = Math.abs(fallback.hashCode());
+        return String.format("%032d", hash).substring(0, 32);
     }
+
 }

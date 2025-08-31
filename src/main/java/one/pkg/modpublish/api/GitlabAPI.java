@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import okhttp3.Request;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
-import one.pkg.modpublish.data.internel.PublishResult;
+import one.pkg.modpublish.data.result.PublishResult;
 
 public class GitlabAPI implements API {
     public Request.Builder getRequestBuilder(String url, Project project) {

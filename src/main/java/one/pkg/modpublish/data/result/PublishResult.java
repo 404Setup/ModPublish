@@ -1,9 +1,9 @@
-package one.pkg.modpublish.data.internel;
+package one.pkg.modpublish.data.result;
 
 import one.pkg.modpublish.resources.Lang;
 import org.jetbrains.annotations.PropertyKey;
 
-public record PublishResult(String result) {
+public record PublishResult(String result) implements Result {
     public static final PublishResult EMPTY = new PublishResult("");
 
     public static PublishResult of(@PropertyKey(resourceBundle = Lang.File) String result) {
