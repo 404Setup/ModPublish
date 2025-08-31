@@ -19,6 +19,7 @@
             <li><strong>[Feat]</strong> Improved hardware ID algorithm to prevent frequent token invalidation</li>
             <li><strong>[Feat]</strong> Added support for Github</li>
             <li><strong>[Feat]</strong> Github/GitLab branches are now optional, ModPublish will search for them in the repo</li>
+            <li><strong>[Feat]</strong> Quick access to token application pages from settings</li>
             <li><strong>[Fix]</strong> Do not display tooltip for disabled release targets on release page</li>
             <li><strong>[Trans]</strong> Improved translations</li>
             <li><strong>[Change]</strong> ModType name should be capitalized</li>

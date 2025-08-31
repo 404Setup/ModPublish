@@ -1,10 +1,12 @@
 package one.pkg.modpublish.ui.base;
 
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorComponent;
+import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -43,6 +45,13 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         JBTextField field = new JBTextField();
         field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
         return field;
+    }
+
+    public @NotNull ActionLink createActionLink(@NotNull String text, @NotNull String url) {
+        ActionLink externalLink = new ActionLink(text);
+        externalLink.addActionListener(event -> BrowserUtil.browse(url));
+        externalLink.setExternalLinkIcon();
+        return externalLink;
     }
 
     public @NotNull JLabel createSectionLabel(@NotNull String text) {
@@ -139,9 +148,11 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         ));
         formBuilder.addComponent(new SeparatorComponent(JBUI.scale(5)));
 
-        for (FieldConfig field : fields)
-            formBuilder.addLabeledComponent(createFieldLabel(field.label), field.fieldSupplier.get());
-
+        for (FieldConfig field : fields) {
+            if (field.label == null || field.label.isEmpty())
+                formBuilder.addComponent(field.fieldSupplier.get());
+            else formBuilder.addLabeledComponent(createFieldLabel(field.label), field.fieldSupplier.get());
+        }
         formBuilder.addVerticalGap(JBUI.scale(15));
     }
 
@@ -169,5 +180,8 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     public record FieldConfig(String label, Supplier<JComponent> fieldSupplier) {
+        public FieldConfig(Supplier<JComponent> fieldSupplier) {
+            this(null, fieldSupplier);
+        }
     }
 }

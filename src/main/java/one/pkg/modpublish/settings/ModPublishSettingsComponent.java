@@ -1,5 +1,6 @@
 package one.pkg.modpublish.settings;
 
+import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import one.pkg.modpublish.protect.HardwareFingerprint;
@@ -16,9 +17,14 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private final JPanel panel;
     private JBTextField modrinthTokenText;
     private JBTextField modrinthTestTokenText;
+    private ActionLink modrinthTokenLink;
+    private ActionLink modrinthTestTokenLink;
     private JBTextField curseforgeTokenText;
     private JBTextField curseforgeStudioTokenText;
+    private ActionLink curseforgeTokenLink;
+    private ActionLink curseforgeStudioTokenLink;
     private JBTextField githubTokenText;
+    private ActionLink githubTokenLink;
     private JBTextField gitlabTokenText;
 
     public ModPublishSettingsComponent() {
@@ -27,14 +33,19 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
                 new FieldConfig("Token", () -> modrinthTokenText = createTextField()),
-                new FieldConfig("(Test) Token", () -> modrinthTestTokenText = createTextField()));
+                new FieldConfig("(Test) Token", () -> modrinthTestTokenText = createTextField()),
+                new FieldConfig(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")),
+                new FieldConfig(() -> modrinthTestTokenLink = createActionLink("Create Modrinth Test Token", "https://staging.modrinth.com/settings/pats")));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
                 new FieldConfig("Token", () -> curseforgeTokenText = createTextField()),
-                new FieldConfig("Studio Token", () -> curseforgeStudioTokenText = createTextField()));
+                new FieldConfig("Studio Token", () -> curseforgeStudioTokenText = createTextField()),
+                new FieldConfig(() -> curseforgeStudioTokenLink = createActionLink("Create CurseForge Studio Token", "https://console.curseforge.com/?#/api-keys")),
+                new FieldConfig(() -> curseforgeTokenLink = createActionLink("Create CurseForge Token", "https://legacy.curseforge.com/account/api-tokens")));
 
         addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
-                new FieldConfig("Token", () -> githubTokenText = createTextField()));
+                new FieldConfig("Token", () -> githubTokenText = createTextField()),
+                new FieldConfig(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
         addPlatformSection(formBuilder, "Gitlab", "/icons/gitlab.svg",
                 new FieldConfig("Token", () -> gitlabTokenText = createTextField()));
 
