@@ -1,15 +1,11 @@
 package one.pkg.modpublish.ui.action;
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import one.pkg.modpublish.data.internel.ModType;
-import one.pkg.modpublish.util.resources.Lang;
 import one.pkg.modpublish.ui.PublishModDialog;
 import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

@@ -2,10 +2,8 @@ package one.pkg.modpublish.ui;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
@@ -14,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ConfigProjectDialog extends BaseDialogWrapper {
     private final Project project;
@@ -107,16 +104,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
 
         autoFillFields();
 
-        JPanel panel = formBuilder.getPanel();
-        panel.setBorder(JBUI.Borders.empty(20, 20, 15, 20));
-
-        JBScrollPane scrollPane = new JBScrollPane(panel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setPreferredSize(new Dimension(600, 360));
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        return scrollPane;
+        return toScrollPanel(formBuilder, 600, 360);
     }
 
     @Override

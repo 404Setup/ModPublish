@@ -2,20 +2,16 @@ package one.pkg.modpublish.api;
 
 import com.google.gson.JsonObject;
 import com.intellij.openapi.project.Project;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
-import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.modrinth.ModrinthFileData;
 import one.pkg.modpublish.data.network.modrinth.ProjectRelation;
+import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
 
@@ -42,7 +38,7 @@ public class ModrinthAPI implements API {
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("version", project));
         RequestBody file = RequestBody.create(data.file(), MediaType.get("application/java-archive"));
 
-        String primaryFileKey = data.file().getName()+"-primary";
+        String primaryFileKey = data.file().getName() + "-primary";
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("data", createJsonBody(data, project))

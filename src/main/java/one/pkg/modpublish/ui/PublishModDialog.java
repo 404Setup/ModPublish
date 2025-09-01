@@ -9,19 +9,13 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
 import one.pkg.modpublish.PluginMain;
 import one.pkg.modpublish.data.internel.*;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
-import one.pkg.modpublish.data.internel.LocalModInfo;
-import one.pkg.modpublish.data.internel.ModType;
-import one.pkg.modpublish.data.internel.ModVersion;
 import one.pkg.modpublish.data.result.PublishResult;
-import one.pkg.modpublish.util.resources.Lang;
-import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
@@ -30,6 +24,8 @@ import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
 import one.pkg.modpublish.util.io.JsonParser;
 import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.resources.Lang;
+import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.util.version.constraint.VersionConstraint;
 import one.pkg.modpublish.util.version.constraint.VersionConstraintParser;
 import org.jetbrains.annotations.Nullable;
@@ -202,19 +198,9 @@ public class PublishModDialog extends BaseDialogWrapper {
         dependencyPanel = new DependencyManagerPanel(this);
         formBuilder.addLabeledComponent(Lang.get("component.name.dependencies"), dependencyPanel);
 
-        // Auto-fill fields
         autoFillFields();
 
-        JPanel panel = formBuilder.getPanel();
-        panel.setBorder(JBUI.Borders.empty(20, 20, 15, 20));
-
-        JBScrollPane scrollPane = new JBScrollPane(panel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setPreferredSize(new Dimension(800, 650));
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        return scrollPane;
+        return toScrollPanel(formBuilder, 800, 650);
     }
 
     private void updateMinecraftVersions() {
@@ -278,50 +264,46 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
     }
 
+    private void setFailedSelect(JBCheckBox jbCheckBox) {
+        jbCheckBox.setEnabled(false);
+        setErrorStyle(jbCheckBox);
+        setToolTipText("tooltip.decrypt.failed", jbCheckBox);
+    }
+
     private void loadPersistedData() {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
 
         Property p2 = Properties.getProperties(properties);
+
         if (!p2.modrinth().isModEnabled()) {
             modrinthCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
-        } else if (p2.modrinth().token().failed()) {
-            modrinthCheckBox.setEnabled(false);
-            setErrorStyle(modrinthCheckBox);
-            setToolTipText("tooltip.decrypt.failed", modrinthCheckBox);
-        }
+        } else if (p2.modrinth().token().failed())
+            setFailedSelect(modrinthCheckBox);
+
         if (!p2.modrinth().isTestEnabled()) {
             modrinthTestCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthTestCheckBox);
-        } else if (p2.modrinth().testToken().failed()) {
-            modrinthTestCheckBox.setEnabled(false);
-            setErrorStyle(modrinthTestCheckBox);
-            setToolTipText("tooltip.decrypt.failed", modrinthTestCheckBox);
-        }
+        } else if (p2.modrinth().testToken().failed())
+            setFailedSelect(modrinthTestCheckBox);
+
         if (!p2.curseforge().isEnabled()) {
             curseforgeCheckBox.setEnabled(false);
             setToolTipText("tooltip.curseforge.disable", curseforgeCheckBox);
-        } else if (p2.curseforge().token().failed() || p2.curseforge().studioToken().failed()) {
-            curseforgeCheckBox.setEnabled(false);
-            setErrorStyle(curseforgeCheckBox);
-            setToolTipText("tooltip.decrypt.failed", curseforgeCheckBox);
-        }
+        } else if (p2.curseforge().token().failed() || p2.curseforge().studioToken().failed())
+            setFailedSelect(curseforgeCheckBox);
+
         if (!p2.github().isEnabled()) {
             githubCheckBox.setEnabled(false);
             setToolTipText("tooltip.git.disable", githubCheckBox, "Github");
-        } else if (p2.github().token().failed()) {
-            githubCheckBox.setEnabled(false);
-            setErrorStyle(githubCheckBox);
-            setToolTipText("tooltip.decrypt.failed", githubCheckBox, "Github");
-        }
+        } else if (p2.github().token().failed())
+            setFailedSelect(githubCheckBox);
+
         if (!p2.gitlab().isEnabled()) {
             gitlabCheckBox.setEnabled(false);
             setToolTipText("tooltip.git.disable", gitlabCheckBox, "Gitlab");
-        } else if (p2.gitlab().token().failed()) {
-            gitlabCheckBox.setEnabled(false);
-            setErrorStyle(gitlabCheckBox);
-            setToolTipText("tooltip.decrypt.failed", gitlabCheckBox, "Gitlab");
-        }
+        } else if (p2.gitlab().token().failed())
+            setFailedSelect(gitlabCheckBox);
 
         // Load changelog
         String savedChangelog = properties.getValue("modpublish.changelog", "");

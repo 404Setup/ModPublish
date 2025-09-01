@@ -2,7 +2,7 @@ package one.pkg.modpublish.data.internel;
 
 import org.jetbrains.annotations.Nullable;
 
-public record ModInfo(@Nullable String modid,  @Nullable String slug, @Nullable String name, @Nullable String failed) {
+public record ModInfo(@Nullable String modid, @Nullable String slug, @Nullable String name, @Nullable String failed) {
     public static ModInfo of(@Nullable String failed) {
         return new ModInfo(null, null, null, failed);
     }

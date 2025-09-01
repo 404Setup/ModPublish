@@ -2,6 +2,7 @@ package one.pkg.modpublish.data.internel;
 
 public enum ReleaseChannel {
     Release("release"), Beta("beta"), Alpha("alpha");
+
     private final String type;
 
     ReleaseChannel(String type) {

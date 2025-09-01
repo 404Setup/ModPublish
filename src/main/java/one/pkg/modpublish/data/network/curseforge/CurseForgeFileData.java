@@ -130,7 +130,7 @@ public class CurseForgeFileData {
     }
 
     public CurseForgeFileData gameVersion(MinecraftVersion version) {
-       return version.canReleaseToCurseForge() ? gameVersion(version.i) : this;
+        return version.canReleaseToCurseForge() ? gameVersion(version.i) : this;
     }
 
     public CurseForgeFileData gameVersion(Integer gameVersion) {

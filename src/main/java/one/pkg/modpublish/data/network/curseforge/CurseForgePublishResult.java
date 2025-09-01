@@ -19,6 +19,25 @@ public class CurseForgePublishResult {
         this.id = id;
     }
 
+    /**
+     * Creates a successful response object
+     *
+     * @param fileId the file ID
+     * @return CurseForgePublishResult object
+     */
+    public static CurseForgePublishResult success(Integer fileId) {
+        return new CurseForgePublishResult(fileId);
+    }
+
+    /**
+     * Creates a failure response object
+     *
+     * @return CurseForgePublishResult object with null ID
+     */
+    public static CurseForgePublishResult failure() {
+        return new CurseForgePublishResult();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -26,7 +45,6 @@ public class CurseForgePublishResult {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
     /**
      * Checks if the response is valid (contains a valid ID)
@@ -53,25 +71,6 @@ public class CurseForgePublishResult {
      */
     public String getIdAsString() {
         return id != null ? id.toString() : "";
-    }
-
-    /**
-     * Creates a successful response object
-     *
-     * @param fileId the file ID
-     * @return CurseForgePublishResult object
-     */
-    public static CurseForgePublishResult success(Integer fileId) {
-        return new CurseForgePublishResult(fileId);
-    }
-
-    /**
-     * Creates a failure response object
-     *
-     * @return CurseForgePublishResult object with null ID
-     */
-    public static CurseForgePublishResult failure() {
-        return new CurseForgePublishResult();
     }
 
     @Override

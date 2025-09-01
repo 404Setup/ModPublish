@@ -73,26 +73,6 @@ public class TomlParser implements AutoCloseable {
         return fromReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
-    @NotNull
-    public static TomlParser parse(@NotNull String content) {
-        return fromToml(content);
-    }
-
-    @NotNull
-    public static TomlParser parseFile(@NotNull Path filePath) {
-        return fromFile(filePath);
-    }
-
-    @NotNull
-    public static TomlParser parseFile(@NotNull File file) {
-        return fromFile(file);
-    }
-
-    @NotNull
-    public static TomlParser parseStream(@NotNull InputStream inputStream) {
-        return fromStream(inputStream);
-    }
-
     private static Map<String, Object> parseToml(String content) {
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> currentSection = null;

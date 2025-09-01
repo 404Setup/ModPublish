@@ -6,10 +6,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorComponent;
-import com.intellij.ui.components.ActionLink;
-import com.intellij.ui.components.JBCheckBox;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.*;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
@@ -33,6 +30,19 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     public BaseDialogWrapper(@NotNull Project project, boolean canBeParent) {
         super(project, canBeParent);
         this.project = project;
+    }
+
+    public JComponent toScrollPanel(FormBuilder formBuilder, int width, int height) {
+        JPanel panel = formBuilder.getPanel();
+        panel.setBorder(JBUI.Borders.empty(20, 20, 15, 20));
+
+        JBScrollPane scrollPane = new JBScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(width, height));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        return scrollPane;
     }
 
     public @NotNull JLabel createFieldLabel(@NotNull String text) {

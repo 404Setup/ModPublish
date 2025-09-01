@@ -56,7 +56,7 @@ public interface API {
             if (response.code() == 400 || response.code() == 401 || response.code() == 422)
                 return Optional.of(response.body().string());
         } catch (Exception ignored) {
-            return Optional.of("HTTP "+ response.code());
+            return Optional.of("HTTP " + response.code());
         }
         Optional<String> ct = getContentType(response);
         if (ct.isEmpty() || !ct.get().contains("application/json"))
