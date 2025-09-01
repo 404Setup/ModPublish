@@ -17,6 +17,7 @@
           <ul>
             <li><strong>[Feat]</strong> Improved Toml Parser</li>
             <li><strong>[Feat]</strong> Added variables for name template: low-version, max-version</li>
+            <li><strong>[Change]</strong> Allow scrolling in the Publish page</li>
           </ul>
         </li>
         <li><b>0.0.3</b>

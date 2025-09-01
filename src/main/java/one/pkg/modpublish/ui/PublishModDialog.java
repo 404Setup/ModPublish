@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
 import one.pkg.modpublish.PluginMain;
 import one.pkg.modpublish.data.internel.*;
 import one.pkg.modpublish.data.local.DependencyInfo;
@@ -204,7 +205,16 @@ public class PublishModDialog extends BaseDialogWrapper {
         // Auto-fill fields
         autoFillFields();
 
-        return formBuilder.getPanel();
+        JPanel panel = formBuilder.getPanel();
+        panel.setBorder(JBUI.Borders.empty(20, 20, 15, 20));
+
+        JBScrollPane scrollPane = new JBScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(800, 650));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        return scrollPane;
     }
 
     private void updateMinecraftVersions() {
