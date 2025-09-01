@@ -1,12 +1,11 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class RangeConstraint implements VersionConstraint {
     private final Version minVersion;
@@ -25,7 +24,7 @@ public class RangeConstraint implements VersionConstraint {
     }
 
     @Override
-    public boolean satisfies(Version version) {
+    public boolean satisfies(@NotNull Version version) {
         if (minVersion != null) {
             int minCompare = version.compareTo(minVersion);
             if (includeMin && minCompare < 0) return false;
@@ -42,12 +41,12 @@ public class RangeConstraint implements VersionConstraint {
     }
 
     @Override
-    public String getOriginalConstraint() {
+    public @NotNull String getOriginalConstraint() {
         return original;
     }
 
     @Override
-    public List<String> getVersions() {
+    public @NotNull List<String> getVersions() {
         List<String> versions = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
@@ -65,12 +64,12 @@ public class RangeConstraint implements VersionConstraint {
     }
 
     @Override
-    public String getLowVersion() {
+    public @NotNull String getLowVersion() {
         return minVersion != null ? minVersion.toString() : null;
     }
 
     @Override
-    public String getMaxVersion() {
+    public @NotNull String getMaxVersion() {
         return maxVersion != null ? maxVersion.toString() : null;
     }
 

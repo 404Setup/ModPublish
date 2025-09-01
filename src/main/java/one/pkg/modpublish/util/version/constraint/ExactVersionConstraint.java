@@ -1,12 +1,11 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class ExactVersionConstraint implements VersionConstraint {
     private final Version targetVersion;
@@ -18,27 +17,27 @@ public class ExactVersionConstraint implements VersionConstraint {
     }
 
     @Override
-    public boolean satisfies(Version version) {
+    public boolean satisfies(@NotNull Version version) {
         return targetVersion.equals(version);
     }
 
     @Override
-    public String getOriginalConstraint() {
+    public @NotNull String getOriginalConstraint() {
         return original;
     }
 
     @Override
-    public List<String> getVersions() {
+    public @NotNull List<String> getVersions() {
         return Collections.singletonList(targetVersion.toString());
     }
 
     @Override
-    public String getLowVersion() {
+    public @NotNull String getLowVersion() {
         return targetVersion.toString();
     }
 
     @Override
-    public String getMaxVersion() {
+    public @NotNull String getMaxVersion() {
         return targetVersion.toString();
     }
 

@@ -104,7 +104,7 @@ If they support fine-grained permission configuration, please do so and do not a
 
 ### Version Name Formatting
 
-You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric` instead of something like
+You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric 1.21.8` instead of something like
 `my-mod-1.0.0+fabric.jar`.
 
 Modrinth usually generates titles automatically, but CurseForge does not, and you don't want to manually copy it every
@@ -114,9 +114,11 @@ ModPublish provides this feature since version 0.0.2. You need to configure the 
 `Project | Tools | Configure ModPublish for Project`.
 Currently supported variables:
 
-- `{version}`
-- `{name}`
-- `{loader}`
+- `{version}` - Mod version
+- `{name}` - Mod name
+- `{loader}` - First detected ModLoader that is compatible with the Mod
+- `{low-version}` - Lowest Minecraft version that is compatible with the Mod; Not replaced if detection fails
+- `{max-version}` - Highest Minecraft version that is compatible with the Mod; Not replaced if detection fails
 
 If not configured, ModPublish will still use the default name generation rules
 

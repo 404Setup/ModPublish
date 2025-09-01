@@ -1,12 +1,9 @@
 package one.pkg.modpublish.util.version;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class Version implements Comparable<Version> {
     private static final Pattern RELEASE_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)$");

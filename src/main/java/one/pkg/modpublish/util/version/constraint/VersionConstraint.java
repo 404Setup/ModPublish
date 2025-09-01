@@ -1,7 +1,7 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -15,7 +15,6 @@ import java.util.List;
  * The constraints may define minimum and/or maximum boundary conditions, equality rules,
  * or complex logical combinations of multiple constraints.
  */
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public interface VersionConstraint {
     /**
@@ -24,13 +23,14 @@ public interface VersionConstraint {
      * @param version the version to be checked against the constraints
      * @return true if the version satisfies the constraints, false otherwise
      */
-    boolean satisfies(Version version);
+    boolean satisfies(@NotNull Version version);
 
     /**
      * Retrieves the original constraint string as it was input or defined.
      *
      * @return the original version constraint string that was used to create this constraint.
      */
+    @NotNull
     String getOriginalConstraint();
 
     /**
@@ -41,6 +41,7 @@ public interface VersionConstraint {
      *
      * @return a list of strings where each string specifies a version constraint.
      */
+    @NotNull
     List<String> getVersions();
 
     /**
@@ -49,8 +50,9 @@ public interface VersionConstraint {
      * The result depends on how the specific implementation computes the lowest version.
      * It may return null if the constraint defines no minimum version.
      *
-     * @return the lowest version as a string, or null if not defined
+     * @return the lowest version as a string
      */
+    @NotNull
     String getLowVersion();
 
     /**
@@ -59,8 +61,9 @@ public interface VersionConstraint {
      * Depending on the implementing class, this may involve calculating the
      * maximum version based on one or more underlying version constraints.
      *
-     * @return the maximum version as a String, or null if no maximum version is defined.
+     * @return the maximum version as a String
      */
+    @NotNull
     String getMaxVersion();
 
 }

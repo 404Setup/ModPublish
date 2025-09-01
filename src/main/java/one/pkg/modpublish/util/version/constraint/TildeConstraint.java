@@ -1,12 +1,11 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class TildeConstraint implements VersionConstraint {
     private final Version baseVersion;
@@ -18,7 +17,7 @@ public class TildeConstraint implements VersionConstraint {
     }
 
     @Override
-    public boolean satisfies(Version version) {
+    public boolean satisfies(@NotNull Version version) {
         if (version.compareTo(baseVersion) < 0) return false;
 
         Version upperBound = new Version(baseVersion.getMajor(),
@@ -27,24 +26,24 @@ public class TildeConstraint implements VersionConstraint {
     }
 
     @Override
-    public String getOriginalConstraint() {
+    public @NotNull String getOriginalConstraint() {
         return original;
     }
 
     @Override
-    public List<String> getVersions() {
+    public @NotNull List<String> getVersions() {
         List<String> versions = new ArrayList<>();
         versions.add(">=" + baseVersion + " <" + baseVersion.getMajor() + "." + (baseVersion.getMinor() + 1) + ".0");
         return versions;
     }
 
     @Override
-    public String getLowVersion() {
+    public @NotNull String getLowVersion() {
         return baseVersion.toString();
     }
 
     @Override
-    public String getMaxVersion() {
+    public @NotNull String getMaxVersion() {
         return baseVersion.getMajor() + "." + (baseVersion.getMinor() + 1) + ".0";
     }
 

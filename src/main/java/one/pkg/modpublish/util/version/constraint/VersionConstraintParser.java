@@ -1,15 +1,13 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class VersionConstraintParser {
     private static final String VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+(?:-(?:pre|rc)\\d+)?|b\\d+\\.\\d+\\.\\d+|\\d{2}w\\d{2}[a-z](?:_or_[a-z])?|[\\w.-]+";

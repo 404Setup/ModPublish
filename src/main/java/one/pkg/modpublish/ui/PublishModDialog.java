@@ -29,6 +29,8 @@ import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
 import one.pkg.modpublish.util.io.JsonParser;
 import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.version.constraint.VersionConstraint;
+import one.pkg.modpublish.util.version.constraint.VersionConstraintParser;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -238,12 +240,18 @@ public class PublishModDialog extends BaseDialogWrapper {
             LocalModInfo lmInfo = t.getMod(jarFile);
             if (lmInfo != null) {
                 version = lmInfo.version();
-                if (!versionNameFormat.isEmpty())
+                VersionConstraint parser = VersionConstraintParser.parse(lmInfo.versionRange());
+                String lowVersion = parser.getLowVersion();
+                String highVersion = parser.getMaxVersion();
+
+                if (!versionNameFormat.isEmpty()) {
                     versionName =
                             versionNameFormat.replace("{version}", version)
                                     .replace("{name}", lmInfo.name())
-                                    .replace("{loader}", t.getName())
-                                    .replace("{mcversion}", lmInfo.versionRange());
+                                    .replace("{loader}", t.getName());
+                    if (!lowVersion.isEmpty()) versionName = versionName.replace("{low-version}", lowVersion);
+                    if (!highVersion.isEmpty()) versionName = versionName.replace("{high-version}", highVersion);
+                }
             }
         }
 

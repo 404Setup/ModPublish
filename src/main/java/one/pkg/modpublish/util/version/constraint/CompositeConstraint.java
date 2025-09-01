@@ -1,12 +1,11 @@
 package one.pkg.modpublish.util.version.constraint;
 
 import one.pkg.modpublish.util.version.Version;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiStatus.Experimental
 @SuppressWarnings("unused")
 public class CompositeConstraint implements VersionConstraint {
     private final List<VersionConstraint> constraints;
@@ -18,17 +17,17 @@ public class CompositeConstraint implements VersionConstraint {
     }
 
     @Override
-    public boolean satisfies(Version version) {
+    public boolean satisfies(@NotNull Version version) {
         return constraints.stream().allMatch(constraint -> constraint.satisfies(version));
     }
 
     @Override
-    public String getOriginalConstraint() {
+    public @NotNull String getOriginalConstraint() {
         return original;
     }
 
     @Override
-    public List<String> getVersions() {
+    public @NotNull List<String> getVersions() {
         List<String> allVersions = new ArrayList<>();
         for (VersionConstraint constraint : constraints) {
             allVersions.addAll(constraint.getVersions());
@@ -37,11 +36,11 @@ public class CompositeConstraint implements VersionConstraint {
     }
 
     @Override
-    public String getLowVersion() {
+    public @NotNull String getLowVersion() {
         String lowest = null;
         for (VersionConstraint constraint : constraints) {
             String low = constraint.getLowVersion();
-            if (low != null) {
+            if (!low.isEmpty()) {
                 if (lowest == null) {
                     lowest = low;
                 } else {
@@ -53,15 +52,15 @@ public class CompositeConstraint implements VersionConstraint {
                 }
             }
         }
-        return lowest;
+        return lowest == null ? "" : lowest;
     }
 
     @Override
-    public String getMaxVersion() {
+    public @NotNull String getMaxVersion() {
         String highest = null;
         for (VersionConstraint constraint : constraints) {
             String max = constraint.getMaxVersion();
-            if (max != null) {
+            if (!max.isEmpty()) {
                 if (highest == null) {
                     highest = max;
                 } else {
@@ -73,7 +72,7 @@ public class CompositeConstraint implements VersionConstraint {
                 }
             }
         }
-        return highest;
+        return highest == null ? "" : highest;
     }
 
 }
