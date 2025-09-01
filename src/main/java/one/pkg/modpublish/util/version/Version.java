@@ -1,4 +1,4 @@
-package one.pkg.modpublish.version;
+package one.pkg.modpublish.util.version;
 
 import org.jetbrains.annotations.ApiStatus;
 

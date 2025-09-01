@@ -1,4 +1,4 @@
 package one.pkg.modpublish.data.internel;
 
-public record LocalModInfo(String name, String version) {
+public record LocalModInfo(String name, String version, String versionRange) {
 }

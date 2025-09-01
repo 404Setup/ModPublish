@@ -242,7 +242,8 @@ public class PublishModDialog extends BaseDialogWrapper {
                     versionName =
                             versionNameFormat.replace("{version}", version)
                                     .replace("{name}", lmInfo.name())
-                                    .replace("{loader}", t.getName());
+                                    .replace("{loader}", t.getName())
+                                    .replace("{mcversion}", lmInfo.versionRange());
             }
         }
 

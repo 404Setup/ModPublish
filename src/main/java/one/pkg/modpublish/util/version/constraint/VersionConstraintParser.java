@@ -1,6 +1,6 @@
-package one.pkg.modpublish.version.constraint;
+package one.pkg.modpublish.util.version.constraint;
 
-import one.pkg.modpublish.version.Version;
+import one.pkg.modpublish.util.version.Version;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;

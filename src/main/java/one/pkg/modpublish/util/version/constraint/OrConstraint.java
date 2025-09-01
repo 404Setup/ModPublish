@@ -1,6 +1,6 @@
-package one.pkg.modpublish.version.constraint;
+package one.pkg.modpublish.util.version.constraint;
 
-import one.pkg.modpublish.version.Version;
+import one.pkg.modpublish.util.version.Version;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -8,18 +8,18 @@ import java.util.List;
 
 @ApiStatus.Experimental
 @SuppressWarnings("unused")
-public class CompositeConstraint implements VersionConstraint {
+public class OrConstraint implements VersionConstraint {
     private final List<VersionConstraint> constraints;
     private final String original;
 
-    public CompositeConstraint(List<VersionConstraint> constraints, String original) {
+    public OrConstraint(List<VersionConstraint> constraints, String original) {
         this.constraints = new ArrayList<>(constraints);
         this.original = original;
     }
 
     @Override
     public boolean satisfies(Version version) {
-        return constraints.stream().allMatch(constraint -> constraint.satisfies(version));
+        return constraints.stream().anyMatch(constraint -> constraint.satisfies(version));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class CompositeConstraint implements VersionConstraint {
                 } else {
                     Version lowVersion = new Version(low);
                     Version currentLowest = new Version(lowest);
-                    if (lowVersion.compareTo(currentLowest) > 0) {
+                    if (lowVersion.compareTo(currentLowest) < 0) {
                         lowest = low;
                     }
                 }
@@ -67,7 +67,7 @@ public class CompositeConstraint implements VersionConstraint {
                 } else {
                     Version maxVersion = new Version(max);
                     Version currentHighest = new Version(highest);
-                    if (maxVersion.compareTo(currentHighest) < 0) {
+                    if (maxVersion.compareTo(currentHighest) > 0) {
                         highest = max;
                     }
                 }
@@ -75,5 +75,4 @@ public class CompositeConstraint implements VersionConstraint {
         }
         return highest;
     }
-
 }

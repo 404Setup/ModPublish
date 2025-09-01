@@ -21,7 +21,8 @@ public class ModJsonParser {
     @Nullable
     public LocalModInfo get() {
         try {
-            return new LocalModInfo(json.get("name").getAsString(), json.get("version").getAsString());
+            return new LocalModInfo(json.get("name").getAsString(), json.get("version").getAsString(),
+                    json.get("depends").getAsJsonObject().get("minecraft").getAsString());
         } catch (Exception e) {
             return null;
         }
