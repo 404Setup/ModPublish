@@ -184,10 +184,13 @@ public class PublishModDialog extends BaseDialogWrapper {
         JBScrollPane minecraftScrollPane = new JBScrollPane(minecraftVersionList);
         minecraftScrollPane.setPreferredSize(new Dimension(200, 120));
 
-        JPanel minecraftPanel = new JPanel(new BorderLayout());
-        minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
-        minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
-        formBuilder.addLabeledComponent(get("component.name.mc-version"), minecraftPanel);
+        addPlatformSection(formBuilder, get("component.name.mc-version"), null,
+                new FieldConfig(() -> {
+                    JPanel minecraftPanel = new JPanel(new BorderLayout());
+                    minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
+                    minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
+                    return minecraftPanel;
+                }));
 
         // Changelog
         addPlatformSection(formBuilder, Lang.get("component.name.changelog"), null,
