@@ -28,6 +28,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 3. Publish to GitLab
 4. Allow syncing README to Modrinth and CurseForge
 5. Allow customizing mod upload targets
+6. Allow hot updating of Minecraft version list
 
 ## Installation
 
@@ -133,10 +134,9 @@ Building ModPublish requires the following tools
 Build steps:
 
 1. Run `./version_processor.py` to download latest Minecraft versions from network
-2. Run `./version_processor_curseforge.py` to download Curseforge Minecraft version ID mappings
-3. Copy generated json files to `./src/main/resources/META-INF` directory (`minecraft.version.json`)
-4. Run `./gradlew buildPlugin`
-5. Final output is located in `./build/distributions` directory
+2. Copy generated json files to `./src/main/resources/META-INF` directory (`minecraft.version.json`)
+3. Run `./gradlew buildPlugin`
+4. Final output is located in `./build/distributions` directory
 
 ## Contribution
 
