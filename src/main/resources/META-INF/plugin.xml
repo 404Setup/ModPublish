@@ -5,6 +5,7 @@
     <vendor url="https://github.com/404Setup">404Setup</vendor>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
+    <depends>org.intellij.plugins.markdown</depends>
     <description>
         <![CDATA[
       Help developers publish mods faster and publish mods to multiple supported platforms with just a few clicks.
@@ -18,6 +19,7 @@
             <li><strong>[Feat]</strong> Improved Toml Parser</li>
             <li><strong>[Feat]</strong> Added variables for name template: low-version, max-version</li>
             <li><strong>[Change]</strong> Allow scrolling in the Publish page</li>
+            <li><strong>[Change]</strong> Replaced Changelog input component with EditorTextField</li>
           </ul>
         </li>
         <li><b>0.0.3</b>

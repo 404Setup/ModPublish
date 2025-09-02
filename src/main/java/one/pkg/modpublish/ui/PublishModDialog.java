@@ -1,9 +1,11 @@
 package one.pkg.modpublish.ui;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
@@ -28,6 +30,7 @@ import one.pkg.modpublish.util.resources.Lang;
 import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.util.version.constraint.VersionConstraint;
 import one.pkg.modpublish.util.version.constraint.VersionConstraintParser;
+import org.intellij.plugins.markdown.lang.MarkdownFileType;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -68,7 +71,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private JBCheckBox showSnapshotsCheckBox;
 
     // Changelog and dependencies
-    private JTextArea changelogArea;
+    private EditorTextField changelogField;
     private DependencyManagerPanel dependencyPanel;
 
     // Data
@@ -188,11 +191,18 @@ public class PublishModDialog extends BaseDialogWrapper {
         formBuilder.addLabeledComponent(get("component.name.mc-version"), minecraftPanel);
 
         // Changelog
-        changelogArea = new JTextArea(8, 50);
-        changelogArea.setLineWrap(true);
-        changelogArea.setWrapStyleWord(true);
-        JBScrollPane changelogScroll = new JBScrollPane(changelogArea);
-        formBuilder.addLabeledComponent(Lang.get("component.name.changelog"), changelogScroll);
+        try {
+            MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
+            changelogField = new EditorTextField("", project, markdownFileType);
+        } catch (Exception e) {
+            changelogField = new EditorTextField("", project, PlainTextFileType.INSTANCE);
+        }
+
+        changelogField.setPreferredSize(new Dimension(500, 150));
+        changelogField.setMinimumSize(new Dimension(500, 100));
+        changelogField.setOneLineMode(false);
+
+        formBuilder.addLabeledComponent(Lang.get("component.name.changelog"), changelogField);
 
         // Dependency manager
         dependencyPanel = new DependencyManagerPanel(this);
@@ -307,7 +317,7 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         // Load changelog
         String savedChangelog = properties.getValue("modpublish.changelog", "");
-        changelogArea.setText(savedChangelog);
+        changelogField.setText(savedChangelog);
 
         // Load dependencies
         String savedDependenciesJson = properties.getValue("modpublish.dependencies", "[]");
@@ -327,7 +337,7 @@ public class PublishModDialog extends BaseDialogWrapper {
      **/
     private void savePersistedData() {
         PropertiesComponent properties = PropertiesComponent.getInstance(project);
-        properties.setValue("modpublish.changelog", changelogArea.getText());
+        properties.setValue("modpublish.changelog", changelogField.getText());
         List<DependencyInfo> dependencies = dependencyPanel.getDependencies();
         String dependenciesJson = JsonParser.toJson(dependencies);
         properties.setValue("modpublish.dependencies", dependenciesJson);
@@ -412,7 +422,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 selectedLoaders,
                 supportedInfo,
                 selectedMinecraftVersions,
-                changelogArea.getText(),
+                changelogField.getText(),
                 dependencyPanel.getDependencies(),
                 VirtualFileAPI.toFile(jarFile)
         );

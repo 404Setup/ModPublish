@@ -36,6 +36,7 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2025.2")
         bundledPlugin("com.intellij.java")
+        bundledPlugin("org.intellij.plugins.markdown")
     }
 }
 
