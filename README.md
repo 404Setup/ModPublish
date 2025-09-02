@@ -176,5 +176,15 @@ All resource files have been adjusted to display at 24px.
 - [Gitlab Logo (vscode-icons)](https://github.com/vscode-icons/vscode-icons) - [License](https://github.com/vscode-icons/vscode-icons#license)
 - [Github Icon](https://github.com/logos)
 
+## Support ModPublish
+
+If you like my work, or if it has brought you great convenience, please consider supporting my work
+through [Patreon](https://www.patreon.com/tranic).
+
+If you don't want to do that, you can also support me by clicking the Star on the Repo. 
+The more Stars, the happier I am, and the more motivated I am to continue working.
+
+Thanks to everyone who uses and supports ModPublish.
+
 ## License
 The source code is licensed under the LGPL-3.0 license.
