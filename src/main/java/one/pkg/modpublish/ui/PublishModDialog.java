@@ -184,29 +184,30 @@ public class PublishModDialog extends BaseDialogWrapper {
         JBScrollPane minecraftScrollPane = new JBScrollPane(minecraftVersionList);
         minecraftScrollPane.setPreferredSize(new Dimension(200, 120));
 
-
         JPanel minecraftPanel = new JPanel(new BorderLayout());
         minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
         minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
         formBuilder.addLabeledComponent(get("component.name.mc-version"), minecraftPanel);
 
         // Changelog
-        try {
-            MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
-            changelogField = new EditorTextField("", project, markdownFileType);
-        } catch (Exception e) {
-            changelogField = new EditorTextField("", project, PlainTextFileType.INSTANCE);
-        }
+        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), null,
+                new FieldConfig(() -> {
+                    try {
+                        MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
+                        changelogField = new EditorTextField("", project, markdownFileType);
+                    } catch (Exception e) {
+                        changelogField = new EditorTextField("", project, PlainTextFileType.INSTANCE);
+                    }
 
-        changelogField.setPreferredSize(new Dimension(500, 150));
-        changelogField.setMinimumSize(new Dimension(500, 100));
-        changelogField.setOneLineMode(false);
-
-        formBuilder.addLabeledComponent(Lang.get("component.name.changelog"), changelogField);
+                    changelogField.setPreferredSize(new Dimension(500, 150));
+                    changelogField.setMinimumSize(new Dimension(500, 100));
+                    changelogField.setOneLineMode(false);
+                    return changelogField;
+                }));
 
         // Dependency manager
-        dependencyPanel = new DependencyManagerPanel(this);
-        formBuilder.addLabeledComponent(Lang.get("component.name.dependencies"), dependencyPanel);
+        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), null,
+                new FieldConfig(() -> dependencyPanel = new DependencyManagerPanel(this)));
 
         autoFillFields();
 
