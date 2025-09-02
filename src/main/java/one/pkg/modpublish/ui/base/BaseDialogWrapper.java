@@ -182,7 +182,7 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         Title() {
             @Override
             void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper) {
-                dialogWrapper.setTitle(Lang.get(key));
+                dialogWrapper.setTitle(key);
             }
         };
 
