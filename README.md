@@ -23,12 +23,14 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
-1. Upload multiple files simultaneously
-2. Code Optimization
-3. Publish to GitLab
-4. Allow syncing README to Modrinth and CurseForge
-5. Allow customizing mod upload targets
-6. Allow hot updating of Minecraft version list
+1. Improve dependency manager
+2. Upload multiple files simultaneously
+3. Code optimization
+4. UI optimization
+5. Allow hot updating of Minecraft version list
+6. Publish to GitLab
+7. Allow syncing README to Modrinth and CurseForge
+8. Allow customizing mod upload targets
 
 ## Installation
 
