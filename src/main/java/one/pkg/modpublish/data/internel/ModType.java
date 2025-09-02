@@ -1,7 +1,7 @@
 package one.pkg.modpublish.data.internel;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.metadata.ModJsonParser;
 import one.pkg.modpublish.util.metadata.ModTomlParser;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +61,7 @@ public enum ModType {
 
     @Nullable
     public static ModType of(VirtualFile file) {
-        return of(VirtualFileAPI.toFile(file));
+        return of(FileAPI.toFile(file));
     }
 
     @Nullable
@@ -82,7 +82,7 @@ public enum ModType {
     }
 
     public static List<ModType> getAll(VirtualFile file) {
-        return getAll(VirtualFileAPI.toFile(file));
+        return getAll(FileAPI.toFile(file));
     }
 
     public static List<ModType> getAll(File file) {
@@ -106,7 +106,7 @@ public enum ModType {
 
     @Nullable
     LocalModInfo getFabricMod(@NotNull File file) {
-        try (JarFile j = VirtualFileAPI.toJarFile(file);
+        try (JarFile j = FileAPI.toJarFile(file);
              InputStream s = getStream(j)) {
             ModJsonParser parser = new ModJsonParser(s);
             return parser.get();
@@ -118,7 +118,7 @@ public enum ModType {
 
     @Nullable
     LocalModInfo getForgeMod(@NotNull File file) {
-        try (JarFile j = VirtualFileAPI.toJarFile(file);
+        try (JarFile j = FileAPI.toJarFile(file);
              InputStream s = getStream(j);
              ModTomlParser parser = ModTomlParser.of(s)) {
             return parser.get();
@@ -130,7 +130,7 @@ public enum ModType {
 
     @Nullable
     public LocalModInfo getMod(@NotNull VirtualFile file) {
-        return getMod(VirtualFileAPI.toFile(file));
+        return getMod(FileAPI.toFile(file));
     }
 
     @Nullable
@@ -143,7 +143,7 @@ public enum ModType {
 
     @Nullable
     public InputStream getStream(JarFile jar) throws IOException {
-        return VirtualFileAPI.open(jar, getEntry(jar));
+        return FileAPI.open(jar, getEntry(jar));
     }
 
     public String getFileName() {

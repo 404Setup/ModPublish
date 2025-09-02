@@ -20,6 +20,8 @@
             <li><strong>[Feat]</strong> Added variables for name template: low-version, max-version</li>
             <li><strong>[Change]</strong> Allow scrolling in the Publish page</li>
             <li><strong>[Change]</strong> Replaced Changelog input component with EditorTextField</li>
+            <li><strong>[Change]</strong> PublishUI layout optimization</li>
+            <li><strong>[Chore]</strong> Bump minecraft version list</li>
           </ul>
         </li>
         <li><b>0.0.3</b>

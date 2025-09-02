@@ -24,8 +24,8 @@ import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
+import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.io.JsonParser;
-import one.pkg.modpublish.util.io.VirtualFileAPI;
 import one.pkg.modpublish.util.resources.Lang;
 import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.util.version.constraint.VersionConstraint;
@@ -425,7 +425,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 selectedMinecraftVersions,
                 changelogField.getText(),
                 dependencyPanel.getDependencies(),
-                VirtualFileAPI.toFile(jarFile)
+                FileAPI.toFile(jarFile)
         );
     }
 

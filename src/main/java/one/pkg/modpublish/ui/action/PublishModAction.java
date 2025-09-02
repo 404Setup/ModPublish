@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import one.pkg.modpublish.data.internel.ModType;
 import one.pkg.modpublish.ui.PublishModDialog;
-import one.pkg.modpublish.util.io.VirtualFileAPI;
+import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ public class PublishModAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         VirtualFile file = event.getData(CommonDataKeys.VIRTUAL_FILE);
-        if (file != null && file.getName().endsWith(".jar") && ModType.of(VirtualFileAPI.toFile(file)) != null) {
+        if (file != null && file.getName().endsWith(".jar") && ModType.of(FileAPI.toFile(file)) != null) {
             // Open the publish dialog
             new PublishModDialog(event.getProject(), file).show();
         } else {
@@ -39,7 +39,7 @@ public class PublishModAction extends AnAction {
             boolean isJarFile = file.getName().endsWith(".jar");
             if (isJarFile) {
                 try {
-                    ModType modType = ModType.of(VirtualFileAPI.toFile(file));
+                    ModType modType = ModType.of(FileAPI.toFile(file));
                     shouldShow = true;
                     shouldEnable = modType != null;
                 } catch (Exception e) {

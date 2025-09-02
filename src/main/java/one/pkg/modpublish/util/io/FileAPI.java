@@ -7,11 +7,23 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class VirtualFileAPI {
+public class FileAPI {
+    static {
+        var p = Paths.get(System.getProperty("user.home"), ".modpublish").toFile();
+        if (!p.exists()) {
+            p.mkdirs();
+        } else if (p.isFile()) {
+            p.delete();
+            p.mkdirs();
+        }
+    }
+
     public static @NotNull File toFile(@NotNull VirtualFile file) {
         return new File(file.getPath());
     }
@@ -31,6 +43,14 @@ public class VirtualFileAPI {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static @NotNull Path getUserData(@NotNull String name) {
+        return Paths.get(System.getProperty("user.home"), ".modpublish", name);
+    }
+
+    public static @NotNull File getUserDataFile(@NotNull String name) {
+        return getUserData(name).toFile();
     }
 
     public static InputStream open(ZipFile zipFile, ZipEntry zipEntry) throws IOException {
