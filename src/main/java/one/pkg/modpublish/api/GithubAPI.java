@@ -63,18 +63,29 @@ public class GithubAPI implements API {
     @Override
     public PublishResult createVersion(PublishData data, Project project) {
         try {
-            Result releaseResult = createRelease(data, project);
-            if (releaseResult instanceof PublishResult pr) {
-                return pr;
+            String tagName = data.versionNumber().startsWith("v") ?
+                    data.versionNumber() :
+                    "v" + data.versionNumber();
+
+            Optional<JsonObject> existingRelease = checkExistingRelease(tagName, project);
+
+            JsonObject releaseResponse;
+            if (existingRelease.isPresent()) {
+                releaseResponse = existingRelease.get();
+            } else {
+                Result releaseResult = createRelease(data, project);
+                if (releaseResult instanceof PublishResult pr) {
+                    return pr;
+                }
+                BackResult br = (BackResult) releaseResult;
+                releaseResponse = JsonParser.fromJson(br.result(), JsonObject.class).getAsJsonObject();
             }
-            BackResult br = (BackResult) releaseResult;
 
-            JsonObject releaseResponse = JsonParser.fromJson(br.result(), JsonObject.class).getAsJsonObject();
             String uploadUrl = releaseResponse.get("upload_url").getAsString();
-
             uploadUrl = uploadUrl.split("\\{")[0];
 
             return uploadAsset(data, project, uploadUrl);
+
         } catch (Exception e) {
             return PublishResult.create("Failed to create GitHub release: " + e.getMessage());
         }
@@ -118,6 +129,29 @@ public class GithubAPI implements API {
             }
         } catch (IOException e) {
             return PublishResult.create("Failed to upload asset: " + e.getMessage());
+        }
+    }
+
+    private Optional<JsonObject> checkExistingRelease(String tagName, Project project) {
+        try {
+            String url = RELEASES_URL + "/tags/" + tagName;
+            Request request = getRequestBuilder(url, project)
+                    .get()
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    JsonObject releaseInfo = JsonParser.fromJson(responseBody, JsonObject.class);
+                    return Optional.of(releaseInfo);
+                } else if (response.code() == 404) {
+                    return Optional.empty();
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } catch (IOException e) {
+            return Optional.empty();
         }
     }
 
