@@ -353,10 +353,12 @@ public class PublishModDialog extends BaseDialogWrapper {
                 && !gitlabCheckBox.isSelected()) {
             return PublishResult.of("failed.1");
         }
-        if (!clientCheckBox.isSelected() && !serverCheckBox.isSelected()) {
+        if ((modrinthCheckBox.isSelected() || modrinthTestCheckBox.isSelected() || curseforgeCheckBox.isSelected()) &&
+                !clientCheckBox.isSelected() && !serverCheckBox.isSelected()) {
             return PublishResult.of("failed.2");
         }
-        if (loaderCheckBoxes.stream().noneMatch(JBCheckBox::isSelected)) {
+        if ((modrinthCheckBox.isSelected() || modrinthTestCheckBox.isSelected() || curseforgeCheckBox.isSelected()) &&
+                loaderCheckBoxes.stream().noneMatch(JBCheckBox::isSelected)) {
             return PublishResult.of("failed.3");
         }
         if (versionNameField.getText() == null || versionNameField.getText().trim().isEmpty()) {
