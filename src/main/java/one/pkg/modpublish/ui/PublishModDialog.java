@@ -348,19 +348,40 @@ public class PublishModDialog extends BaseDialogWrapper {
     }
 
     private @Nullable PublishResult doOKActionFirst() {
+        PublishResult validationResult = validatePublishTargetSelection();
+        if (validationResult != null) return validationResult;
+
+        validationResult = validateModrinthCurseforgeSettings();
+        if (validationResult != null) return validationResult;
+        return validateVersionFields();
+    }
+
+    private PublishResult validatePublishTargetSelection() {
         if (!curseforgeCheckBox.isSelected() && !modrinthCheckBox.isSelected()
                 && !modrinthTestCheckBox.isSelected() && !githubCheckBox.isSelected()
                 && !gitlabCheckBox.isSelected()) {
             return PublishResult.of("failed.1");
         }
-        if ((modrinthCheckBox.isSelected() || modrinthTestCheckBox.isSelected() || curseforgeCheckBox.isSelected()) &&
-                !clientCheckBox.isSelected() && !serverCheckBox.isSelected()) {
+        return null;
+    }
+
+    private PublishResult validateModrinthCurseforgeSettings() {
+        boolean hasModrinthOrCurseforge = modrinthCheckBox.isSelected()
+                || modrinthTestCheckBox.isSelected()
+                || curseforgeCheckBox.isSelected();
+
+        if (hasModrinthOrCurseforge && !clientCheckBox.isSelected() && !serverCheckBox.isSelected()) {
             return PublishResult.of("failed.2");
         }
-        if ((modrinthCheckBox.isSelected() || modrinthTestCheckBox.isSelected() || curseforgeCheckBox.isSelected()) &&
-                loaderCheckBoxes.stream().noneMatch(JBCheckBox::isSelected)) {
+
+        if (hasModrinthOrCurseforge && loaderCheckBoxes.stream().noneMatch(JBCheckBox::isSelected)) {
             return PublishResult.of("failed.3");
         }
+
+        return null;
+    }
+
+    private PublishResult validateVersionFields() {
         if (versionNameField.getText() == null || versionNameField.getText().trim().isEmpty()) {
             return PublishResult.of("failed.5");
         }
@@ -369,6 +390,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
         return null;
     }
+
 
     @Override
     protected void doOKAction() {
