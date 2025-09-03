@@ -377,14 +377,14 @@ public class PublishModDialog extends BaseDialogWrapper {
             return;
         }
 
-        savePersistedData();
-
-        PublishData publishData = collectPublishData();
-
         getOKAction().setEnabled(false);
         setText("button.publishing", TextType.OKButton);
 
         SwingUtilities.invokeLater(() -> {
+            savePersistedData();
+
+            PublishData publishData = collectPublishData();
+
             PublishResult result = performPublish(publishData);
 
             if (result.result() == null || result.result().trim().isEmpty()) {
