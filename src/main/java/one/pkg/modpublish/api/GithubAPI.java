@@ -78,7 +78,7 @@ public class GithubAPI implements API {
                     return pr;
                 }
                 BackResult br = (BackResult) releaseResult;
-                releaseResponse = JsonParser.fromJson(br.result(), JsonObject.class).getAsJsonObject();
+                releaseResponse = JsonParser.fromJson(br.result()).getAsJsonObject();
             }
 
             String uploadUrl = releaseResponse.get("upload_url").getAsString();
@@ -142,7 +142,7 @@ public class GithubAPI implements API {
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    JsonObject releaseInfo = JsonParser.fromJson(responseBody, JsonObject.class);
+                    JsonObject releaseInfo = JsonParser.fromJson(responseBody);
                     return Optional.of(releaseInfo);
                 } else if (response.code() == 404) {
                     return Optional.empty();
@@ -174,7 +174,7 @@ public class GithubAPI implements API {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                JsonObject repoInfo = JsonParser.fromJson(response.body().string(), JsonObject.class);
+                JsonObject repoInfo = JsonParser.fromJson(response.body().string());
                 return repoInfo.get("default_branch").getAsString();
             }
         }
@@ -189,7 +189,7 @@ public class GithubAPI implements API {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                JsonObject branchInfo = JsonParser.fromJson(response.body().string(), JsonObject.class);
+                JsonObject branchInfo = JsonParser.fromJson(response.body().string());
                 JsonObject commit = branchInfo.getAsJsonObject("commit");
                 return commit.get("sha").getAsString();
             }
