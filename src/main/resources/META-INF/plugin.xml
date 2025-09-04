@@ -26,6 +26,7 @@
             <li><strong>[Translate]</strong> Improved translations</li>
             <li><strong>[Chore]</strong> Bump minecraft version list</li>
             <li><strong>[Fix]</strong> Title repeatedly requests i18n</li>
+            <li><strong>[Fix/Translate]</strong> Fixed incorrect Korean reference</li>
           </ul>
         </li>
         <li><b>0.0.3</b>
