@@ -1,5 +1,10 @@
 # ModPublish
 
+**This plugin is completely free, please download it from Jetbrains Marketplace or the official GitHub page!
+Do not download this plugin from any untrusted third party pages!**
+
+----
+
 Quickly publish your Minecraft mods to multiple mod hosting sites using Jetbrains IDEA.
 
 It may not be as convenient as some Gradle plugins, but I want to do it.
@@ -7,8 +12,9 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 ## Feature
 
 - Fully GUI-based operation
+- Automatically detect Mod information, no need to repeatedly manually select/input
 - Quick saving of last operation records (dependencies, changelog)
-- One click publishing of mods to Modrinth, CurseForge and Github
+- One-click publishing of mods to Modrinth, CurseForge and GitHub
 
 ### Unsupported Features
 
