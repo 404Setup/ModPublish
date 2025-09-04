@@ -59,11 +59,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PublishModDialog extends BaseDialogWrapper {
-
     @Getter
     private final Project project;
     private final VirtualFile jarFile;
     private final List<ModType> modTypes;
+    private LocalModInfo modInfo;
+    private VersionConstraint parser;
 
     // UI Components
     private JBTextField versionNameField;
@@ -94,7 +95,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private DependencyManagerPanel dependencyPanel;
 
     // Data
-    private List<MinecraftVersion> minecraftVersions;
+    private List<MinecraftVersion> minecraftVersions = null;
     private List<LauncherInfo> launchers;
     private SupportedInfo supportedInfo;
 
@@ -103,6 +104,16 @@ public class PublishModDialog extends BaseDialogWrapper {
         this.project = project;
         this.jarFile = jarFile;
         this.modTypes = ModType.getAll(jarFile);
+        for (ModType modType : modTypes) {
+            if (modType.equals(ModType.Rift)) continue;
+            this.modInfo = modType.getMod(jarFile);
+            if (this.modInfo != null) {
+                this.parser = modInfo.versionRange() != null && !modInfo.versionRange().isEmpty() ?
+                        VersionConstraintParser.parse(modInfo.versionRange()) :
+                        null;
+                break;
+            }
+        }
 
         PluginMain.updateProject(project);
 
@@ -117,7 +128,6 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     private void loadConfigData() {
         try {
-            minecraftVersions = LocalResources.getMinecraftVersions();
             launchers = LocalResources.getLauncherInfo();
             supportedInfo = LocalResources.getSupportedInfo();
         } catch (Exception e) {
@@ -237,24 +247,27 @@ public class PublishModDialog extends BaseDialogWrapper {
     }
 
     private void updateMinecraftVersions() {
-        minecraftVersionModel.clear();
-        boolean includeSnapshots = showSnapshotsCheckBox.isSelected();
+        SwingUtilities.invokeLater(() -> {
+            minecraftVersionModel.clear();
+            boolean includeSnapshots = showSnapshotsCheckBox.isSelected();
 
-        for (MinecraftVersion version : minecraftVersions) {
-            if ("release".equals(version.type) || (includeSnapshots && "snapshot".equals(version.type))) {
-                minecraftVersionModel.addElement(new MinecraftVersionItem(version, false));
+            if (minecraftVersions == null) minecraftVersions = LocalResources.getMinecraftVersions();
+
+            for (MinecraftVersion version : minecraftVersions) {
+                if ("release".equals(version.type) || (includeSnapshots && "snapshot".equals(version.type))) {
+                    minecraftVersionModel.addElement(new MinecraftVersionItem(version, false));
+                }
             }
-        }
-    }
 
+            autoFillMinecraftVersions();
+        });
+    }
 
     private String extractVersionName(VirtualFile file) {
         return file.getNameWithoutExtension();
     }
 
     private void autoFillFields() {
-        autoFillMinecraftVersions();
-
         loadModInfo();
         loadPersistedData();
     }
@@ -263,24 +276,20 @@ public class PublishModDialog extends BaseDialogWrapper {
         String version = null;
         String versionName = extractVersionName(jarFile);
         String versionNameFormat = PID.CommonVersionFormat.get(project);
+        ModType modType = modTypes.get(0);
 
-        ModType t = ModType.of(jarFile);
-        if (t != null) {
-            LocalModInfo lmInfo = t.getMod(jarFile);
-            if (lmInfo != null) {
-                version = lmInfo.version();
-                VersionConstraint parser = VersionConstraintParser.parse(lmInfo.versionRange());
-                String lowVersion = parser.getLowVersion();
-                String highVersion = parser.getMaxVersion();
+        if (modInfo != null) {
+            version = modInfo.version();
+            String lowVersion = parser.getLowVersion();
+            String highVersion = parser.getMaxVersion();
 
-                if (!versionNameFormat.isEmpty()) {
-                    versionName =
-                            versionNameFormat.replace("{version}", version)
-                                    .replace("{name}", lmInfo.name())
-                                    .replace("{loader}", t.getName());
-                    if (!lowVersion.isEmpty()) versionName = versionName.replace("{low-version}", lowVersion);
-                    if (!highVersion.isEmpty()) versionName = versionName.replace("{high-version}", highVersion);
-                }
+            if (!versionNameFormat.isEmpty()) {
+                versionName =
+                        versionNameFormat.replace("{version}", version)
+                                .replace("{name}", modInfo.name())
+                                .replace("{loader}", modType.getName());
+                if (!lowVersion.isEmpty()) versionName = versionName.replace("{low-version}", lowVersion);
+                if (!highVersion.isEmpty()) versionName = versionName.replace("{high-version}", highVersion);
             }
         }
 
@@ -292,7 +301,45 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     private void autoFillMinecraftVersions() {
         if (minecraftVersionModel.getSize() > 0) {
-            minecraftVersionModel.getElementAt(0).setSelected(true);
+            if (parser != null) {
+                String lowVersion = parser.getLowVersion();
+                String highVersion = parser.getMaxVersion();
+
+                // Find indices for low and high versions
+                int lowIndex = -1;
+                int highIndex = -1;
+
+                for (int i = 0; i < minecraftVersionModel.getSize(); i++) {
+                    MinecraftVersionItem item = minecraftVersionModel.getElementAt(i);
+                    String version = item.getVersion().version;
+
+                    if (!lowVersion.isBlank() && version.equals(lowVersion)) {
+                        lowIndex = i;
+                    }
+                    if (!highVersion.isBlank() && version.equals(highVersion)) {
+                        highIndex = i;
+                    }
+                }
+
+                if (!lowVersion.isBlank() && !highVersion.isBlank() && lowIndex != -1 && highIndex != -1) {
+                    int startIndex = Math.min(lowIndex, highIndex);
+                    int endIndex = Math.max(lowIndex, highIndex);
+                    for (int i = startIndex; i <= endIndex; i++) {
+                        minecraftVersionModel.getElementAt(i).setSelected(true);
+                    }
+                } else if (!lowVersion.isBlank() && lowIndex != -1) {
+                    // Select from lowVersion to index 0
+                    for (int i = 0; i <= lowIndex; i++) {
+                        minecraftVersionModel.getElementAt(i).setSelected(true);
+                    }
+                } else if (!highVersion.isBlank() && highIndex != -1) {
+                    // Select only highVersion
+                    minecraftVersionModel.getElementAt(highIndex).setSelected(true);
+                }
+            } else {
+                // If no version constraints, select the latest version (index 0)
+                minecraftVersionModel.getElementAt(0).setSelected(true);
+            }
             minecraftVersionList.repaint();
         }
     }
