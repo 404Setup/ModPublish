@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-
+@SuppressWarnings("unused")
 public class ModPublishSettingsComponent extends BaseDialogWrapper {
     @Getter
     private final JPanel panel;

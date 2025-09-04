@@ -23,6 +23,7 @@ import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.result.PublishResult;
 
+@SuppressWarnings("unused")
 public class GitlabAPI implements API {
     public Request.Builder getRequestBuilder(String url, Project project) {
         return null;

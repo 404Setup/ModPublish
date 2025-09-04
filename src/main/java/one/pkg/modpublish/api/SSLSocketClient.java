@@ -36,6 +36,7 @@ import java.util.Arrays;
  * It helped me fix several constructor-related bugs.
  *
  */
+@SuppressWarnings("unused")
 public class SSLSocketClient {
     public static SSLSocketFactory getSSLSocketFactory() {
         try {

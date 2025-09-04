@@ -19,18 +19,15 @@ package one.pkg.modpublish;
 
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 
 @Service(Service.Level.PROJECT)
 public final class PluginMain {
+    @Getter
     private static Project project;
 
     public PluginMain(Project project) {
         PluginMain.project = project;
-    }
-
-
-    public static Project getProject() {
-        return project;
     }
 
     public static void updateProject(Project project) {

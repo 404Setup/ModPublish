@@ -23,6 +23,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBUI;
+import lombok.Getter;
 import one.pkg.modpublish.api.API;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.TargetType;
@@ -38,6 +39,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
     private final Project project;
     private JBTextField projectIdField;
     private JComboBox<DependencyType> dependencyTypeCombo;
+    @Getter
     private boolean isDone = false;
     private DependencyInfo resultDependency;
 
@@ -47,10 +49,6 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         this.publishTargets = publishTargets;
         setText("title.add-dependency", TextType.Title);
         init();
-    }
-
-    public boolean isDone() {
-        return isDone;
     }
 
     @Override

@@ -20,8 +20,6 @@ package one.pkg.modpublish.data.network.curseforge;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
-import java.util.Objects;
-
 @SuppressWarnings("unused")
 @Data
 public class CurseForgePublishResult {
