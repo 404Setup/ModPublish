@@ -26,6 +26,7 @@
             <li><strong>[Translate]</strong> Improved translations</li>
             <li><strong>[Translate]</strong> Added French translation</li>
             <li><strong>[Translate]</strong> Added Russian translation</li>
+            <li><strong>[Translate]</strong> Added Spanish translation</li>
             <li><strong>[Chore]</strong> Bump minecraft version list</li>
             <li><strong>[Fix]</strong> Title repeatedly requests i18n</li>
             <li><strong>[Fix/Translate]</strong> Fixed incorrect Korean reference</li>
