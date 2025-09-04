@@ -30,6 +30,8 @@ tasks.withType<JavaCompile>().configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
         options.release.set(targetJavaVersion)
     }
+
+    options.compilerArgs.add("-Xdiags:verbose")
 }
 
 dependencies {
@@ -65,10 +67,6 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("META-INF/plugin.xml") {
         expand(props)
     }
-}
-
-tasks.named<JavaCompile>("compileJava") {
-    options.compilerArgs.add("-Xdiags:verbose")
 }
 
 tasks.named<SignPluginTask>("signPlugin") {
