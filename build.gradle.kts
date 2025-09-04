@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "one.pkg"
-version = "0.0.4"
+version = "0.0.5-dev"
 val targetJavaVersion = 17
 
 repositories {
