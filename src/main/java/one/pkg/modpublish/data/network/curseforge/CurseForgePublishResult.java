@@ -1,10 +1,12 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 
 import java.util.Objects;
 
 @SuppressWarnings("unused")
+@Data
 public class CurseForgePublishResult {
     /**
      * The uploaded file ID
@@ -38,14 +40,6 @@ public class CurseForgePublishResult {
         return new CurseForgePublishResult();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     /**
      * Checks if the response is valid (contains a valid ID)
      *
@@ -71,26 +65,6 @@ public class CurseForgePublishResult {
      */
     public String getIdAsString() {
         return id != null ? id.toString() : "";
-    }
-
-    @Override
-    public String toString() {
-        return "CurseForgePublishResult{" +
-                "id=" + id +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        CurseForgePublishResult that = (CurseForgePublishResult) obj;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 
 }

@@ -1,5 +1,9 @@
 package one.pkg.modpublish.data.local;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 @SuppressWarnings("unused")
 public class SupportedInfo {
     public SupportTarget client;
@@ -13,14 +17,8 @@ public class SupportedInfo {
         this.server = server;
     }
 
-    public SupportTarget getClient() {
-        return client;
-    }
-
-    public SupportTarget getServer() {
-        return server;
-    }
-
+    @Getter
+    @Setter
     public static class SupportTarget {
         public int cfid;
         public boolean enabled = false;
@@ -32,16 +30,5 @@ public class SupportedInfo {
             this.cfid = cfid;
         }
 
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public int getCfid() {
-            return cfid;
-        }
     }
 }

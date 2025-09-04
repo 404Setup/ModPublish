@@ -1,5 +1,8 @@
 package one.pkg.modpublish.data.local;
 
+import lombok.Getter;
+
+@Getter
 public enum DependencyType {
     EMBEDDED("Embedded", "embeddedLibrary"),
     REQUIRED("Required", "requiredDependency"),
@@ -12,14 +15,6 @@ public enum DependencyType {
     DependencyType(String displayName, String curseForgeName) {
         this.displayName = displayName;
         this.curseForgeName = curseForgeName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getCurseForgeName() {
-        return curseForgeName;
     }
 
     public String getModrinthName() {

@@ -1,9 +1,11 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @SuppressWarnings("unused")
 public class Relations {
     /**
@@ -16,14 +18,6 @@ public class Relations {
     }
 
     public Relations(List<ProjectRelation> projects) {
-        this.projects = projects;
-    }
-
-    public List<ProjectRelation> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<ProjectRelation> projects) {
         this.projects = projects;
     }
 

@@ -65,12 +65,12 @@ public class RangeConstraint implements VersionConstraint {
 
     @Override
     public @NotNull String getLowVersion() {
-        return minVersion != null ? minVersion.toString() : null;
+        return minVersion != null ? minVersion.toString() : "";
     }
 
     @Override
     public @NotNull String getMaxVersion() {
-        return maxVersion != null ? maxVersion.toString() : null;
+        return maxVersion != null ? maxVersion.toString() : "";
     }
 
 }

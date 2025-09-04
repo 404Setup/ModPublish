@@ -9,7 +9,7 @@ import one.pkg.modpublish.data.internel.RequestStatus;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.data.network.modrinth.ModrinthFileData;
+import one.pkg.modpublish.data.network.modrinth.ModrinthData;
 import one.pkg.modpublish.data.network.modrinth.ProjectRelation;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.settings.properties.PID;
@@ -56,7 +56,7 @@ public class ModrinthAPI implements API {
 
     @Override
     public String createJsonBody(PublishData data, Project project) {
-        var json = ModrinthFileData.create().releaseChannel(data.releaseChannel())
+        var json = ModrinthData.builder().releaseChannel(data.releaseChannel())
                 .projectId(ab ? PID.ModrinthTestModID.get(project) : PID.ModrinthModID.get(project))
                 .versionBody(data.changelog())
                 .status(RequestStatus.Listed)
@@ -68,14 +68,14 @@ public class ModrinthAPI implements API {
         for (LauncherInfo l : data.loaders()) json.loader(l);
         for (MinecraftVersion version : data.minecraftVersions()) json.gameVersion(version);
         for (DependencyInfo d : data.dependencies()) {
-            ModInfo info = d.getModrinthInfo();
+            ModInfo info = d.getModrinthModInfo();
             if (info == null || info.modid() == null || info.modid().isBlank() ||
                     info.slug() == null || info.slug().isBlank()) continue;
             json.dependency(
                     ProjectRelation.create(info.modid(), d.getType())
             );
         }
-        return json.toJson();
+        return json.build().toJson();
     }
 
     @Override

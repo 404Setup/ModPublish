@@ -19,7 +19,7 @@ public class CheckBoxListCellRenderer extends JCheckBox implements ListCellRende
             boolean cellHasFocus) {
 
         setSelected(value.isSelected());
-        setText(value.getVersion().v);
+        setText(value.getVersion().version);
 
         if (isSelected) {
             setBackground(list.getSelectionBackground());

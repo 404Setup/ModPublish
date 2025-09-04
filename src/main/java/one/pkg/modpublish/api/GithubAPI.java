@@ -45,19 +45,19 @@ public class GithubAPI implements API {
         String branch = PID.GithubBranch.get(project);
         String targetCommitish = getTargetCommitish(branch, project);
 
-        GithubData githubData = GithubData.create()
+        GithubData.GithubDataBuilder githubData = GithubData.builder()
                 .tagName(data.versionNumber().startsWith("v") ?
                         data.versionNumber() :
                         "v" + data.versionNumber())
                 .targetCommitish(targetCommitish)
                 .name(data.versionName())
                 .body(data.changelog())
-                .draft(false)
                 .releaseChannel(data.releaseChannel())
+                .draft(false)
                 .generateReleaseNotes(true)
                 .makeLatest(true);
 
-        return githubData.toJson();
+        return githubData.build().toJson();
     }
 
     @Override

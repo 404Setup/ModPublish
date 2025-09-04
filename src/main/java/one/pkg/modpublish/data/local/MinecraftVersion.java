@@ -1,56 +1,33 @@
 package one.pkg.modpublish.data.local;
 
+import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+
+@Getter
 @SuppressWarnings("unused")
 public class MinecraftVersion {
-    public String v;  // version
-    public String t;  // type (release/snapshot)
-    public int i; // id (curseforge)
-    public String d;  // date
+    // Getter properties for easier access
+    @SerializedName("v")
+    public String version;  // version
+    @SerializedName("t")
+    public String type;  // type (release/snapshot)
+    @SerializedName("i")
+    public int id; // id (curseforge)
+    @SerializedName("d")
+    public String date;  // date
 
     public MinecraftVersion() {
     }
 
     public MinecraftVersion(String version, String type, int id, String date) {
-        this.v = version;
-        this.t = type;
-        this.i = id;
-        this.d = date;
-    }
-
-    public String getVersion() {
-        return v;
-    }
-
-    public String getType() {
-        return t;
-    }
-
-    public int getId() {
-        return i;
-    }
-
-    public String getDate() {
-        return d;
+        this.version = version;
+        this.type = type;
+        this.id = id;
+        this.date = date;
     }
 
     public boolean canReleaseToCurseForge() {
-        return t.equals("release") && i > 0;
+        return type.equals("release") && id > 0;
     }
 
-    // Getter properties for easier access
-    public String getV() {
-        return v;
-    }
-
-    public String getT() {
-        return t;
-    }
-
-    public int getI() {
-        return i;
-    }
-
-    public String getD() {
-        return d;
-    }
 }

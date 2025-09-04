@@ -14,6 +14,12 @@
     <change-notes>
         <![CDATA[
       <ul>
+        <li><b>0.0.5</b>
+          <ul>
+            <li><strong>[Chore]</strong> Use Lombok to clean code</li>
+            <li><strong>[Fix]</strong> Version parts should not be null</li>
+          </ul>
+        </li>
         <li><b>0.0.4</b>
           <ul>
             <li><strong>[Feat]</strong> Improved Toml Parser</li>

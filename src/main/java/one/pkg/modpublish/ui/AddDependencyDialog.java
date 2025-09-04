@@ -113,11 +113,11 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         }
         if (validationResult[0] != null) {
             resultDependency.setCustomTitle(validationResult[0].name());
-            resultDependency.setModrinthInfo(validationResult[0]);
+            resultDependency.setModrinthModInfo(validationResult[0]);
         }
         if (validationResult[1] != null) {
             resultDependency.setCustomTitle(validationResult[1].name());
-            resultDependency.setCurseforgeInfo(validationResult[1]);
+            resultDependency.setCurseforgeModInfo(validationResult[1]);
         }
         isDone = true;
         super.doOKAction();

@@ -1,5 +1,8 @@
 package one.pkg.modpublish.data.internel;
 
+import lombok.Getter;
+
+@Getter
 public enum ReleaseChannel {
     Release("release"), Beta("beta"), Alpha("alpha");
 
@@ -9,7 +12,4 @@ public enum ReleaseChannel {
         this.type = type;
     }
 
-    public String getType() {
-        return type;
-    }
 }

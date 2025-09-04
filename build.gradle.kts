@@ -38,6 +38,9 @@ dependencies {
         bundledPlugin("com.intellij.java")
         bundledPlugin("org.intellij.plugins.markdown")
     }
+
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 intellijPlatform {
@@ -62,6 +65,10 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("META-INF/plugin.xml") {
         expand(props)
     }
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    options.compilerArgs.add("-Xdiags:verbose")
 }
 
 tasks.named<SignPluginTask>("signPlugin") {

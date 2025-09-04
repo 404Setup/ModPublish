@@ -1,8 +1,10 @@
 package one.pkg.modpublish.data.network.modrinth;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 import one.pkg.modpublish.data.local.DependencyType;
 
+@Data
 @SuppressWarnings("unused")
 public class ProjectRelation {
     @SerializedName("version_id")
@@ -47,49 +49,8 @@ public class ProjectRelation {
         };
     }
 
-    public String getVersionID() {
-        return versionID;
-    }
-
-    public void setVersionID(String versionID) {
-        this.versionID = versionID;
-    }
-
-    public String getProjectID() {
-        return projectID;
-    }
-
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public boolean isValid() {
         return projectID != null && !projectID.trim().isEmpty() ||
                 type != null && !type.trim().isEmpty();
     }
-
-    @Override
-    public String toString() {
-        return "ProjectRelation{" +
-                ", projectID='" + projectID + '\'' +
-                ", type='" + type + '\'' +
-                '}';
-    }
-
 }

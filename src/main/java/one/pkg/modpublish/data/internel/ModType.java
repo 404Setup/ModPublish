@@ -1,6 +1,7 @@
 package one.pkg.modpublish.data.internel;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import lombok.Getter;
 import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.metadata.ModJsonParser;
 import one.pkg.modpublish.util.metadata.ModTomlParser;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+@Getter
 public enum ModType {
     Fabric("fabric.mod.json", "Fabric") {
         @Override
@@ -144,14 +146,6 @@ public enum ModType {
     @Nullable
     public InputStream getStream(JarFile jar) throws IOException {
         return FileAPI.open(jar, getEntry(jar));
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

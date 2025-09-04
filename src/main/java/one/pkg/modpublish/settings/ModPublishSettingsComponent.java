@@ -3,6 +3,7 @@ package one.pkg.modpublish.settings;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import lombok.Getter;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.util.protect.HardwareFingerprint;
 import one.pkg.modpublish.util.protect.Protect;
@@ -14,6 +15,7 @@ import javax.swing.*;
 
 
 public class ModPublishSettingsComponent extends BaseDialogWrapper {
+    @Getter
     private final JPanel panel;
     private JBTextField modrinthTokenText;
     private JBTextField modrinthTestTokenText;
@@ -54,10 +56,6 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
-    }
-
-    public JPanel getPanel() {
-        return panel;
     }
 
     @Override

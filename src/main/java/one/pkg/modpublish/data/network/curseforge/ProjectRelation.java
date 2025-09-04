@@ -1,8 +1,10 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 import one.pkg.modpublish.data.local.DependencyType;
 
+@Data
 @SuppressWarnings("unused")
 public class ProjectRelation {
     /**
@@ -112,30 +114,6 @@ public class ProjectRelation {
         };
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public int getProjectID() {
-        return projectID;
-    }
-
-    public void setProjectID(int projectID) {
-        this.projectID = projectID;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     /**
      * Check if project ID exists
      *
@@ -155,14 +133,4 @@ public class ProjectRelation {
                 hasProjectID() ||
                 type != null && !type.trim().isEmpty();
     }
-
-    @Override
-    public String toString() {
-        return "ProjectRelation{" +
-                "slug='" + slug + '\'' +
-                ", projectID='" + projectID + '\'' +
-                ", type='" + type + '\'' +
-                '}';
-    }
-
 }

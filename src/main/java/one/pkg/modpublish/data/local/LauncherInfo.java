@@ -1,5 +1,8 @@
 package one.pkg.modpublish.data.local;
 
+import lombok.Getter;
+
+@Getter
 @SuppressWarnings("unused")
 public class LauncherInfo {
     public String n;    // name
@@ -13,17 +16,5 @@ public class LauncherInfo {
         this.n = name;
         this.id = id;
         this.cfid = cfid;
-    }
-
-    public String getName() {
-        return n;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getCfid() {
-        return cfid;
     }
 }

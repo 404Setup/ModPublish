@@ -8,7 +8,7 @@ import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.data.network.curseforge.CurseForgeFileData;
+import one.pkg.modpublish.data.network.curseforge.CurseForgeData;
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
 import one.pkg.modpublish.data.result.PublishResult;
@@ -62,7 +62,7 @@ public class CurseForgeAPI implements API {
 
     @Override
     public String createJsonBody(PublishData data, Project project) {
-        CurseForgeFileData builder = CurseForgeFileData.create().releaseType(data.releaseChannel())
+        CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder().releaseType(data.releaseChannel())
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
         for (MinecraftVersion v : data.minecraftVersions()) builder.gameVersion(v);
@@ -72,13 +72,13 @@ public class CurseForgeAPI implements API {
             builder.gameVersion(data.supportedInfo().getServer().getCfid());
         for (LauncherInfo l : data.loaders()) if (l.getCfid() > 0) builder.gameVersion(l.getCfid());
         for (DependencyInfo d : data.dependencies()) {
-            ModInfo info = d.getCurseforgeInfo();
+            ModInfo info = d.getCurseforgeModInfo();
             if (info == null || info.modid() == null || info.modid().isBlank() ||
                     info.slug() == null || info.slug().isBlank()) continue;
             ProjectRelation relation = ProjectRelation.create(info.slug(), Integer.parseInt(info.modid()), d.getType());
             builder.dependency(relation);
         }
-        return builder.toJson();
+        return builder.build().toJson();
     }
 
     @Override

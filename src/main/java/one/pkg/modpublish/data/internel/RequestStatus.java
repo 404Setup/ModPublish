@@ -1,5 +1,8 @@
 package one.pkg.modpublish.data.internel;
 
+import lombok.Getter;
+
+@Getter
 public enum RequestStatus {
     Listed("listed"), Archived("archived"), Draft("draft"), Unlisted("unlisted"), Scheduled("scheduled");
 
@@ -9,7 +12,4 @@ public enum RequestStatus {
         this.status = status;
     }
 
-    public String getStatus() {
-        return status;
-    }
 }

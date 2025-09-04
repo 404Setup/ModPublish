@@ -11,6 +11,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import lombok.Getter;
 import one.pkg.modpublish.PluginMain;
 import one.pkg.modpublish.data.internel.*;
 import one.pkg.modpublish.data.local.DependencyInfo;
@@ -42,6 +43,7 @@ import java.util.List;
 
 public class PublishModDialog extends BaseDialogWrapper {
 
+    @Getter
     private final Project project;
     private final VirtualFile jarFile;
     private final List<ModType> modTypes;
@@ -222,7 +224,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         boolean includeSnapshots = showSnapshotsCheckBox.isSelected();
 
         for (MinecraftVersion version : minecraftVersions) {
-            if ("release".equals(version.t) || (includeSnapshots && "snapshot".equals(version.t))) {
+            if ("release".equals(version.type) || (includeSnapshots && "snapshot".equals(version.type))) {
                 minecraftVersionModel.addElement(new MinecraftVersionItem(version, false));
             }
         }
@@ -501,9 +503,5 @@ public class PublishModDialog extends BaseDialogWrapper {
                 modrinthTestCheckBox.isSelected(),
                 curseforgeCheckBox.isSelected()
         };
-    }
-
-    public Project getProject() {
-        return project;
     }
 }

@@ -1,15 +1,20 @@
 package one.pkg.modpublish.util.version;
 
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 @SuppressWarnings("unused")
 public class Version implements Comparable<Version> {
     private static final Pattern RELEASE_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)$");
     private static final Pattern PRE_RELEASE_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)-(pre|rc)(\\d+)$");
     private static final Pattern BETA_PATTERN = Pattern.compile("^b(\\d+)\\.(\\d+)\\.(\\d+)$");
     private static final Pattern SNAPSHOT_PATTERN = Pattern.compile("^(\\d{2})w(\\d{2})([a-z])(?:_or_([a-z]))?$");
+    @NotNull
     private final String original;
     private final VersionType type;
     private int major;
@@ -17,7 +22,7 @@ public class Version implements Comparable<Version> {
     private int patch;
     private String preRelease;
 
-    public Version(String version) {
+    public Version(@NotNull String version) {
         this.original = version.trim();
 
         if (parseReleaseVersion()) {
@@ -174,30 +179,6 @@ public class Version implements Comparable<Version> {
     @Override
     public String toString() {
         return original;
-    }
-
-    public int getMajor() {
-        return major;
-    }
-
-    public int getMinor() {
-        return minor;
-    }
-
-    public int getPatch() {
-        return patch;
-    }
-
-    public String getOriginal() {
-        return original;
-    }
-
-    public VersionType getType() {
-        return type;
-    }
-
-    public String getPreRelease() {
-        return preRelease;
     }
 
     public enum VersionType {
