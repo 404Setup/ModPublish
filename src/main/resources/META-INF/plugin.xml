@@ -16,6 +16,7 @@
       <ul>
         <li><b>0.0.5</b>
           <ul>
+            <li><strong>[Translate]</strong> Added German translation</li>
             <li><strong>[Chore]</strong> Use Lombok to clean code</li>
             <li><strong>[Fix]</strong> Version parts should not be null</li>
           </ul>
