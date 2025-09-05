@@ -22,6 +22,7 @@
             <li><strong>[Optimize]</strong> Cache isn't used effectively</li>
             <li><strong>[Translate]</strong> Added German translation</li>
             <li><strong>[Chore]</strong> Use Lombok to clean code</li>
+            <li><strong>[Chore]</strong> Add a prompt for CurseForge</li>
             <li><strong>[Fix]</strong> Version parts should not be null</li>
             <li><strong>[Fix]</strong> The first value is not selected by default after refreshing Minecraft version list</li>
           </ul>
