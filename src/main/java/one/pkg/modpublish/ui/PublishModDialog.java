@@ -55,14 +55,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PublishModDialog extends BaseDialogWrapper {
     @Getter
     private final Project project;
-    private final VirtualFile jarFile;
-    private final List<ModType> modTypes;
+    private VirtualFile[] jarFile;
+    private final Map<VirtualFile, List<ModType>> modTypes;
     private LocalModInfo modInfo;
     private VersionConstraint parser;
 
@@ -81,6 +84,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private JBCheckBox clientCheckBox;
     private JBCheckBox serverCheckBox;
     private JComboBox<ReleaseChannel> releaseType;
+    private JComboBox<VirtualFile> primaryFile;
 
     // Loaders
     private List<JBCheckBox> loaderCheckBoxes;
@@ -99,31 +103,43 @@ public class PublishModDialog extends BaseDialogWrapper {
     private List<LauncherInfo> launchers;
     private SupportedInfo supportedInfo;
 
-    public PublishModDialog(Project project, VirtualFile jarFile) {
+    public PublishModDialog(Project project, VirtualFile... jarFile) {
         super(project);
         this.project = project;
         this.jarFile = jarFile;
-        this.modTypes = ModType.getAll(jarFile);
-        for (ModType modType : modTypes) {
-            if (modType.equals(ModType.Rift)) continue;
-            this.modInfo = modType.getMod(jarFile);
-            if (this.modInfo != null) {
-                this.parser = modInfo.versionRange() != null && !modInfo.versionRange().isEmpty() ?
-                        VersionConstraintParser.parse(modInfo.versionRange()) :
-                        null;
-                break;
-            }
+        this.modTypes = new HashMap<>();
+        for (VirtualFile file : jarFile) {
+            List<ModType> types = ModType.getAll(file);
+            this.modTypes.put(file, types);
         }
+
+        updateParser(jarFile[0]);
 
         PluginMain.updateProject(project);
 
-        setTitle("title.publish", jarFile.getName());
+        setTitle("title.publish", jarFile[0].getName());
         setModal(true);
 
         loadConfigData();
         init();
         setText("button.publish", TextType.OKButton);
         setText("button.cancel", TextType.CancelButton);
+    }
+
+    private void updateParser(VirtualFile primaryFile) {
+        List<ModType> type = this.modTypes.get(primaryFile);
+        if (type != null) {
+            for (ModType modType : type) {
+                if (modType.equals(ModType.Rift)) continue;
+                this.modInfo = modType.getMod(primaryFile);
+                if (this.modInfo != null) {
+                    this.parser = modInfo.versionRange() != null && !modInfo.versionRange().isEmpty() ?
+                            VersionConstraintParser.parse(modInfo.versionRange()) :
+                            null;
+                    break;
+                }
+            }
+        }
     }
 
     private void loadConfigData() {
@@ -133,6 +149,32 @@ public class PublishModDialog extends BaseDialogWrapper {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void updateJarFiles(VirtualFile current) {
+        VirtualFile[] newJarFiles = new VirtualFile[jarFile.length];
+        newJarFiles[0] = current;
+        int index = 1;
+        for (VirtualFile file : jarFile) {
+            if (!file.equals(current)) {
+                newJarFiles[index++] = file;
+            }
+        }
+        this.jarFile = newJarFiles;
+    }
+
+    private void onPrimaryFileUpdate() {
+        VirtualFile current = primaryFile.getItemAt(primaryFile.getSelectedIndex());
+        updateJarFiles(current);
+
+        List<ModType> types = this.modTypes.get(current);
+        for (JBCheckBox checkBox : loaderCheckBoxes) {
+            checkBox.setSelected(types.contains(ModType.of(checkBox.getText().toLowerCase())));
+        }
+        updateParser(current);
+        loadModInfo(current);
+        updateMinecraftVersions();
+        setTitle("title.publish", current.getName());
     }
 
     @Override
@@ -173,14 +215,33 @@ public class PublishModDialog extends BaseDialogWrapper {
         // Loaders
         loaderCheckBoxes = new ArrayList<>();
         JPanel loadersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        List<ModType> pTargets = modTypes.values().iterator().next();
+        ;
         for (LauncherInfo launcher : launchers) {
             JBCheckBox checkBox = new JBCheckBox(launcher.n);
-            if (modTypes.contains(ModType.of(launcher.n.toLowerCase())))
+            if (pTargets.contains(ModType.of(launcher.n.toLowerCase())))
                 checkBox.setSelected(true);
             loaderCheckBoxes.add(checkBox);
             loadersPanel.add(checkBox);
         }
         formBuilder.addLabeledComponent(get("component.name.loaders"), loadersPanel);
+
+        primaryFile = new ComboBox<>(jarFile);
+        primaryFile.addActionListener(e -> onPrimaryFileUpdate());
+        primaryFile.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof VirtualFile) {
+                    setText(((VirtualFile) value).getName());
+                }
+                return this;
+            }
+        });
+        JPanel primaryFilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        primaryFilePanel.add(primaryFile);
+        formBuilder.addLabeledComponent(get("component.name.primary-file"), primaryFilePanel);
 
         JPanel releaseTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         releaseType = new ComboBox<>(ReleaseChannel.values());
@@ -268,15 +329,15 @@ public class PublishModDialog extends BaseDialogWrapper {
     }
 
     private void autoFillFields() {
-        loadModInfo();
+        loadModInfo(this.jarFile[0]);
         loadPersistedData();
     }
 
-    private void loadModInfo() {
+    private void loadModInfo(VirtualFile current) {
         String version = null;
-        String versionName = extractVersionName(jarFile);
+        String versionName = extractVersionName(current);
         String versionNameFormat = PID.CommonVersionFormat.get(project);
-        ModType modType = modTypes.get(0);
+        ModType modType = modTypes.get(current).get(0);
 
         if (modInfo != null) {
             version = modInfo.version();
@@ -293,7 +354,7 @@ public class PublishModDialog extends BaseDialogWrapper {
             }
         }
 
-        if (version == null) version = ModVersion.extractVersionNumber(jarFile);
+        if (version == null) version = ModVersion.extractVersionNumber(current);
 
         versionNameField.setText(versionName);
         versionNumberField.setText(version);
@@ -457,7 +518,6 @@ public class PublishModDialog extends BaseDialogWrapper {
         return null;
     }
 
-
     @Override
     protected void doOKAction() {
         PublishResult fr = doOKActionFirst();
@@ -508,6 +568,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         if (serverCheckBox.isSelected())
             supportedInfo.server.setEnabled(true);
 
+        List<File> files = new ArrayList<>(jarFile.length);
+        for (VirtualFile file : jarFile) {
+            files.add(FileAPI.toFile(file));
+        }
+
         return new PublishData(
                 versionNameField.getText(),
                 versionNumberField.getText(),
@@ -518,7 +583,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 selectedMinecraftVersions,
                 changelogField.getText(),
                 dependencyPanel.getDependencies(),
-                FileAPI.toFile(jarFile)
+                files
         );
     }
 

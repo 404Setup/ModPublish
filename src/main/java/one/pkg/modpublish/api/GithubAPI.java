@@ -32,6 +32,7 @@ import one.pkg.modpublish.data.result.Result;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -101,7 +102,15 @@ public class GithubAPI implements API {
             String uploadUrl = releaseResponse.get("upload_url").getAsString();
             uploadUrl = uploadUrl.split("\\{")[0];
 
-            return uploadAsset(data, project, uploadUrl);
+            PublishResult result = PublishResult.empty();
+            for (File file : data.files()) {
+                result = uploadAsset(file, project, uploadUrl);
+                if (!result.isSuccess()) {
+                    return result;
+                }
+            }
+
+            return result;
 
         } catch (Exception e) {
             return PublishResult.create("Failed to create GitHub release: " + e.getMessage());
@@ -124,12 +133,12 @@ public class GithubAPI implements API {
         }
     }
 
-    private PublishResult uploadAsset(PublishData data, Project project, String uploadUrl) {
+    private PublishResult uploadAsset(File file, Project project, String uploadUrl) {
         try {
-            String fileName = data.file().getName();
+            String fileName = file.getName();
             String assetUrl = uploadUrl + "?name=" + fileName;
 
-            RequestBody fileBody = RequestBody.create(data.file(), MediaType.get("application/java-archive"));
+            RequestBody fileBody = RequestBody.create(file, MediaType.get("application/java-archive"));
 
             Request request = getRequestBuilder(assetUrl, project)
                     .header("Content-Type", "application/java-archive")

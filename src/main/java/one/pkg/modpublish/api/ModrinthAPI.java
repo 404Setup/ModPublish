@@ -32,6 +32,7 @@ import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -51,17 +52,21 @@ public class ModrinthAPI implements API {
     }
 
     @Override
+    @SuppressWarnings("all")
     public PublishResult createVersion(PublishData data, Project project) {
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("version", project));
-        RequestBody file = RequestBody.create(data.file(), MediaType.get("application/java-archive"));
 
-        String primaryFileKey = data.file().getName() + "-primary";
-        MultipartBody body = new MultipartBody.Builder()
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("data", createJsonBody(data, project))
-                .addFormDataPart(primaryFileKey, data.file().getName(), file)
-                .build();
-        Request request = requestBuilder.post(body).build();
+                .addFormDataPart("data", createJsonBody(data, project));
+
+        for (int i = 0; i < data.files().size(); i++) {
+            File f = data.files().get(i);
+            String key = i == 0 ? f.getName() + "-primary" : f.getName() + "-" + (i - 1);
+            bodyBuilder = bodyBuilder.addFormDataPart(key, f.getName(), RequestBody.create(f, MediaType.get("application/java-archive")));
+        }
+
+        Request request = requestBuilder.post(bodyBuilder.build()).build();
 
         try (Response resp = client.newCall(request).execute()) {
             Optional<String> status = getStatus(resp);
@@ -78,10 +83,10 @@ public class ModrinthAPI implements API {
                 .versionBody(data.changelog())
                 .status(RequestStatus.Listed)
                 .featured(true)
-                .filePart(data.file())
                 //.primaryFile(data.file())
                 .name(data.versionName())
                 .versionNumber(data.versionNumber());
+        for (File file : data.files()) json.filePart(file);
         for (LauncherInfo l : data.loaders()) json.loader(l);
         for (MinecraftVersion version : data.minecraftVersions()) json.gameVersion(version);
         for (DependencyInfo d : data.dependencies()) {

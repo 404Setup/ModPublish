@@ -26,18 +26,33 @@ import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PublishModAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        VirtualFile file = event.getData(CommonDataKeys.VIRTUAL_FILE);
-        if (file != null && file.getName().endsWith(".jar") && ModType.of(FileAPI.toFile(file)) != null) {
-            // Open the publish dialog
-            new PublishModDialog(event.getProject(), file).show();
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE);
+        VirtualFile[] file = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
+        if (file == null || file.length == 0) {
+            VirtualFile f = event.getData(CommonDataKeys.VIRTUAL_FILE);
+            if (f != null) file = new VirtualFile[]{f};
+            else file = new VirtualFile[0];
         }
+        if (file.length > 0) {
+            List<VirtualFile> list = new ArrayList<>();
+            for (VirtualFile virtualFile : file) {
+                if (!virtualFile.isDirectory() && virtualFile.getName().endsWith(".jar") &&
+                        ModType.of(FileAPI.toFile(virtualFile)) != null) {
+                    list.add(virtualFile);
+                }
+            }
+            if (!list.isEmpty()) {
+                new PublishModDialog(event.getProject(), list.toArray(VirtualFile[]::new)).show();
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(null,
+                Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE);
     }
 
     @Override

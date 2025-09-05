@@ -118,7 +118,7 @@ public enum ModType {
     @Nullable
     public static ModType of(String name) {
         for (ModType type : VALUES) {
-            if (type.name.equalsIgnoreCase(name)) return type;
+            if (type.name.toLowerCase().equalsIgnoreCase(name)) return type;
         }
         return null;
     }

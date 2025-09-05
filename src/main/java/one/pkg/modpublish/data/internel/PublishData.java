@@ -29,7 +29,7 @@ import java.util.List;
 public record PublishData(String versionName, String versionNumber, Enabled enabled, ReleaseChannel releaseChannel,
                           List<LauncherInfo> loaders, SupportedInfo supportedInfo,
                           List<MinecraftVersion> minecraftVersions, String changelog,
-                          List<DependencyInfo> dependencies, File file) {
+                          List<DependencyInfo> dependencies, List<File> files) {
     public record Enabled(boolean github, boolean gitlab, boolean modrinth, boolean modrinthTest, boolean curseforge) {
         public static Enabled getInstance(boolean[] publishTargets) {
             return new Enabled(publishTargets[0], publishTargets[1], publishTargets[2],

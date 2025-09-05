@@ -55,11 +55,11 @@ public class CurseForgeAPI implements API {
         if (ab) ab = false;
         String modid = PID.CurseForgeModID.get(project);
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("projects/" + modid + "/upload-file", project));
-        RequestBody file = RequestBody.create(data.file(), MediaType.get("application/java-archive"));
+        RequestBody file = RequestBody.create(data.files().get(0), MediaType.get("application/java-archive"));
 
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", data.file().getName(), file)
+                .addFormDataPart("file", data.files().get(0).getName(), file)
                 .addFormDataPart("metadata", createJsonBody(data, project))
                 .build();
         Request request = requestBuilder.post(body).build();
