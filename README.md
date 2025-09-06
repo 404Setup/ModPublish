@@ -171,6 +171,7 @@ Build steps:
 
 - [Gson](https://github.com/google/gson) - License [Apache 2.0](https://github.com/google/gson/blob/main/LICENSE)
 - [OKHttp](https://github.com/square/okhttp) - License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+- [Lombok](https://github.com/projectlombok/lombok) - License [MIT](https://projectlombok.org/)
 
 #### Resource Files
 All resource files have been adjusted to display at 24px.
