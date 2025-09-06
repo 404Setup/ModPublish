@@ -62,8 +62,8 @@ import java.util.Map;
 public class PublishModDialog extends BaseDialogWrapper {
     @Getter
     private final Project project;
-    private VirtualFile[] jarFile;
     private final Map<VirtualFile, List<ModType>> modTypes;
+    private VirtualFile[] jarFile;
     private LocalModInfo modInfo;
     private VersionConstraint parser;
 
@@ -214,7 +214,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         loaderCheckBoxes = new ArrayList<>();
         JPanel loadersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         List<ModType> pTargets = modTypes.values().iterator().next();
-        ;
+
         for (LauncherInfo launcher : launchers) {
             JBCheckBox checkBox = new JBCheckBox(launcher.n);
             if (pTargets.contains(ModType.of(launcher.n.toLowerCase())))

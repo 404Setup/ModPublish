@@ -55,14 +55,18 @@ public record ModTomlParser(@NotNull TomlParser parser) implements AutoCloseable
 
     @NotNull
     public String getMinecraftVersions(String modId) {
-        var arrays = parser.getAsTomlArray("dependencies.\"" + modId + "\"");
-        if (arrays.isEmpty()) arrays = parser.getAsTomlArray("dependencies." + modId);
-        if (arrays.isEmpty())
-            return "";
-        for (TomlParser array : arrays) {
-            if (array.getAsString("modId").equals("minecraft"))
-                return array.getAsString("versionRange");
+        TomlParser dependencies = parser.getAsTomlParser("dependencies");
+        if (dependencies != null) {
+            TomlParser.TomlArray arrays = dependencies.getAsTomlArray(modId);
+            if (arrays.isEmpty()) {
+                return "";
+            }
+            for (TomlParser array : arrays) {
+                if (array.getAsString("modId").equals("minecraft"))
+                    return array.getAsString("versionRange");
+            }
         }
+
         return "";
     }
 

@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
-public class TomlParser implements AutoCloseable {
+public class TomlParser implements Closeable {
     private static final Logger LOG = Logger.getInstance(TomlParser.class);
 
     private final Map<String, Object> parsedData;
@@ -137,13 +137,29 @@ public class TomlParser implements AutoCloseable {
 
             Matcher arrayTableMatcher = arrayTablePattern.matcher(trimmedLine);
             if (arrayTableMatcher.matches()) {
-                currentSectionName = arrayTableMatcher.group(1).trim();
+                String sectionPath = arrayTableMatcher.group(1).trim();
                 inRootSection = false;
 
-                List<Map<String, Object>> tableArray = (List<Map<String, Object>>) result.get(currentSectionName);
+                String[] pathSegments = parsePath(sectionPath);
+
+                Map<String, Object> currentMap = result;
+                for (int i = 0; i < pathSegments.length - 1; i++) {
+                    String segment = pathSegments[i];
+                    Object existing = currentMap.get(segment);
+                    if (!(existing instanceof Map)) {
+                        Map<String, Object> newMap = new HashMap<>();
+                        currentMap.put(segment, newMap);
+                        currentMap = newMap;
+                    } else {
+                        currentMap = (Map<String, Object>) existing;
+                    }
+                }
+
+                String finalSegment = pathSegments[pathSegments.length - 1];
+                List<Map<String, Object>> tableArray = (List<Map<String, Object>>) currentMap.get(finalSegment);
                 if (tableArray == null) {
                     tableArray = new ArrayList<>();
-                    result.put(currentSectionName, tableArray);
+                    currentMap.put(finalSegment, tableArray);
                 }
 
                 currentSection = new HashMap<>();
@@ -153,11 +169,27 @@ public class TomlParser implements AutoCloseable {
 
             Matcher tableMatcher = tablePattern.matcher(trimmedLine);
             if (tableMatcher.matches()) {
-                currentSectionName = tableMatcher.group(1).trim();
+                String sectionPath = tableMatcher.group(1).trim();
                 inRootSection = false;
 
+                String[] pathSegments = parsePath(sectionPath);
+
+                Map<String, Object> currentMap = result;
+                for (int i = 0; i < pathSegments.length - 1; i++) {
+                    String segment = pathSegments[i];
+                    Object existing = currentMap.get(segment);
+                    if (!(existing instanceof Map)) {
+                        Map<String, Object> newMap = new HashMap<>();
+                        currentMap.put(segment, newMap);
+                        currentMap = newMap;
+                    } else {
+                        currentMap = (Map<String, Object>) existing;
+                    }
+                }
+
+                String finalSegment = pathSegments[pathSegments.length - 1];
                 currentSection = new HashMap<>();
-                result.put(currentSectionName, currentSection);
+                currentMap.put(finalSegment, currentSection);
                 continue;
             }
 
@@ -243,6 +275,51 @@ public class TomlParser implements AutoCloseable {
         return value;
     }
 
+    private static String[] parsePath(@NotNull String path) {
+        if (!path.contains(".")) {
+            return new String[]{path};
+        }
+
+        List<String> parts = new ArrayList<>();
+        StringBuilder currentPart = new StringBuilder();
+        boolean inQuotes = false;
+        char quoteChar = '\0';
+
+        for (int i = 0; i < path.length(); i++) {
+            char c = path.charAt(i);
+
+            if (!inQuotes) {
+                if (c == '"' || c == '\'') {
+                    inQuotes = true;
+                    quoteChar = c;
+                    // Don't add the quote character to the part
+                } else if (c == '.') {
+                    if (currentPart.length() > 0) {
+                        parts.add(currentPart.toString());
+                        currentPart = new StringBuilder();
+                    }
+                } else {
+                    currentPart.append(c);
+                }
+            } else {
+                if (c == quoteChar) {
+                    inQuotes = false;
+                    quoteChar = '\0';
+                    // Don't add the quote character to the part
+                } else {
+                    currentPart.append(c);
+                }
+            }
+        }
+
+        // Add the last part
+        if (!currentPart.isEmpty()) {
+            parts.add(currentPart.toString());
+        }
+
+        return parts.toArray(new String[0]);
+    }
+
     public String toJson() {
         return JsonParser.toJson(parsedData);
     }
@@ -268,21 +345,83 @@ public class TomlParser implements AutoCloseable {
     }
 
     /**
+     * Navigate through nested path using parsed path segments
+     */
+    @Nullable
+    private TomlParser navigateToPath(@NotNull String[] pathSegments, int startIndex) {
+        if (startIndex >= pathSegments.length) {
+            return this;
+        }
+
+        String currentSegment = pathSegments[startIndex];
+        Object value = parsedData.get(currentSegment);
+
+        if (value instanceof Map) {
+            TomlParser nextLevel = new TomlParser((Map<String, Object>) value);
+            return nextLevel.navigateToPath(pathSegments, startIndex + 1);
+        } else if (value instanceof List) {
+            List<Map<String, Object>> list = (List<Map<String, Object>>) value;
+            if (!list.isEmpty()) {
+                TomlParser nextLevel = new TomlParser(list.get(0));
+                return nextLevel.navigateToPath(pathSegments, startIndex + 1);
+            }
+        }
+
+        // If we can't navigate further and there are more segments, return null
+        return startIndex == pathSegments.length - 1 ? this : null;
+    }
+
+    /**
+     * Check if the value for the given key can be converted to TomlParser
+     */
+    public boolean canAsTomlParser(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Map) {
+                return true;
+            } else if (value instanceof List<?> list) {
+                return !list.isEmpty() && list.get(0) instanceof Map;
+            }
+            return false;
+        }
+
+        // For nested paths, navigate to the parent and check the final segment
+        if (pathSegments.length > 1) {
+            String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+            TomlParser parent = navigateToPath(parentPath, 0);
+            if (parent != null) {
+                return parent.canAsTomlParser(pathSegments[pathSegments.length - 1]);
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get a TOML object for the given key. If the key maps to an array, returns the first element.
      * Similar to JsonObject.getAsJsonObject()
      */
     @Nullable
     public TomlParser getAsTomlParser(@NotNull String key) {
-        Object value = parsedData.get(key);
-        if (value instanceof Map) {
-            return new TomlParser((Map<String, Object>) value);
-        } else if (value instanceof List) {
-            List<Map<String, Object>> list = (List<Map<String, Object>>) value;
-            if (!list.isEmpty()) {
-                return new TomlParser(list.get(0));
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Map) {
+                return new TomlParser((Map<String, Object>) value);
+            } else if (value instanceof List) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>) value;
+                if (!list.isEmpty()) {
+                    return new TomlParser(list.get(0));
+                }
             }
+            return null;
         }
-        return null;
+
+        // For nested paths, navigate step by step
+        return navigateToPath(pathSegments, 0);
     }
 
     /**
@@ -291,14 +430,48 @@ public class TomlParser implements AutoCloseable {
      */
     @NotNull
     public TomlArray getAsTomlArray(@NotNull String key) {
-        Object value = parsedData.get(key);
-        if (value instanceof List) {
-            List<Map<String, Object>> list = (List<Map<String, Object>>) value;
-            return new TomlArray(list);
-        } else if (value instanceof Map) {
-            return new TomlArray(Collections.singletonList((Map<String, Object>) value));
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof List) {
+                List<Map<String, Object>> list = (List<Map<String, Object>>) value;
+                return new TomlArray(list);
+            } else if (value instanceof Map) {
+                return new TomlArray(Collections.singletonList((Map<String, Object>) value));
+            }
+            return new TomlArray(Collections.emptyList());
         }
+
+        // For nested paths, navigate to parent and get array from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsTomlArray(pathSegments[pathSegments.length - 1]);
+        }
+
         return new TomlArray(Collections.emptyList());
+    }
+
+    /**
+     * Check if the value for the given key can be converted to TomlArray
+     */
+    public boolean canAsTomlArray(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            return value instanceof List || value instanceof Map;
+        }
+
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsTomlArray(pathSegments[pathSegments.length - 1]);
+        }
+
+        return false;
     }
 
     /**
@@ -314,8 +487,42 @@ public class TomlParser implements AutoCloseable {
      */
     @NotNull
     public String getAsString(@NotNull String key, @NotNull String defaultValue) {
-        Object value = parsedData.get(key);
-        return value != null ? value.toString() : defaultValue;
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            return value != null ? value.toString() : defaultValue;
+        }
+
+        // For nested paths, navigate to parent and get value from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsString(pathSegments[pathSegments.length - 1], defaultValue);
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * Check if the value for the given key can be converted to String
+     */
+    public boolean canAsString(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            return value != null && !(value instanceof List) && !(value instanceof Map);
+        }
+
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsString(pathSegments[pathSegments.length - 1]);
+        }
+
+        return false;
     }
 
     /**
@@ -329,15 +536,57 @@ public class TomlParser implements AutoCloseable {
      * Get an integer value by key with default value
      */
     public int getAsInt(@NotNull String key, int defaultValue) {
-        Object value = parsedData.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Number) {
+                return ((Number) value).intValue();
+            }
+            try {
+                return Integer.parseInt(value.toString());
+            } catch (Exception e) {
+                return defaultValue;
+            }
         }
-        try {
-            return Integer.parseInt(value.toString());
-        } catch (Exception e) {
-            return defaultValue;
+
+        // For nested paths, navigate to parent and get value from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsInt(pathSegments[pathSegments.length - 1], defaultValue);
         }
+
+        return defaultValue;
+    }
+
+    /**
+     * Check if the value for the given key can be converted to int
+     */
+    public boolean canAsInt(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value == null) return false;
+            if (value instanceof Number) return true;
+
+            try {
+                Integer.parseInt(value.toString());
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsInt(pathSegments[pathSegments.length - 1]);
+        }
+
+        return false;
     }
 
     /**
@@ -351,15 +600,57 @@ public class TomlParser implements AutoCloseable {
      * Get a long value by key with default value
      */
     public long getAsLong(@NotNull String key, long defaultValue) {
-        Object value = parsedData.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Number) {
+                return ((Number) value).longValue();
+            }
+            try {
+                return Long.parseLong(value.toString());
+            } catch (Exception e) {
+                return defaultValue;
+            }
         }
-        try {
-            return Long.parseLong(value.toString());
-        } catch (Exception e) {
-            return defaultValue;
+
+        // For nested paths, navigate to parent and get value from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsLong(pathSegments[pathSegments.length - 1], defaultValue);
         }
+
+        return defaultValue;
+    }
+
+    /**
+     * Check if the value for the given key can be converted to long
+     */
+    public boolean canAsLong(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value == null) return false;
+            if (value instanceof Number) return true;
+
+            try {
+                Long.parseLong(value.toString());
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsLong(pathSegments[pathSegments.length - 1]);
+        }
+
+        return false;
     }
 
     /**
@@ -373,15 +664,57 @@ public class TomlParser implements AutoCloseable {
      * Get a double value by key with default value
      */
     public double getAsDouble(@NotNull String key, double defaultValue) {
-        Object value = parsedData.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).doubleValue();
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Number) {
+                return ((Number) value).doubleValue();
+            }
+            try {
+                return Double.parseDouble(value.toString());
+            } catch (Exception e) {
+                return defaultValue;
+            }
         }
-        try {
-            return Double.parseDouble(value.toString());
-        } catch (Exception e) {
-            return defaultValue;
+
+        // For nested paths, navigate to parent and get value from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsDouble(pathSegments[pathSegments.length - 1], defaultValue);
         }
+
+        return defaultValue;
+    }
+
+    /**
+     * Check if the value for the given key can be converted to double
+     */
+    public boolean canAsDouble(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value == null) return false;
+            if (value instanceof Number) return true;
+
+            try {
+                Double.parseDouble(value.toString());
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsDouble(pathSegments[pathSegments.length - 1]);
+        }
+
+        return false;
     }
 
     /**
@@ -395,81 +728,53 @@ public class TomlParser implements AutoCloseable {
      * Get a boolean value by key with default value
      */
     public boolean getAsBoolean(@NotNull String key, boolean defaultValue) {
-        Object value = parsedData.get(key);
-        if (value instanceof Boolean) {
-            return (Boolean) value;
+        String[] pathSegments = parsePath(key);
+
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value instanceof Boolean) {
+                return (Boolean) value;
+            }
+            try {
+                return Boolean.parseBoolean(value.toString());
+            } catch (Exception e) {
+                return defaultValue;
+            }
         }
-        try {
-            return Boolean.parseBoolean(value.toString());
-        } catch (Exception e) {
-            return defaultValue;
+
+        // For nested paths, navigate to parent and get value from final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.getAsBoolean(pathSegments[pathSegments.length - 1], defaultValue);
         }
+
+        return defaultValue;
     }
 
     /**
-     * @deprecated Use {@link #getAsString(String)} instead
+     * Check if the value for the given key can be converted to boolean
      */
-    @Deprecated
-    @NotNull
-    public String getString(@NotNull String key) {
-        return getAsString(key);
-    }
+    public boolean canAsBoolean(@NotNull String key) {
+        String[] pathSegments = parsePath(key);
 
-    /**
-     * @deprecated Use {@link #getAsString(String, String)} instead
-     */
-    @Deprecated
-    @NotNull
-    public String getString(@NotNull String key, @NotNull String defaultValue) {
-        return getAsString(key, defaultValue);
-    }
+        if (pathSegments.length == 1) {
+            Object value = parsedData.get(key);
+            if (value == null) return false;
+            if (value instanceof Boolean) return true;
 
-    /**
-     * @deprecated Use {@link #getAsInt(String)} instead
-     */
-    @Deprecated
-    public int getInt(@NotNull String key) {
-        return getAsInt(key);
-    }
+            String stringValue = value.toString().toLowerCase();
+            return "true".equals(stringValue) || "false".equals(stringValue);
+        }
 
-    /**
-     * @deprecated Use {@link #getAsInt(String, int)} instead
-     */
-    @Deprecated
-    public int getInt(@NotNull String key, int defaultValue) {
-        return getAsInt(key, defaultValue);
-    }
+        // For nested paths, navigate to parent and check final segment
+        String[] parentPath = Arrays.copyOf(pathSegments, pathSegments.length - 1);
+        TomlParser parent = navigateToPath(parentPath, 0);
+        if (parent != null) {
+            return parent.canAsBoolean(pathSegments[pathSegments.length - 1]);
+        }
 
-    /**
-     * @deprecated Use {@link #getAsLong(String)} instead
-     */
-    @Deprecated
-    public long getLong(@NotNull String key) {
-        return getAsLong(key);
-    }
-
-    /**
-     * @deprecated Use {@link #getAsLong(String, long)} instead
-     */
-    @Deprecated
-    public long getLong(@NotNull String key, long defaultValue) {
-        return getAsLong(key, defaultValue);
-    }
-
-    /**
-     * @deprecated Use {@link #getAsBoolean(String)} instead
-     */
-    @Deprecated
-    public boolean getBoolean(@NotNull String key) {
-        return getAsBoolean(key);
-    }
-
-    /**
-     * @deprecated Use {@link #getAsBoolean(String, boolean)} instead
-     */
-    @Deprecated
-    public boolean getBoolean(@NotNull String key, boolean defaultValue) {
-        return getAsBoolean(key, defaultValue);
+        return false;
     }
 
     /**
@@ -543,6 +848,10 @@ public class TomlParser implements AutoCloseable {
 
         private TomlArray(List<Map<String, Object>> elements) {
             this.elements = elements;
+        }
+
+        public String toJson() {
+            return JsonParser.toJson(elements);
         }
 
         /**

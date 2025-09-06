@@ -18,6 +18,7 @@
           <ul>
             <li><strong>[Feat]</strong> More uses for version parser: Automatically select version ranges</li>
             <li><strong>[Feat]</strong> Upload multiple files simultaneously</li>
+            <li><strong>[Feat]</strong> Improved Toml parser</li>
             <li><strong>[Optimize]</strong> Don't process Minecraft version list synchronously when creating UI</li>
             <li><strong>[Optimize]</strong> Cache isn't used effectively</li>
             <li><strong>[Translate]</strong> Added German translation</li>
