@@ -18,10 +18,10 @@
 package one.pkg.modpublish.data.network.modrinth;
 
 import com.google.gson.annotations.SerializedName;
-import lombok.Data;
+import lombok.Getter;
 import one.pkg.modpublish.data.local.DependencyType;
 
-@Data
+@Getter
 @SuppressWarnings("unused")
 public class ProjectRelation {
     @SerializedName("version_id")

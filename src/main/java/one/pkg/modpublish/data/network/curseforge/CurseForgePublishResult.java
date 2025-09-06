@@ -18,10 +18,10 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
-import lombok.Data;
+import lombok.Getter;
 
 @SuppressWarnings("unused")
-@Data
+@Getter
 public class CurseForgePublishResult {
     /**
      * The uploaded file ID

@@ -19,7 +19,7 @@ package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Tolerate;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.local.MinecraftVersion;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-@Data
+@Getter
 @Builder(toBuilder = true)
 public class CurseForgeData {
 
@@ -77,6 +77,30 @@ public class CurseForgeData {
      */
     @SerializedName("relations")
     private Relations relations;
+
+    /**
+     * Checks if there is a parent file
+     *
+     * @return true if there is a parent file
+     */
+    public boolean parentFile() {
+        return parentFileID != null;
+    }
+
+    /**
+     * Validates that required fields are set
+     *
+     * @return true if all required fields are set
+     */
+    public boolean isValid() {
+        return changelog != null && !changelog.trim().isEmpty() &&
+                releaseType != null && !releaseType.trim().isEmpty() &&
+                (parentFile() || (gameVersions != null && !gameVersions.isEmpty()));
+    }
+
+    public String toJson() {
+        return JsonParser.toJson(this);
+    }
 
     public static class CurseForgeDataBuilder {
         public CurseForgeDataBuilder changelog(String changelog) {
@@ -174,29 +198,5 @@ public class CurseForgeData {
         public CurseForgeDataBuilder incompatible(String slug, int projectID) {
             return dependency(ProjectRelation.createIncompatible(slug, projectID));
         }
-    }
-
-    /**
-     * Checks if there is a parent file
-     *
-     * @return true if there is a parent file
-     */
-    public boolean parentFile() {
-        return parentFileID != null;
-    }
-
-    /**
-     * Validates that required fields are set
-     *
-     * @return true if all required fields are set
-     */
-    public boolean isValid() {
-        return changelog != null && !changelog.trim().isEmpty() &&
-                releaseType != null && !releaseType.trim().isEmpty() &&
-                (parentFile() || (gameVersions != null && !gameVersions.isEmpty()));
-    }
-
-    public String toJson() {
-        return JsonParser.toJson(this);
     }
 }

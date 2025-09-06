@@ -105,9 +105,7 @@ public class GithubAPI implements API {
             PublishResult result = PublishResult.empty();
             for (File file : data.files()) {
                 result = uploadAsset(file, project, uploadUrl);
-                if (!result.isSuccess()) {
-                    return result;
-                }
+                if (!result.isSuccess()) break;
             }
 
             return result;

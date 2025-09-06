@@ -294,7 +294,7 @@ public class TomlParser implements Closeable {
                     quoteChar = c;
                     // Don't add the quote character to the part
                 } else if (c == '.') {
-                    if (currentPart.length() > 0) {
+                    if (!currentPart.isEmpty()) {
                         parts.add(currentPart.toString());
                         currentPart = new StringBuilder();
                     }

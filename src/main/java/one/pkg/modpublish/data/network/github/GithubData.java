@@ -19,13 +19,13 @@ package one.pkg.modpublish.data.network.github;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Tolerate;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.util.io.JsonParser;
 
 @SuppressWarnings("unused")
-@Data
+@Getter
 @Builder(toBuilder = true)
 public class GithubData {
     @SerializedName("tag_name")
@@ -42,6 +42,14 @@ public class GithubData {
     @SerializedName("make_latest")
     private String makeLatest;
 
+    public boolean makeLatest() {
+        return "true".equals(makeLatest);
+    }
+
+    public String toJson() {
+        return JsonParser.toJson(this);
+    }
+
     public static class GithubDataBuilder {
         public GithubDataBuilder releaseChannel(ReleaseChannel releaseChannel) {
             this.prerelease = !ReleaseChannel.Release.equals(releaseChannel);
@@ -53,13 +61,5 @@ public class GithubData {
             this.makeLatest = makeLatest ? "true" : "false";
             return this;
         }
-    }
-
-    public boolean makeLatest() {
-        return "true".equals(makeLatest);
-    }
-
-    public String toJson() {
-        return JsonParser.toJson(this);
     }
 }

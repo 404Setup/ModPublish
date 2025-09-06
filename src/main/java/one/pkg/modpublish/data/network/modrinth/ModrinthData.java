@@ -19,7 +19,7 @@ package one.pkg.modpublish.data.network.modrinth;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Tolerate;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.internel.RequestStatus;
@@ -37,7 +37,7 @@ import java.util.List;
  * Comment: Why are many parameters here inconsistent with the API docs?
  */
 @SuppressWarnings("unused")
-@Data
+@Getter
 @Builder(toBuilder = true)
 public class ModrinthData {
     @SerializedName("version_title")
