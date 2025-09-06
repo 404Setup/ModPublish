@@ -30,16 +30,16 @@ public record PublishData(String versionName, String versionNumber, Enabled enab
                           List<LauncherInfo> loaders, SupportedInfo supportedInfo,
                           List<MinecraftVersion> minecraftVersions, String changelog,
                           List<DependencyInfo> dependencies, List<File> files) {
-    public record Enabled(boolean github, boolean gitlab, boolean modrinth, boolean modrinthTest, boolean curseforge) {
+    public record Enabled(boolean github, boolean modrinth, boolean modrinthTest, boolean curseforge) {
         public static Enabled getInstance(boolean[] publishTargets) {
             return new Enabled(publishTargets[0], publishTargets[1], publishTargets[2],
-                    publishTargets[3], publishTargets[4]);
+                    publishTargets[3]);
         }
 
         public static Enabled getInstance(JBCheckBox... jbCheckBoxes) {
-            if (jbCheckBoxes.length != 5) throw new IllegalArgumentException("jbCheckBoxes length must be 5");
+            if (jbCheckBoxes.length != 4) throw new IllegalArgumentException("jbCheckBoxes length must be 4");
             return new Enabled(jbCheckBoxes[0].isSelected(), jbCheckBoxes[1].isSelected(),
-                    jbCheckBoxes[2].isSelected(), jbCheckBoxes[3].isSelected(), jbCheckBoxes[4].isSelected());
+                    jbCheckBoxes[2].isSelected(), jbCheckBoxes[3].isSelected());
         }
     }
 }

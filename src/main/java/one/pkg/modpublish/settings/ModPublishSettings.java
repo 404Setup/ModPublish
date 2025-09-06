@@ -60,8 +60,6 @@ public final class ModPublishSettings
         public String curseforgeStudioToken = "";
         @NonNls
         public String githubToken = "";
-        @NonNls
-        public String gitlabToken = "";
 
         public Info getModrinthToken() {
             return getDecryptedToken(modrinthToken);
@@ -101,14 +99,6 @@ public final class ModPublishSettings
 
         public void updateGithubToken(String token) {
             this.githubToken = encryptToken(token);
-        }
-
-        public Info getGitlabToken() {
-            return getDecryptedToken(gitlabToken);
-        }
-
-        public void updateGitlabToken(String token) {
-            this.gitlabToken = encryptToken(token);
         }
     }
 

@@ -21,7 +21,7 @@ import one.pkg.modpublish.api.*;
 
 public enum TargetType {
     Modrinth(new ModrinthAPI()), CurseForge(new CurseForgeAPI()),
-    Github(new GithubAPI()), Gitlab(new GitlabAPI());
+    Github(new GithubAPI());
 
     public final API api;
 

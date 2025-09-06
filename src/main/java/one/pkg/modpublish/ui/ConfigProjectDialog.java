@@ -25,7 +25,6 @@ import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -47,10 +46,6 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private JBTextField githubTokenField;
     private JBTextField githubRepoField;
     private JBTextField githubBranchField;
-
-    private JBTextField gitlabTokenField;
-    private JBTextField gitlabRepoField;
-    private JBTextField gitlabBranchField;
 
     public ConfigProjectDialog(Project project) {
         super(project);
@@ -102,23 +97,6 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
                     return githubBranchField;
                 }));
 
-        addPlatformSection(formBuilder, "Gitlab", "/icons/gitlab.svg",
-                new FieldConfig(token, () -> {
-                    gitlabTokenField = createTextField();
-                    setDisabledWithTooltip(gitlabTokenField);
-                    return gitlabTokenField;
-                }),
-                new FieldConfig(repoLabel, () -> {
-                    gitlabRepoField = createTextField();
-                    setDisabledWithTooltip(gitlabRepoField);
-                    return gitlabRepoField;
-                }),
-                new FieldConfig(branchLabel, () -> {
-                    gitlabBranchField = createTextField();
-                    setDisabledWithTooltip(gitlabBranchField);
-                    return gitlabBranchField;
-                }));
-
         autoFillFields();
 
         return toScrollPanel(formBuilder, 600, 360);
@@ -161,12 +139,6 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
             setToolTipText("dialog.modpublish.config-project.global", githubTokenField);
         githubRepoField.setText(p1.github().repo());
         githubBranchField.setText(p1.github().branch());
-
-        gitlabTokenField.setText(p1.gitlab().token().globalData() ? "" : p1.gitlab().token().data());
-        if (p1.gitlab().token().globalData() && gitlabTokenField.isEnabled())
-            setToolTipText("dialog.modpublish.config-project.global", gitlabTokenField);
-        gitlabRepoField.setText(p1.gitlab().repo());
-        gitlabBranchField.setText(p1.gitlab().branch());
     }
 
     private void savePersistedData() {
@@ -186,14 +158,5 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         PID.GithubToken.set(properties, githubTokenField);
         PID.GithubRepo.set(properties, githubRepoField);
         PID.GithubBranch.set(properties, githubBranchField);
-
-        PID.GitlabToken.set(properties, gitlabTokenField);
-        PID.GitlabRepo.set(properties, gitlabRepoField);
-        PID.GitlabBranch.set(properties, gitlabBranchField);
-    }
-
-    public void setDisabledWithTooltip(@NotNull JBTextField field) {
-        field.setEnabled(false);
-        field.setToolTipText(get("tooltip.gitlab.disable"));
     }
 }

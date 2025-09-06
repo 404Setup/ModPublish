@@ -54,8 +54,7 @@ public class ModPublishSettingsConfigurable implements Configurable {
                 !component.getModrinthTestTokenText().equals(state.getModrinthTestToken().data()) ||
                 !component.getCurseforgeTokenText().equals(state.getCurseforgeToken().data()) ||
                 !component.getCurseforgeStudioTokenText().equals(state.getCurseforgeStudioToken().data()) ||
-                !component.getGithubTokenText().equals(state.getGithubToken().data()) ||
-                !component.getGitlabTokenText().equals(state.getGitlabToken().data());
+                !component.getGithubTokenText().equals(state.getGithubToken().data());
     }
 
     @Override
@@ -67,7 +66,6 @@ public class ModPublishSettingsConfigurable implements Configurable {
         state.updateCurseforgeToken(component.getCurseforgeTokenText());
         state.updateCurseforgeStudioToken(component.getCurseforgeStudioTokenText());
         state.updateGithubToken(component.getGithubTokenText());
-        state.updateGitlabToken(component.getGitlabTokenText());
     }
 
     @Override
@@ -79,7 +77,6 @@ public class ModPublishSettingsConfigurable implements Configurable {
         component.setCurseforgeTokenText(state.getCurseforgeToken().data());
         component.setCurseforgeStudioTokenText(state.getCurseforgeStudioToken().data());
         component.setGithubTokenText(state.getGithubToken().data());
-        component.setGitlabTokenText(state.getGitlabToken().data());
     }
 
     @Override

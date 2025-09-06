@@ -30,7 +30,6 @@ public enum PID {
     CurseForgeToken("modpublish.curseforge.token", true), CurseForgeStudioToken("modpublish.curseforge.studioToken", true),
     CurseForgeModID("modpublish.curseforge.modid", false),
     GithubToken("modpublish.github.token", true), GithubRepo("modpublish.github.repo", false), GithubBranch("modpublish.github.branch", false),
-    GitlabToken("modpublish.gitlab.token", true), GitlabRepo("modpublish.gitlab.repo", false), GitlabBranch("modpublish.gitlab.branch", false),
     CommonVersionFormat("modpublish.common.versionFormat", false);
 
     public final String id;

@@ -22,13 +22,12 @@ import one.pkg.modpublish.data.internel.Info;
 import org.jetbrains.annotations.NotNull;
 
 public record Property(@NotNull ModrinthProperty modrinth, @NotNull CurseForgeProperty curseforge,
-                       @NotNull GithubProperty github, @NotNull GitlabProperty gitlab,
+                       @NotNull GithubProperty github,
                        @NotNull CommonProperty common) {
     public static Property getInstance(PropertiesComponent properties) {
         return new Property(ModrinthProperty.getInstance(properties),
                 CurseForgeProperty.getInstance(properties),
                 GithubProperty.getInstance(properties),
-                GitlabProperty.getInstance(properties),
                 CommonProperty.getInstance(properties)
         );
     }
@@ -64,20 +63,6 @@ public record Property(@NotNull ModrinthProperty modrinth, @NotNull CurseForgePr
             return new GithubProperty(PID.GithubToken.getProtect(properties),
                     PID.GithubRepo.get(properties),
                     PID.GithubBranch.get(properties));
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return !token.data().trim().isEmpty() && !repo.trim().isEmpty();
-        }
-    }
-
-    public record GitlabProperty(@NotNull Info token, @NotNull String repo,
-                                 @NotNull String branch) implements PropertyBase {
-        public static GitlabProperty getInstance(PropertiesComponent properties) {
-            return new GitlabProperty(PID.GitlabToken.getProtect(properties),
-                    PID.GitlabRepo.get(properties),
-                    PID.GitlabBranch.get(properties));
         }
 
         @Override

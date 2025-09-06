@@ -22,7 +22,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 > or I suddenly want to implement them
 
 - Publishing to custom Git servers
-- Publishing to Hangar/SpigotMC
+- Publishing to Hangar/SpigotMC/GitLab
 - Publishing plugins/resource packs/data packs
 
 ### TODO
@@ -33,9 +33,8 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 2. Code optimization
 3. UI optimization
 4. Allow hot updating of Minecraft version list
-5. Publish to GitLab
-6. Allow syncing README to Modrinth and CurseForge
-7. Allow customizing mod upload targets
+5. Allow syncing README to Modrinth and CurseForge
+6. Allow customizing mod upload targets
 
 ## Installation
 
@@ -178,7 +177,6 @@ All resource files have been adjusted to display at 24px.
 
 - [Modrinth Logo](https://github.com/modrinth/code/blob/main/packages/assets/branding/logo.svg) - License [GPL-3.0](https://github.com/modrinth/code/blob/main/packages/assets/LICENSE), with proper coloring of the logo
 - [CurseForge Logo](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824) - License [CC BY 4.0](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824?permalink_comment_id=3683512#gistcomment-3683512)
-- [Gitlab Logo (vscode-icons)](https://github.com/vscode-icons/vscode-icons) - [License](https://github.com/vscode-icons/vscode-icons#license)
 - [Github Icon](https://github.com/logos)
 
 ## Support ModPublish

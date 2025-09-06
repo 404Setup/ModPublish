@@ -44,7 +44,6 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private ActionLink curseforgeStudioTokenLink;
     private JBTextField githubTokenText;
     private ActionLink githubTokenLink;
-    private JBTextField gitlabTokenText;
 
     public ModPublishSettingsComponent() {
         super(null);
@@ -65,11 +64,6 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
                 new FieldConfig("Token", () -> githubTokenText = createTextField()),
                 new FieldConfig(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
-        addPlatformSection(formBuilder, "Gitlab", "/icons/gitlab.svg",
-                new FieldConfig("Token", () -> gitlabTokenText = createTextField()));
-
-        gitlabTokenText.setEnabled(false);
-        gitlabTokenText.setToolTipText(Lang.get("tooltip.gitlab.disable"));
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -127,14 +121,5 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     public void setGithubTokenText(@NotNull String newText) {
         githubTokenText.setText(newText);
-    }
-
-    @NotNull
-    public String getGitlabTokenText() {
-        return Protect.decryptString(gitlabTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
-    }
-
-    public void setGitlabTokenText(@NotNull String newText) {
-        gitlabTokenText.setText(newText);
     }
 }

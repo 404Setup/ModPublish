@@ -35,7 +35,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AddDependencyDialog extends BaseDialogWrapper {
-    private final boolean[] publishTargets; // [github, gitlab, modrinth, modrinthTest, curseforge]
+    private final boolean[] publishTargets; // [github, modrinth, modrinthTest, curseforge]
     private final Project project;
     private JBTextField projectIdField;
     private JComboBox<DependencyType> dependencyTypeCombo;
@@ -96,8 +96,8 @@ public class AddDependencyDialog extends BaseDialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (!publishTargets[2] && !publishTargets[3] && !publishTargets[4]) {
-            if (publishTargets[0] || publishTargets[1])
+        if (!publishTargets[1] && !publishTargets[2] && !publishTargets[3]) {
+            if (publishTargets[0])
                 showMessageDialog("message.dont-support-add-depends", "title.failed", JOptionPane.ERROR_MESSAGE);
             else showMessageDialog("failed.8", "title.failed", JOptionPane.ERROR_MESSAGE);
             return;
@@ -151,7 +151,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
                 return ModInfo.ofs("Invalid project ID format");
             }
             ModInfo[] infos = new ModInfo[]{null, null};
-            if (publishTargets[2] && !parts[0].trim().isEmpty()) {
+            if (publishTargets[1] && !parts[0].trim().isEmpty()) {
                 ModInfo modInfo = TargetType.Modrinth.api.getModInfo(parts[0], project);
                 if (modInfo.failed() != null) return ModInfo.of(modInfo);
                 infos[0] = modInfo;
@@ -167,19 +167,19 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         ModInfo[] infos = new ModInfo[2];
         API modrinthApi = TargetType.Modrinth.api;
         API curseforgeApi = TargetType.CurseForge.api;
-        if (publishTargets[2]) { // Modrinth
+        if (publishTargets[1]) { // Modrinth
             if (modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;
         }
-        if (publishTargets[3]) { // Modrinth Test
+        if (publishTargets[2]) { // Modrinth Test
             if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;
         }
-        if (publishTargets[4]) { // CurseForge
+        if (publishTargets[3]) { // CurseForge
             ModInfo modInfo = curseforgeApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[1] = modInfo;

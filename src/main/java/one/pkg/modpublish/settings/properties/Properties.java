@@ -48,7 +48,6 @@ public class Properties {
                 case CurseForgeToken -> state.getCurseforgeToken();
                 case CurseForgeStudioToken -> state.getCurseforgeStudioToken();
                 case GithubToken -> state.getGithubToken();
-                case GitlabToken -> state.getGitlabToken();
                 default -> Info.INSTANCE;
             };
         }

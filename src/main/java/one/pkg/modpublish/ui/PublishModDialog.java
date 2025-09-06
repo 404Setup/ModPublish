@@ -73,7 +73,6 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     // Publish targets
     private JBCheckBox githubCheckBox;
-    private JBCheckBox gitlabCheckBox;
     private JBCheckBox modrinthCheckBox;
     private JBCheckBox modrinthTestCheckBox;
     private JBCheckBox curseforgeCheckBox;
@@ -188,14 +187,12 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         // Publish targets
         githubCheckBox = new JBCheckBox("GitHub");
-        gitlabCheckBox = new JBCheckBox("GitLab");
         modrinthCheckBox = new JBCheckBox("Modrinth");
         modrinthTestCheckBox = new JBCheckBox("Modrinth (Test Server)");
         curseforgeCheckBox = new JBCheckBox("CurseForge");
 
         JPanel publishTargetsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         publishTargetsPanel.add(githubCheckBox);
-        publishTargetsPanel.add(gitlabCheckBox);
         publishTargetsPanel.add(modrinthCheckBox);
         publishTargetsPanel.add(modrinthTestCheckBox);
         publishTargetsPanel.add(curseforgeCheckBox);
@@ -445,12 +442,6 @@ public class PublishModDialog extends BaseDialogWrapper {
         } else if (p2.github().token().failed())
             setFailedSelect(githubCheckBox);
 
-        if (!p2.gitlab().isEnabled()) {
-            gitlabCheckBox.setEnabled(false);
-            setToolTipText("tooltip.git.disable", gitlabCheckBox, "Gitlab");
-        } else if (p2.gitlab().token().failed())
-            setFailedSelect(gitlabCheckBox);
-
         // Load changelog
         String savedChangelog = properties.getValue("modpublish.changelog", "");
         changelogField.setText(savedChangelog);
@@ -490,8 +481,7 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     private PublishResult validatePublishTargetSelection() {
         if (!curseforgeCheckBox.isSelected() && !modrinthCheckBox.isSelected()
-                && !modrinthTestCheckBox.isSelected() && !githubCheckBox.isSelected()
-                && !gitlabCheckBox.isSelected()) {
+                && !modrinthTestCheckBox.isSelected() && !githubCheckBox.isSelected()) {
             return PublishResult.of("failed.1");
         }
         return null;
@@ -632,7 +622,6 @@ public class PublishModDialog extends BaseDialogWrapper {
     public boolean[] getPublishTargets() {
         return new boolean[]{
                 githubCheckBox.isSelected(),
-                gitlabCheckBox.isSelected(),
                 modrinthCheckBox.isSelected(),
                 modrinthTestCheckBox.isSelected(),
                 curseforgeCheckBox.isSelected()
