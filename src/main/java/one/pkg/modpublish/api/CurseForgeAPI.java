@@ -41,6 +41,11 @@ public class CurseForgeAPI implements API {
     private boolean ab = false;
 
     @Override
+    public String getID() {
+        return "CurseForge";
+    }
+
+    @Override
     public void updateABServer() {
         ab = !ab;
     }
@@ -66,14 +71,14 @@ public class CurseForgeAPI implements API {
 
         try (Response resp = client.newCall(request).execute()) {
             Optional<String> status = getStatus(resp);
-            if (status.isPresent()) return PublishResult.of(status.get());
+            if (status.isPresent()) return PublishResult.create(this, status.get());
             String bs = resp.body().string();
             CurseForgePublishResult result = JsonParser.fromJson(bs, CurseForgePublishResult.class);
             if (result != null && result.isSuccess())
                 return PublishResult.empty();
-            return new PublishResult(bs);
+            return PublishResult.create(bs);
         } catch (IOException e) {
-            return PublishResult.of(e.getMessage());
+            return PublishResult.create(this, e.getMessage());
         }
     }
 

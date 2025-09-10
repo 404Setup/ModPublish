@@ -19,6 +19,7 @@
             <li><strong>[Feat]</strong> More uses for version parser: Automatically select version ranges</li>
             <li><strong>[Feat]</strong> Upload multiple files simultaneously</li>
             <li><strong>[Feat]</strong> Improved Toml parser</li>
+            <li><strong>[Feat]</strong> When API errors occur, should return API ID</li>
             <li><strong>[Optimize]</strong> Don't process Minecraft version list synchronously when creating UI</li>
             <li><strong>[Optimize]</strong> Cache isn't used effectively</li>
             <li><strong>[Translate]</strong> Added German translation</li>
@@ -28,6 +29,7 @@
             <li><strong>[Fix]</strong> Version parts should not be null</li>
             <li><strong>[Fix]</strong> The first value is not selected by default after refreshing Minecraft version list</li>
             <li><strong>[Fix]</strong> An incorrect judgment in the dependency manager</li>
+            <li><strong>[Fix]</strong> When API returns error message, should not call getI18n method to create PublishResult</li>
           </ul>
         </li>
         <li><b>0.0.4</b>

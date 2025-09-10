@@ -42,6 +42,11 @@ public class ModrinthAPI implements API {
     private boolean ab = false;
 
     @Override
+    public String getID() {
+        return "Modrinth";
+    }
+
+    @Override
     public void updateABServer() {
         ab = !ab;
     }
@@ -70,9 +75,9 @@ public class ModrinthAPI implements API {
 
         try (Response resp = client.newCall(request).execute()) {
             Optional<String> status = getStatus(resp);
-            return status.map(PublishResult::create).orElseGet(PublishResult::empty);
+            return status.map(s -> PublishResult.create(this, s)).orElseGet(PublishResult::empty);
         } catch (IOException e) {
-            return PublishResult.of(e.getMessage());
+            return PublishResult.create(this, e.getMessage());
         }
     }
 

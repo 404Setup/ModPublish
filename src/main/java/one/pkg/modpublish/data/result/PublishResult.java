@@ -17,6 +17,7 @@
 
 package one.pkg.modpublish.data.result;
 
+import one.pkg.modpublish.api.API;
 import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.PropertyKey;
 
@@ -33,6 +34,10 @@ public record PublishResult(String result) implements Result {
 
     public static PublishResult create(String result) {
         return new PublishResult(result);
+    }
+
+    public static PublishResult create(API api, String result) {
+        return new PublishResult("Failed API: "+ api.getID() +" ;" + result);
     }
 
     public static PublishResult empty() {

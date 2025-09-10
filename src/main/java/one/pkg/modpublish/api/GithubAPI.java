@@ -50,6 +50,11 @@ public class GithubAPI implements API {
     }
 
     @Override
+    public String getID() {
+        return "Github";
+    }
+
+    @Override
     public void updateABServer() {
     }
 
@@ -111,7 +116,7 @@ public class GithubAPI implements API {
             return result;
 
         } catch (Exception e) {
-            return PublishResult.create("Failed to create GitHub release: " + e.getMessage());
+            return PublishResult.create(this, "Failed to create GitHub release: " + e.getMessage());
         }
     }
 
@@ -123,7 +128,7 @@ public class GithubAPI implements API {
 
             try (Response response = client.newCall(request).execute()) {
                 Optional<String> status = getStatus(response);
-                if (status.isPresent()) return PublishResult.create("Failed to create release: " + status.get());
+                if (status.isPresent()) return PublishResult.create(this, "Failed to create release: " + status.get());
                 return BackResult.result(response.body().string());
             }
         } catch (IOException e) {
@@ -147,9 +152,7 @@ public class GithubAPI implements API {
                 Optional<String> status = getStatus(response);
                 /*JsonObject assetResponse = JsonParser.getJsonObject(response.body().byteStream());
                 String downloadUrl = assetResponse.get("browser_download_url").getAsString();*/
-                return status.map(s -> PublishResult.create("Failed to upload asset: " + s)).orElseGet(PublishResult::empty);
-
-
+                return status.map(s -> PublishResult.create(this, "Failed to upload asset: " + s)).orElseGet(PublishResult::empty);
             }
         } catch (IOException e) {
             return PublishResult.create("Failed to upload asset: " + e.getMessage());
