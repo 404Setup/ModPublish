@@ -19,8 +19,6 @@ package one.pkg.modpublish.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBUI;
 import lombok.Getter;
@@ -75,9 +73,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        JBLabel helpLabel = new JBLabel("<html><small>" + get("tips.1") + "</small></html>");
-        helpLabel.setForeground(JBColor.GRAY);
-        panel.add(helpLabel, gbc);
+        panel.add(createLabel(get("tips.1")), gbc);
 
         // Dependency type
         gbc.gridx = 0;

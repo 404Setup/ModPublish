@@ -23,8 +23,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorTextField;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.components.*;
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
 import one.pkg.modpublish.PluginMain;
@@ -235,11 +237,7 @@ public class PublishModDialog extends BaseDialogWrapper {
             }
         });
 
-
-        JBLabel helpLabel = new JBLabel("<html><small>" + get("tips.2") + "</small></html>");
-        helpLabel.setForeground(JBColor.GRAY);
-
-        formBuilder.addLabeledComponent("", helpLabel);
+        formBuilder.addLabeledComponent("", createLabel(get("tips.2")));
 
         JPanel primaryFilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         primaryFilePanel.add(primaryFile);

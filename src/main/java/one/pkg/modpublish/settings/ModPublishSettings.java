@@ -25,6 +25,8 @@ import one.pkg.modpublish.data.internel.Info;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.Proxy;
+
 @State(
         name = "org.intellij.sdk.settings.AppSettings",
         storages = @Storage("ModPublish.xml")
@@ -60,6 +62,18 @@ public final class ModPublishSettings
         public String curseforgeStudioToken = "";
         @NonNls
         public String githubToken = "";
+        @NonNls
+        public boolean autoProxy = false;
+        @NonNls
+        public int proxyType = 0; // 0: sockets; 1: http
+        @NonNls
+        public String proxyAddress = "";
+        @NonNls
+        public int proxyPort = 3366;
+
+        public Proxy.Type getProxyType() {
+            return proxyType == 0 ? Proxy.Type.SOCKS : Proxy.Type.HTTP;
+        }
 
         public Info getModrinthToken() {
             return getDecryptedToken(modrinthToken);

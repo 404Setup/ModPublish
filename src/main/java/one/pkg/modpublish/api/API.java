@@ -24,16 +24,17 @@ import okhttp3.Response;
 import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.result.PublishResult;
+import one.pkg.modpublish.util.proxy.MProxy;
 import one.pkg.modpublish.util.resources.Lang;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public interface API {
-    OkHttpClient client = new OkHttpClient.Builder()/*.proxy(ProxyConfigReader.getProxy(Proxy.NO_PROXY))*/
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+    OkHttpClient client = new OkHttpClient.Builder().proxy(MProxy.getProxy())
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             //.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
             //.sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
             .build();

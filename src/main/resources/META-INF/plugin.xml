@@ -20,12 +20,15 @@
             <li><strong>[Feat]</strong> Upload multiple files simultaneously</li>
             <li><strong>[Feat]</strong> Improved Toml parser</li>
             <li><strong>[Feat]</strong> When API errors occur, should return API ID</li>
+            <li><strong>[Feat]</strong> Support using proxy server. Need to configure in settings.</li>
             <li><strong>[Optimize]</strong> Don't process Minecraft version list synchronously when creating UI</li>
             <li><strong>[Optimize]</strong> Cache isn't used effectively</li>
+            <li><strong>[Change]</strong> Network request timeout increased from 15 to 20 seconds</li>
             <li><strong>[Translate]</strong> Added German translation</li>
             <li><strong>[Remove]</strong> Cancel plans to provide GitLab compatibility</li>
             <li><strong>[Chore]</strong> Use Lombok to clean code</li>
             <li><strong>[Chore]</strong> Add a prompt for CurseForge</li>
+            <li><strong>[Chore]</strong> Bump minecraft version list</li>
             <li><strong>[Fix]</strong> Version parts should not be null</li>
             <li><strong>[Fix]</strong> The first value is not selected by default after refreshing Minecraft version list</li>
             <li><strong>[Fix]</strong> An incorrect judgment in the dependency manager</li>

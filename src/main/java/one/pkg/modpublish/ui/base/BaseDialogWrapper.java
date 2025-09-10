@@ -33,7 +33,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.PropertyKey;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.function.Supplier;
 
 public abstract class BaseDialogWrapper extends DialogWrapper {
@@ -73,6 +79,53 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
         return field;
     }
+
+    private JBTextField createNumericTextField() {
+        JBTextField field = new JBTextField();
+        field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
+
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string != null && string.matches("\\d*")) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text != null && text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+
+        return field;
+    }
+
+    public @NotNull JBTextField createSimpleNumericTextField() {
+        JBTextField field = new JBTextField();
+        field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
+
+        field.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
+            }
+        });
+
+        return field;
+    }
+
+    public @NotNull JBLabel createLabel(@NotNull String text) {
+        JBLabel label = new JBLabel("<html><small>" + text + "</small></html>");
+        label.setForeground(JBColor.GRAY);
+        return label;
+    }
+
 
     public @NotNull ActionLink createActionLink(@NotNull String text, @NotNull String url) {
         ActionLink externalLink = new ActionLink(text);

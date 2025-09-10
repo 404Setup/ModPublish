@@ -41,6 +41,8 @@ dependencies {
         bundledPlugin("org.intellij.plugins.markdown")
     }
 
+    implementation("one.tranic:t-proxy:1.0.1")
+
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
 }

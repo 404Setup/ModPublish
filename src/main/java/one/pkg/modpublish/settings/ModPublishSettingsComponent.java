@@ -18,17 +18,18 @@
 package one.pkg.modpublish.settings;
 
 import com.intellij.ui.components.ActionLink;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.util.protect.HardwareFingerprint;
 import one.pkg.modpublish.util.protect.Protect;
-import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.net.Proxy;
 
 @SuppressWarnings("unused")
 public class ModPublishSettingsComponent extends BaseDialogWrapper {
@@ -44,6 +45,10 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private ActionLink curseforgeStudioTokenLink;
     private JBTextField githubTokenText;
     private ActionLink githubTokenLink;
+    private JBCheckBox autoProxyCheckBox;
+    private JComboBox<Proxy.Type> proxyTypeComboBox;
+    private JBTextField proxyAddressText;
+    private JBTextField proxyPortText;
 
     public ModPublishSettingsComponent() {
         super(null);
@@ -64,6 +69,13 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
                 new FieldConfig("Token", () -> githubTokenText = createTextField()),
                 new FieldConfig(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
+
+        addPlatformSection(formBuilder, "Proxy", null,
+                new FieldConfig(() -> createLabel(get("tips.3"))),
+                new FieldConfig("Enable AutoProxy", () -> autoProxyCheckBox = new JBCheckBox()),
+                new FieldConfig("Proxy Type", () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
+                new FieldConfig("Proxy Address", () -> proxyAddressText = createTextField()),
+                new FieldConfig("Proxy Port", () -> proxyPortText = createSimpleNumericTextField()));
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -121,5 +133,41 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     public void setGithubTokenText(@NotNull String newText) {
         githubTokenText.setText(newText);
+    }
+
+    public boolean isAutoProxyEnabled() {
+        return autoProxyCheckBox.isSelected();
+    }
+
+    public void setAutoProxyEnabled(boolean enabled) {
+        autoProxyCheckBox.setSelected(enabled);
+    }
+
+    public int getProxyType() {
+        return proxyTypeComboBox.getSelectedIndex();
+    }
+
+    public void setProxyType(@NotNull Proxy.Type newType) {
+        proxyTypeComboBox.setSelectedItem(newType);
+    }
+
+    public void setProxyType(int newType) {
+        proxyTypeComboBox.setSelectedItem(newType);
+    }
+
+    public String getProxyAddress() {
+        return proxyAddressText.getText();
+    }
+
+    public void setProxyAddress(@NotNull String newAddress) {
+        proxyAddressText.setText(newAddress);
+    }
+
+    public int getProxyPort() {
+        return Integer.parseInt(proxyPortText.getText());
+    }
+
+    public void setProxyPort(int newPort) {
+        proxyPortText.setText(String.valueOf(newPort));
     }
 }

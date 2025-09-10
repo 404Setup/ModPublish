@@ -54,7 +54,11 @@ public class ModPublishSettingsConfigurable implements Configurable {
                 !component.getModrinthTestTokenText().equals(state.getModrinthTestToken().data()) ||
                 !component.getCurseforgeTokenText().equals(state.getCurseforgeToken().data()) ||
                 !component.getCurseforgeStudioTokenText().equals(state.getCurseforgeStudioToken().data()) ||
-                !component.getGithubTokenText().equals(state.getGithubToken().data());
+                !component.getGithubTokenText().equals(state.getGithubToken().data()) ||
+                component.isAutoProxyEnabled() != state.autoProxy ||
+                component.getProxyType() != state.proxyType ||
+                !component.getProxyAddress().equals(state.proxyAddress) ||
+                component.getProxyPort() != state.proxyPort;
     }
 
     @Override
@@ -66,6 +70,10 @@ public class ModPublishSettingsConfigurable implements Configurable {
         state.updateCurseforgeToken(component.getCurseforgeTokenText());
         state.updateCurseforgeStudioToken(component.getCurseforgeStudioTokenText());
         state.updateGithubToken(component.getGithubTokenText());
+        state.autoProxy = component.isAutoProxyEnabled();
+        state.proxyType = component.getProxyType();
+        state.proxyAddress = component.getProxyAddress();
+        state.proxyPort = component.getProxyPort();
     }
 
     @Override
@@ -77,6 +85,10 @@ public class ModPublishSettingsConfigurable implements Configurable {
         component.setCurseforgeTokenText(state.getCurseforgeToken().data());
         component.setCurseforgeStudioTokenText(state.getCurseforgeStudioToken().data());
         component.setGithubTokenText(state.getGithubToken().data());
+        component.setAutoProxyEnabled(state.autoProxy);
+        component.setProxyType(state.proxyType);
+        component.setProxyAddress(state.proxyAddress);
+        component.setProxyPort(state.proxyPort);
     }
 
     @Override
