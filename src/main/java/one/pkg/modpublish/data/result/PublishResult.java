@@ -37,7 +37,7 @@ public record PublishResult(String result) implements Result {
     }
 
     public static PublishResult create(API api, String result) {
-        return new PublishResult("Failed API: "+ api.getID() +" ;" + result);
+        return new PublishResult("Failed API: "+ api.getID() +"; " + result);
     }
 
     public static PublishResult empty() {
