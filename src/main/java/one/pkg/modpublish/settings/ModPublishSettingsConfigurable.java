@@ -18,6 +18,7 @@
 package one.pkg.modpublish.settings;
 
 import com.intellij.openapi.options.Configurable;
+import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +32,7 @@ public class ModPublishSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "ModPublish: Global Settings";
+        return Lang.get("title.global-settings");
     }
 
     @Override

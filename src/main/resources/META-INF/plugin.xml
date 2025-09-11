@@ -106,8 +106,7 @@
         <applicationConfigurable
                 parentId="tools"
                 instance="one.pkg.modpublish.settings.ModPublishSettingsConfigurable"
-                id="modpublish.global-settings"
-                displayName="ModPublish: Global Settings"/>
+                id="modpublish.global-settings" key="title.global-settings"/>
     </extensions>
 
 </idea-plugin>
