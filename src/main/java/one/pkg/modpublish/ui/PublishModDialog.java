@@ -561,15 +561,14 @@ public class PublishModDialog extends BaseDialogWrapper {
         if (serverCheckBox.isSelected())
             supportedInfo.server.setEnabled(true);
 
-        List<File> files = new ArrayList<>(jarFile.length);
-        for (VirtualFile file : jarFile) {
-            files.add(FileAPI.toFile(file));
-        }
+        File[] files = new File[jarFile.length];
+        for (int i = 0; i < jarFile.length; i++)
+            files[i] = FileAPI.toFile(jarFile[i]);
 
         return new PublishData(
                 versionNameField.getText(),
                 versionNumberField.getText(),
-                PublishData.Enabled.getInstance(getPublishTargets()),
+                getPublishTargets(),
                 rT,
                 selectedLoaders,
                 supportedInfo,
@@ -617,12 +616,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         }*/
     }
 
-    public boolean[] getPublishTargets() {
-        return new boolean[]{
-                githubCheckBox.isSelected(),
-                modrinthCheckBox.isSelected(),
-                modrinthTestCheckBox.isSelected(),
-                curseforgeCheckBox.isSelected()
-        };
+    public Selector getPublishTargets() {
+        return Selector.of(modrinthCheckBox, modrinthTestCheckBox, curseforgeCheckBox, githubCheckBox);
     }
 }

@@ -17,16 +17,14 @@
 
 package one.pkg.modpublish.data.internel;
 
-import one.pkg.modpublish.data.local.DependencyInfo;
-import one.pkg.modpublish.data.local.LauncherInfo;
-import one.pkg.modpublish.data.local.MinecraftVersion;
-import one.pkg.modpublish.data.local.SupportedInfo;
+import com.intellij.ui.components.JBCheckBox;
 
-import java.io.File;
-import java.util.List;
+public record Selector(boolean modrinth, boolean modrinthTest, boolean curseForge, boolean github) {
+    public static Selector of(boolean modrinth, boolean modrinthTest, boolean curseForge, boolean github) {
+        return new Selector(modrinth, modrinthTest, curseForge, github);
+    }
 
-public record PublishData(String versionName, String versionNumber, Selector enabled, ReleaseChannel releaseChannel,
-                          List<LauncherInfo> loaders, SupportedInfo supportedInfo,
-                          List<MinecraftVersion> minecraftVersions, String changelog,
-                          List<DependencyInfo> dependencies, File[] files) {
+    public static Selector of(JBCheckBox modrinth, JBCheckBox modrinthTest, JBCheckBox curseForge, JBCheckBox github) {
+        return of(modrinth.isSelected(), modrinthTest.isSelected(), curseForge.isSelected(), github.isSelected());
+    }
 }

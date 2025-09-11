@@ -24,6 +24,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.Getter;
 import one.pkg.modpublish.api.API;
 import one.pkg.modpublish.data.internel.ModInfo;
+import one.pkg.modpublish.data.internel.Selector;
 import one.pkg.modpublish.data.internel.TargetType;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.DependencyType;
@@ -33,7 +34,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AddDependencyDialog extends BaseDialogWrapper {
-    private final boolean[] publishTargets; // [github, modrinth, modrinthTest, curseforge]
+    private final Selector selector;
     private final Project project;
     private JBTextField projectIdField;
     private JComboBox<DependencyType> dependencyTypeCombo;
@@ -41,10 +42,10 @@ public class AddDependencyDialog extends BaseDialogWrapper {
     private boolean isDone = false;
     private DependencyInfo resultDependency;
 
-    public AddDependencyDialog(PublishModDialog parent, boolean[] publishTargets) {
+    public AddDependencyDialog(PublishModDialog parent, Selector selector) {
         super(parent.getProject(), true);
         this.project = parent.getProject();
-        this.publishTargets = publishTargets;
+        this.selector = selector;
         setText("title.add-dependency", TextType.Title);
         init();
     }
@@ -92,8 +93,8 @@ public class AddDependencyDialog extends BaseDialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (!publishTargets[1] && !publishTargets[2] && !publishTargets[3]) {
-            if (publishTargets[0])
+        if (!selector.modrinth() && !selector.modrinthTest() && !selector.curseForge()) {
+            if (selector.github())
                 showMessageDialog("message.dont-support-add-depends", "title.failed", JOptionPane.ERROR_MESSAGE);
             else showMessageDialog("failed.8", "title.failed", JOptionPane.ERROR_MESSAGE);
             return;
@@ -147,12 +148,12 @@ public class AddDependencyDialog extends BaseDialogWrapper {
                 return ModInfo.ofs("Invalid project ID format");
             }
             ModInfo[] infos = new ModInfo[]{null, null};
-            if (publishTargets[1] && !parts[0].trim().isEmpty()) {
+            if (selector.modrinth() && !parts[0].trim().isEmpty()) {
                 ModInfo modInfo = TargetType.Modrinth.api.getModInfo(parts[0], project);
                 if (modInfo.failed() != null) return ModInfo.of(modInfo);
                 infos[0] = modInfo;
             }
-            if (publishTargets[3] && !parts[1].trim().isEmpty()) {
+            if (selector.curseForge() && !parts[1].trim().isEmpty()) {
                 ModInfo modInfo = TargetType.CurseForge.api.getModInfo(parts[1], project);
                 if (modInfo.failed() != null) return ModInfo.of(modInfo);
                 infos[1] = modInfo;
@@ -163,19 +164,19 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         ModInfo[] infos = new ModInfo[2];
         API modrinthApi = TargetType.Modrinth.api;
         API curseforgeApi = TargetType.CurseForge.api;
-        if (publishTargets[1]) { // Modrinth
+        if (selector.modrinth()) { // Modrinth
             if (modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;
         }
-        if (publishTargets[2]) { // Modrinth Test
+        if (selector.modrinthTest()) { // Modrinth Test
             if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;
         }
-        if (publishTargets[3]) { // CurseForge
+        if (selector.curseForge()) { // CurseForge
             ModInfo modInfo = curseforgeApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[1] = modInfo;

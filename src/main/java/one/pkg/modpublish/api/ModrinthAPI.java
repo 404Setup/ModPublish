@@ -65,8 +65,8 @@ public class ModrinthAPI implements API {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("data", createJsonBody(data, project));
 
-        for (int i = 0; i < data.files().size(); i++) {
-            File f = data.files().get(i);
+        for (int i = 0; i < data.files().length; i++) {
+            File f = data.files()[i];
             String key = i == 0 ? f.getName() + "-primary" : f.getName() + "-" + (i - 1);
             bodyBuilder = bodyBuilder.addFormDataPart(key, f.getName(), RequestBody.create(f, MediaType.get("application/java-archive")));
         }

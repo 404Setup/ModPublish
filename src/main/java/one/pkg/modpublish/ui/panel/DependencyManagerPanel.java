@@ -19,6 +19,7 @@ package one.pkg.modpublish.ui.panel;
 
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
+import one.pkg.modpublish.data.internel.Selector;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.ui.AddDependencyDialog;
 import one.pkg.modpublish.ui.PublishModDialog;
@@ -63,9 +64,9 @@ public class DependencyManagerPanel extends JPanel {
     }
 
     private void onAddDependency(ActionEvent e) {
-        boolean[] publishTargets = parentDialog.getPublishTargets();
+        Selector selector = parentDialog.getPublishTargets();
 
-        AddDependencyDialog dialog = new AddDependencyDialog(parentDialog, publishTargets);
+        AddDependencyDialog dialog = new AddDependencyDialog(parentDialog, selector);
         if (dialog.showAndGet() && dialog.isOK()) {
             DependencyInfo dependency = dialog.getDependency();
             addDependency(dependency);
