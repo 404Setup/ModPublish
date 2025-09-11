@@ -6,6 +6,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>org.intellij.plugins.markdown</depends>
+    <depends>Git4Idea</depends>
     <description>
         <![CDATA[
       Help developers publish mods faster and publish mods to multiple supported platforms with just a few clicks.
@@ -21,6 +22,7 @@
             <li><strong>[Feat]</strong> Improved Toml parser</li>
             <li><strong>[Feat]</strong> When API errors occur, should return API ID</li>
             <li><strong>[Feat]</strong> Support using proxy server. Need to configure in settings.</li>
+            <li><strong>[Feat]</strong> Support auto detecting current Git branch</li>
             <li><strong>[Optimize]</strong> Don't process Minecraft version list synchronously when creating UI</li>
             <li><strong>[Optimize]</strong> Cache isn't used effectively</li>
             <li><strong>[Change]</strong> Network request timeout increased from 15 to 20 seconds</li>

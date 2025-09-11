@@ -30,6 +30,7 @@ import one.pkg.modpublish.data.result.BackResult;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.data.result.Result;
 import one.pkg.modpublish.settings.properties.PID;
+import one.pkg.modpublish.util.io.GitInfo;
 import one.pkg.modpublish.util.io.JsonParser;
 
 import java.io.File;
@@ -66,6 +67,7 @@ public class GithubAPI implements API {
     @Override
     public String createJsonBody(PublishData data, Project project) {
         String branch = PID.GithubBranch.get(project);
+        if (branch.isEmpty()) branch = GitInfo.getBrach(project);
         String targetCommitish = getTargetCommitish(branch, project);
 
         GithubData.GithubDataBuilder githubData = GithubData.builder()

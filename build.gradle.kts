@@ -39,6 +39,7 @@ dependencies {
         intellijIdeaCommunity("2025.2")
         bundledPlugin("com.intellij.java")
         bundledPlugin("org.intellij.plugins.markdown")
+        bundledPlugin("Git4Idea")
     }
 
     implementation("one.tranic:t-proxy:1.0.1")
