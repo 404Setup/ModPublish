@@ -35,6 +35,7 @@
             <li><strong>[Fix]</strong> The first value is not selected by default after refreshing Minecraft version list</li>
             <li><strong>[Fix]</strong> An incorrect judgment in the dependency manager</li>
             <li><strong>[Fix]</strong> When API returns error message, should not call getI18n method to create PublishResult</li>
+            <li><strong>[Fix]</strong> Settings options disappeared due to ID conflict</li>
           </ul>
         </li>
         <li><b>0.0.4</b>
@@ -105,7 +106,7 @@
         <applicationConfigurable
                 parentId="tools"
                 instance="one.pkg.modpublish.settings.ModPublishSettingsConfigurable"
-                id="org.intellij.sdk.settings.AppSettingsConfigurable"
+                id="modpublish.global-settings"
                 displayName="ModPublish: Global Settings"/>
     </extensions>
 
