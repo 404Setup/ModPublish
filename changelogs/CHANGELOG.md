@@ -1,3 +1,10 @@
+## v0.0.6
+
+### Translate
+- Improved translations
+
+---
+
 ## v0.0.5
 
 ### Feat
