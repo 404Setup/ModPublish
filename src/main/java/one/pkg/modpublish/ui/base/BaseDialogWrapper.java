@@ -103,7 +103,9 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         return field;
     }
 
-    public @NotNull JBTextField createSimpleNumericTextField() {
+    public @NotNull JBTextField createSimpleNumericTextField(int minValue, int maxValue) {
+        if (minValue >= maxValue)
+            throw new IllegalArgumentException("minValue must be greater than maxValue");
         JBTextField field = new JBTextField();
         field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
 
@@ -111,13 +113,74 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != '-') {
+                    e.consume();
+                }
+                // Only allow minus sign at the beginning and if minValue is negative
+                if (c == '-' && (field.getCaretPosition() != 0 || minValue >= 0)) {
                     e.consume();
                 }
             }
         });
 
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
+                if (isValidNumber(newText)) {
+                    super.insertString(fb, offset, string, attr);
+                    adjustValueIfNeeded(fb);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text == null) return;
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+                if (isValidNumber(newText)) {
+                    super.replace(fb, offset, length, text, attrs);
+                    adjustValueIfNeeded(fb);
+                }
+            }
+
+            private boolean isValidNumber(String text) {
+                if (text.isEmpty() || text.equals("-")) return true;
+                try {
+                    Long.parseLong(text);
+                    return true;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+
+            private void adjustValueIfNeeded(FilterBypass fb) throws BadLocationException {
+                String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+                if (text.isEmpty() || text.equals("-")) return;
+
+                try {
+                    long value = Long.parseLong(text);
+                    String newText;
+                    if (value < minValue) {
+                        newText = String.valueOf(minValue);
+                    } else if (value > maxValue) {
+                        newText = String.valueOf(maxValue);
+                    } else {
+                        return;
+                    }
+
+                    fb.replace(0, fb.getDocument().getLength(), newText, null);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        });
+
         return field;
+    }
+
+    public @NotNull JBTextField createSimpleNumericTextField() {
+        return createSimpleNumericTextField(0, Integer.MAX_VALUE);
     }
 
     public @NotNull JBLabel createLabel(@NotNull String text) {

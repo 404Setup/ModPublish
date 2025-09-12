@@ -1,5 +1,11 @@
 ## v0.0.6
 
+### Feat
+- More configurable network options
+
+### Optimize
+- Enhanced number input field validation
+
 ### Translate
 - Improved translations
 

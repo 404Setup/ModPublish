@@ -15,16 +15,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package one.pkg.modpublish.util.proxy;
+package one.pkg.modpublish.api;
 
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
 import one.pkg.modpublish.settings.ModPublishSettings;
 import one.tranic.t.proxy.ProxyConfigReader;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-public class MProxy {
+public class NetworkUtil {
+    final static OkHttpClient client;
+
+    static {
+        ModPublishSettings.State state = Objects.requireNonNull(ModPublishSettings.getInstance().getState());
+
+        var cb = new OkHttpClient.Builder().proxy(NetworkUtil.getProxy(state))
+                .connectTimeout(state.networkConnectTimeout, TimeUnit.SECONDS)
+                .readTimeout(state.networkReadTimeout, TimeUnit.SECONDS)
+                .writeTimeout(state.networkWriteTimeout, TimeUnit.SECONDS);
+        if (!state.networkEnableSSLCheck)
+            cb.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+                    .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager());
+
+        client = cb.build();
+
+        //Credentials.basic("username", "password");
+    }
+
     private static boolean isValidIpAddress(String ip) {
         try {
             String[] parts = ip.split("\\.");
@@ -49,8 +70,7 @@ public class MProxy {
         }
     }
 
-    public static Proxy getProxy() {
-        ModPublishSettings.State state = Objects.requireNonNull(ModPublishSettings.getInstance().getState());
+    static Proxy getProxy(ModPublishSettings.State state) {
         if (state.autoProxy) return ProxyConfigReader.getProxy(Proxy.NO_PROXY);
         if (state.proxyAddress.isBlank() || state.proxyPort < 1 || state.proxyPort > 65535 || !isValidIpAddress(state.proxyAddress))
             return Proxy.NO_PROXY;

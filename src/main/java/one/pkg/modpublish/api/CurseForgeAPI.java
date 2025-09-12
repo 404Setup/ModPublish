@@ -35,7 +35,7 @@ import one.pkg.modpublish.util.io.JsonParser;
 import java.io.IOException;
 import java.util.Optional;
 
-public class CurseForgeAPI implements API {
+public class CurseForgeAPI extends API {
     private static final String A_URL = "https://minecraft.curseforge.com/api/";
     private static final String B_URL = "https://api.curseforge.com/v1/";
     private boolean ab = false;
@@ -69,7 +69,7 @@ public class CurseForgeAPI implements API {
                 .build();
         Request request = requestBuilder.post(body).build();
 
-        try (Response resp = client.newCall(request).execute()) {
+        try (Response resp = NetworkUtil.client.newCall(request).execute()) {
             Optional<String> status = getStatus(resp);
             if (status.isPresent()) return PublishResult.create(this, status.get());
             String bs = resp.body().string();
@@ -83,7 +83,7 @@ public class CurseForgeAPI implements API {
     }
 
     @Override
-    public String createJsonBody(PublishData data, Project project) {
+    String createJsonBody(PublishData data, Project project) {
         CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder().releaseType(data.releaseChannel())
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
@@ -107,7 +107,7 @@ public class CurseForgeAPI implements API {
     public ModInfo getModInfo(String modid, Project project) {
         if (!ab) ab = true;
         Request req = getJsonRequest(getRequestBuilder("mods/" + modid, project)).get().build();
-        try (Response resp = client.newCall(req).execute()) {
+        try (Response resp = NetworkUtil.client.newCall(req).execute()) {
             Optional<String> status = getStatus(resp);
             if (status.isPresent()) return ModInfo.of(status.get());
             JsonObject object = JsonParser.getJsonObject(resp.body().byteStream());
@@ -118,7 +118,7 @@ public class CurseForgeAPI implements API {
         }
     }
 
-    public Request.Builder getRequestBuilder(String url, Project project) {
+    Request.Builder getRequestBuilder(String url, Project project) {
         Request.Builder builder = getBaseRequestBuilder();
         return ab ? builder.header("x-api-key",
                         PID.CurseForgeStudioToken.getProtect(project).data())

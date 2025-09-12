@@ -70,6 +70,29 @@ public final class ModPublishSettings
         public String proxyAddress = "";
         @NonNls
         public int proxyPort = 3366;
+        @NonNls
+        public boolean networkEnableSSLCheck = true;
+        @NonNls
+        public int networkConnectTimeout = 20;
+        @NonNls
+        public int networkReadTimeout = 20;
+        @NonNls
+        public int networkWriteTimeout = 20;
+
+        public void updateNetworkConnectTimeout(int timeout) {
+            if (timeout > 0 && timeout < Integer.MAX_VALUE)
+                networkConnectTimeout = timeout;
+        }
+
+        public void updateNetworkReadTimeout(int timeout) {
+            if (timeout > 0 && timeout < Integer.MAX_VALUE)
+                networkReadTimeout = timeout;
+        }
+
+        public void updateNetworkWriteTimeout(int timeout) {
+            if (timeout > 0 && timeout < Integer.MAX_VALUE)
+                networkWriteTimeout = timeout;
+        }
 
         public Proxy.Type getProxyType() {
             return proxyType == 0 ? Proxy.Type.SOCKS : Proxy.Type.HTTP;

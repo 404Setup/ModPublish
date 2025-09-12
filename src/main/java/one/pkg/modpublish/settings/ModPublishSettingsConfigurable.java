@@ -59,7 +59,11 @@ public class ModPublishSettingsConfigurable implements Configurable {
                 component.isAutoProxyEnabled() != state.autoProxy ||
                 component.getProxyType() != state.proxyType ||
                 !component.getProxyAddress().equals(state.proxyAddress) ||
-                component.getProxyPort() != state.proxyPort;
+                component.getProxyPort() != state.proxyPort ||
+                component.isNetworkEnableSSLCheck() != state.networkEnableSSLCheck ||
+                component.getNetworkConnectTimeout() != state.networkConnectTimeout ||
+                component.getNetworkReadTimeout() != state.networkReadTimeout ||
+                component.getNetworkWriteTimeout() != state.networkWriteTimeout;
     }
 
     @Override
@@ -75,6 +79,10 @@ public class ModPublishSettingsConfigurable implements Configurable {
         state.proxyType = component.getProxyType();
         state.proxyAddress = component.getProxyAddress();
         state.proxyPort = component.getProxyPort();
+        state.networkEnableSSLCheck = component.isNetworkEnableSSLCheck();
+        state.updateNetworkConnectTimeout(component.getNetworkConnectTimeout());
+        state.updateNetworkReadTimeout(component.getNetworkReadTimeout());
+        state.updateNetworkWriteTimeout(component.getNetworkWriteTimeout());
     }
 
     @Override
@@ -90,6 +98,10 @@ public class ModPublishSettingsConfigurable implements Configurable {
         component.setProxyType(state.proxyType);
         component.setProxyAddress(state.proxyAddress);
         component.setProxyPort(state.proxyPort);
+        component.setNetworkEnableSSLCheck(state.networkEnableSSLCheck);
+        component.setNetworkConnectTimeout(state.networkConnectTimeout);
+        component.setNetworkReadTimeout(state.networkReadTimeout);
+        component.setNetworkWriteTimeout(state.networkWriteTimeout);
     }
 
     @Override

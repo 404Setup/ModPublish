@@ -171,6 +171,7 @@ Build steps:
 
 - [Gson](https://github.com/google/gson) - License [Apache 2.0](https://github.com/google/gson/blob/main/LICENSE)
 - [OKHttp](https://github.com/square/okhttp) - License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+- [TProxy](https://github.com/404Setup/t-proxy) - License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
 - [Lombok](https://github.com/projectlombok/lombok) - License [MIT](https://projectlombok.org/)
 
 #### Resource Files
@@ -179,6 +180,7 @@ All resource files have been adjusted to display at 24px.
 - [Modrinth Logo](https://github.com/modrinth/code/blob/main/packages/assets/branding/logo.svg) - License [GPL-3.0](https://github.com/modrinth/code/blob/main/packages/assets/LICENSE), with proper coloring of the logo
 - [CurseForge Logo](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824) - License [CC BY 4.0](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824?permalink_comment_id=3683512#gistcomment-3683512)
 - [Github Icon](https://github.com/logos)
+- [FluentUI System Icons](https://github.com/microsoft/fluentui-system-icons) - License [MIT](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE)
 
 ## Support ModPublish
 

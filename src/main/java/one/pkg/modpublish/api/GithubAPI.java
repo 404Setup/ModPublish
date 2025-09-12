@@ -37,7 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-public class GithubAPI implements API {
+public class GithubAPI extends API {
     private static final String RELEASES_URL = "https://api.github.com/repos/{path}/releases";
     private static final String UPLOAD_URL = "https://uploads.github.com/repos/{path}/releases/{id}/assets";
     private static final String REPO_INFO_URL = "https://api.github.com/repos/{path}";
@@ -65,7 +65,7 @@ public class GithubAPI implements API {
     }
 
     @Override
-    public String createJsonBody(PublishData data, Project project) {
+    String createJsonBody(PublishData data, Project project) {
         String branch = PID.GithubBranch.get(project);
         if (branch.isEmpty()) branch = GitInfo.getBrach(project);
         String targetCommitish = getTargetCommitish(branch, project);
@@ -128,7 +128,7 @@ public class GithubAPI implements API {
                     .post(RequestBody.create(createJsonBody(data, project), MediaType.get("application/json")))
                     .build();
 
-            try (Response response = client.newCall(request).execute()) {
+            try (Response response = NetworkUtil.client.newCall(request).execute()) {
                 Optional<String> status = getStatus(response);
                 if (status.isPresent()) return PublishResult.create(this, "Failed to create release: " + status.get());
                 return BackResult.result(response.body().string());
@@ -150,7 +150,7 @@ public class GithubAPI implements API {
                     .post(fileBody)
                     .build();
 
-            try (Response response = client.newCall(request).execute()) {
+            try (Response response = NetworkUtil.client.newCall(request).execute()) {
                 Optional<String> status = getStatus(response);
                 /*JsonObject assetResponse = JsonParser.getJsonObject(response.body().byteStream());
                 String downloadUrl = assetResponse.get("browser_download_url").getAsString();*/
@@ -168,7 +168,7 @@ public class GithubAPI implements API {
                     .get()
                     .build();
 
-            try (Response response = client.newCall(request).execute()) {
+            try (Response response = NetworkUtil.client.newCall(request).execute()) {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     JsonObject releaseInfo = JsonParser.fromJson(responseBody);
@@ -201,7 +201,7 @@ public class GithubAPI implements API {
                 .get()
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = NetworkUtil.client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 JsonObject repoInfo = JsonParser.fromJson(response.body().string());
                 return repoInfo.get("default_branch").getAsString();
@@ -216,7 +216,7 @@ public class GithubAPI implements API {
                 .get()
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = NetworkUtil.client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 JsonObject branchInfo = JsonParser.fromJson(response.body().string());
                 JsonObject commit = branchInfo.getAsJsonObject("commit");

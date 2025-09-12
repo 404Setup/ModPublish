@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-public class ModrinthAPI implements API {
+public class ModrinthAPI extends API {
     private static final String A_URL = "https://api.modrinth.com/v2/";
     private static final String B_URL = "https://staging-api.modrinth.com/v2/";
     private boolean ab = false;
@@ -73,7 +73,7 @@ public class ModrinthAPI implements API {
 
         Request request = requestBuilder.post(bodyBuilder.build()).build();
 
-        try (Response resp = client.newCall(request).execute()) {
+        try (Response resp = NetworkUtil.client.newCall(request).execute()) {
             Optional<String> status = getStatus(resp);
             return status.map(s -> PublishResult.create(this, s)).orElseGet(PublishResult::empty);
         } catch (IOException e) {
@@ -82,7 +82,7 @@ public class ModrinthAPI implements API {
     }
 
     @Override
-    public String createJsonBody(PublishData data, Project project) {
+    String createJsonBody(PublishData data, Project project) {
         var json = ModrinthData.builder().releaseChannel(data.releaseChannel())
                 .projectId(ab ? PID.ModrinthTestModID.get(project) : PID.ModrinthModID.get(project))
                 .versionBody(data.changelog())
@@ -108,7 +108,7 @@ public class ModrinthAPI implements API {
     @Override
     public ModInfo getModInfo(String modid, Project project) {
         Request req = getJsonRequest(getRequestBuilder("project/" + modid, project)).get().build();
-        try (Response resp = client.newCall(req).execute()) {
+        try (Response resp = NetworkUtil.client.newCall(req).execute()) {
             Optional<String> status = getStatus(resp);
             if (status.isPresent()) return ModInfo.of(status.get());
             JsonObject object = JsonParser.getJsonObject(resp.body().byteStream());
@@ -118,7 +118,7 @@ public class ModrinthAPI implements API {
         }
     }
 
-    public Request.Builder getRequestBuilder(String url, Project project) {
+    Request.Builder getRequestBuilder(String url, Project project) {
         return getBaseRequestBuilder()
                 .header("Authorization",
                         ab ? PID.ModrinthTestToken.getProtect(project).data() :

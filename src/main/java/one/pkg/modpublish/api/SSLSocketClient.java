@@ -17,12 +17,7 @@
 
 package one.pkg.modpublish.api;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -37,8 +32,8 @@ import java.util.Arrays;
  *
  */
 @SuppressWarnings("unused")
-public class SSLSocketClient {
-    public static SSLSocketFactory getSSLSocketFactory() {
+class SSLSocketClient {
+    static SSLSocketFactory getSSLSocketFactory() {
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, getTrustManager(), new SecureRandom());
@@ -67,11 +62,11 @@ public class SSLSocketClient {
         };
     }
 
-    public static HostnameVerifier getHostnameVerifier() {
+    static HostnameVerifier getHostnameVerifier() {
         return (s, sslSession) -> true;
     }
 
-    public static X509TrustManager getX509TrustManager() {
+    static X509TrustManager getX509TrustManager() {
         X509TrustManager trustManager = null;
         try {
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());

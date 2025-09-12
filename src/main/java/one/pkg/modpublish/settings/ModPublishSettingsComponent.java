@@ -35,20 +35,29 @@ import java.net.Proxy;
 public class ModPublishSettingsComponent extends BaseDialogWrapper {
     @Getter
     private final JPanel panel;
+
     private JBTextField modrinthTokenText;
     private JBTextField modrinthTestTokenText;
     private ActionLink modrinthTokenLink;
     private ActionLink modrinthTestTokenLink;
+
     private JBTextField curseforgeTokenText;
     private JBTextField curseforgeStudioTokenText;
     private ActionLink curseforgeTokenLink;
     private ActionLink curseforgeStudioTokenLink;
+
     private JBTextField githubTokenText;
     private ActionLink githubTokenLink;
+
     private JBCheckBox autoProxyCheckBox;
     private JComboBox<Proxy.Type> proxyTypeComboBox;
     private JBTextField proxyAddressText;
     private JBTextField proxyPortText;
+
+    private JBCheckBox networkEnableSSLCheckBox;
+    private JBTextField networkConnectTimeoutText;
+    private JBTextField networkReadTimeoutText;
+    private JBTextField networkWriteTimeoutText;
 
     public ModPublishSettingsComponent() {
         super(null);
@@ -70,12 +79,32 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
                 new FieldConfig("Token", () -> githubTokenText = createTextField()),
                 new FieldConfig(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
 
-        addPlatformSection(formBuilder, "Proxy", null,
+        addPlatformSection(formBuilder, get("setting.network.name"), "/icons/databar.svg",
+                new FieldConfig(get("setting.network.ssl-check.name"), () -> networkEnableSSLCheckBox = new JBCheckBox()),
+                new FieldConfig(() -> createLabel(get("setting.network.ssl-check.desc"))),
+                new FieldConfig(get("setting.network.read-timeout.name"), () -> {
+                    networkReadTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
+                    networkReadTimeoutText.setToolTipText(get("setting.network.read-timeout.desc"));
+                    return networkReadTimeoutText;
+                }),
+                new FieldConfig(get("setting.network.write-timeout.name"), () -> {
+                    networkWriteTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
+                    networkWriteTimeoutText.setToolTipText(get("setting.network.write-timeout.desc"));
+                    return networkWriteTimeoutText;
+                }),
+                new FieldConfig(get("setting.network.connect-timeout.name"), () -> {
+                    networkConnectTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
+                    networkConnectTimeoutText.setToolTipText(get("setting.network.connect-timeout.desc"));
+                    return networkConnectTimeoutText;
+                })
+        );
+
+        addPlatformSection(formBuilder, get("setting.proxy.name"), "/icons/globe.svg",
                 new FieldConfig(() -> createLabel(get("tips.3"))),
-                new FieldConfig("Enable AutoProxy", () -> autoProxyCheckBox = new JBCheckBox()),
-                new FieldConfig("Proxy Type", () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
-                new FieldConfig("Proxy Address", () -> proxyAddressText = createTextField()),
-                new FieldConfig("Proxy Port", () -> proxyPortText = createSimpleNumericTextField()));
+                new FieldConfig(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = new JBCheckBox()),
+                new FieldConfig(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
+                new FieldConfig(get("setting.proxy.address"), () -> proxyAddressText = createTextField()),
+                new FieldConfig(get("setting.proxy.port"), () -> proxyPortText = createSimpleNumericTextField(1, 65535)));
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -169,5 +198,37 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     public void setProxyPort(int newPort) {
         proxyPortText.setText(String.valueOf(newPort));
+    }
+
+    public boolean isNetworkEnableSSLCheck() {
+        return networkEnableSSLCheckBox.isSelected();
+    }
+
+    public void setNetworkEnableSSLCheck(boolean enabled) {
+        networkEnableSSLCheckBox.setSelected(enabled);
+    }
+
+    public int getNetworkConnectTimeout() {
+        return Integer.parseInt(networkConnectTimeoutText.getText());
+    }
+
+    public void setNetworkConnectTimeout(int newTimeout) {
+        networkConnectTimeoutText.setText(String.valueOf(newTimeout));
+    }
+
+    public int getNetworkReadTimeout() {
+        return Integer.parseInt(networkReadTimeoutText.getText());
+    }
+
+    public void setNetworkReadTimeout(int newTimeout) {
+        networkReadTimeoutText.setText(String.valueOf(newTimeout));
+    }
+
+    public int getNetworkWriteTimeout() {
+        return Integer.parseInt(networkWriteTimeoutText.getText());
+    }
+
+    public void setNetworkWriteTimeout(int newTimeout) {
+        networkWriteTimeoutText.setText(String.valueOf(newTimeout));
     }
 }
