@@ -106,11 +106,9 @@ task("generateChangeNotes") {
 
             val updatedContent = pluginXmlContent.replace(changeNotesRegex) { matchResult ->
                 val leadingSpaces = matchResult.groupValues[1]
-                """${leadingSpaces}<change-notes>
-$leadingSpaces        <![CDATA[
+                """${leadingSpaces}<change-notes><![CDATA[
 $leadingSpaces      $htmlContent
-$leadingSpaces    ]]>
-$leadingSpaces    </change-notes>"""
+$leadingSpaces]]></change-notes>"""
             }
 
             pluginXmlFile.writeText(updatedContent)
