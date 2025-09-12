@@ -173,6 +173,7 @@ Build steps:
 - [OKHttp](https://github.com/square/okhttp) - License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
 - [TProxy](https://github.com/404Setup/t-proxy) - License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
 - [Lombok](https://github.com/projectlombok/lombok) - License [MIT](https://projectlombok.org/)
+- [Flexmark](https://github.com/vsch/flexmark-java) - License [BSD 2-Clause "Simplified" License](https://github.com/vsch/flexmark-java/blob/master/LICENSE.txt)
 
 #### Resource Files
 All resource files have been adjusted to display at 24px.
