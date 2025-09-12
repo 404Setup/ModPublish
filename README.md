@@ -133,7 +133,7 @@ If not configured, ModPublish will still use the default name generation rules
 
 Building ModPublish requires the following tools
 
-- JDK 17
+- JDK 21
 - Gradle 9
 - Python3
 

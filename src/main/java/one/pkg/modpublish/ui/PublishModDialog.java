@@ -280,6 +280,12 @@ public class PublishModDialog extends BaseDialogWrapper {
                     minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
                     minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
                     return minecraftPanel;
+                }),
+                new FieldConfig(() -> {
+                    JButton jButton = new JButton("Update version list (WIP)");
+                    jButton.addActionListener(e ->
+                            showMessageDialogRaw("Unfinished", "Unfinished", JOptionPane.ERROR_MESSAGE));
+                    return jButton;
                 }));
 
         // Changelog
@@ -337,7 +343,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         String version = null;
         String versionName = extractVersionName(current);
         String versionNameFormat = PID.CommonVersionFormat.get(project);
-        ModType modType = modTypes.get(current).get(0);
+        ModType modType = modTypes.get(current).getFirst();
 
         if (modInfo != null) {
             version = modInfo.version();

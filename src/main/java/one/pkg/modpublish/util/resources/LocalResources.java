@@ -22,8 +22,11 @@ import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.local.SupportedInfo;
+import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.io.JsonParser;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -66,7 +69,9 @@ public class LocalResources {
     }
 
     public static List<MinecraftVersion> getMinecraftVersions() {
-        try (InputStream stream = LocalResources.class.getResourceAsStream("/META-INF/minecraft.version.json")) {
+        File localFile = FileAPI.getUserDataFile("minecraft.version.json");
+        try (InputStream stream = localFile.exists() ? new FileInputStream(localFile) :
+                LocalResources.class.getResourceAsStream("/META-INF/minecraft.version.json")) {
             if (stream == null) {
                 throw new Exception("minecraft.version.json not found");
             }

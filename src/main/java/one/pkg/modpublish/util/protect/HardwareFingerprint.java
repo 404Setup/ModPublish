@@ -125,7 +125,7 @@ public class HardwareFingerprint {
 
             if (!macAddresses.isEmpty()) {
                 Collections.sort(macAddresses);
-                return macAddresses.get(0);
+                return macAddresses.getFirst();
             }
         } catch (Exception ignored) {
         }

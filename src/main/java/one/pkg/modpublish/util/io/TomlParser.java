@@ -362,7 +362,7 @@ public class TomlParser implements Closeable {
         } else if (value instanceof List) {
             List<Map<String, Object>> list = (List<Map<String, Object>>) value;
             if (!list.isEmpty()) {
-                TomlParser nextLevel = new TomlParser(list.get(0));
+                TomlParser nextLevel = new TomlParser(list.getFirst());
                 return nextLevel.navigateToPath(pathSegments, startIndex + 1);
             }
         }
@@ -382,7 +382,7 @@ public class TomlParser implements Closeable {
             if (value instanceof Map) {
                 return true;
             } else if (value instanceof List<?> list) {
-                return !list.isEmpty() && list.get(0) instanceof Map;
+                return !list.isEmpty() && list.getFirst() instanceof Map;
             }
             return false;
         }
@@ -414,7 +414,7 @@ public class TomlParser implements Closeable {
             } else if (value instanceof List) {
                 List<Map<String, Object>> list = (List<Map<String, Object>>) value;
                 if (!list.isEmpty()) {
-                    return new TomlParser(list.get(0));
+                    return new TomlParser(list.getFirst());
                 }
             }
             return null;
@@ -786,7 +786,7 @@ public class TomlParser implements Closeable {
         Object section = parsedData.get(sectionName);
         if (section instanceof List) {
             List<Map<String, Object>> sectionList = (List<Map<String, Object>>) section;
-            return sectionList.isEmpty() ? null : sectionList.get(0);
+            return sectionList.isEmpty() ? null : sectionList.getFirst();
         } else if (section instanceof Map) {
             return (Map<String, Object>) section;
         }

@@ -3,6 +3,9 @@
 ### Translate
 - Improved translations
 
+### Change
+- Java 21 is now required
+
 ---
 
 ## v0.0.5

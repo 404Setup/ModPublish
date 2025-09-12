@@ -7,7 +7,7 @@ plugins {
 
 group = "one.pkg"
 version = "0.0.6-dev"
-val targetJavaVersion = 17
+val targetJavaVersion = 21
 
 repositories {
     mavenCentral()
