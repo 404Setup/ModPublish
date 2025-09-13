@@ -44,8 +44,8 @@ dependencies {
 
     implementation("one.tranic:t-proxy:1.0.1")
 
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    compileOnly("org.projectlombok:lombok:1.18.40")
+    annotationProcessor("org.projectlombok:lombok:1.18.40")
 
     compileOnly("com.vladsch.flexmark:flexmark:0.64.8")
     compileOnly("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")

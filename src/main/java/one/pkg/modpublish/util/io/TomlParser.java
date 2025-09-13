@@ -844,10 +844,13 @@ public class TomlParser implements Closeable {
     }
 
     public static class TomlArray implements Iterable<TomlParser> {
-        private final List<Map<String, Object>> elements;
+        private final List<TomlParser> elements;
 
         private TomlArray(List<Map<String, Object>> elements) {
-            this.elements = elements;
+            this.elements = new ArrayList<>(elements.size());
+            for (Map<String, Object> element : elements) {
+                this.elements.add(new TomlParser(element));
+            }
         }
 
         public String toJson() {
@@ -874,7 +877,7 @@ public class TomlParser implements Closeable {
         @Nullable
         public TomlParser get(int index) {
             if (index >= 0 && index < elements.size()) {
-                return new TomlParser(elements.get(index));
+                return elements.get(index);
             }
             return null;
         }
@@ -884,11 +887,7 @@ public class TomlParser implements Closeable {
          */
         @NotNull
         public List<TomlParser> asList() {
-            List<TomlParser> result = new ArrayList<>();
-            for (Map<String, Object> element : elements) {
-                result.add(new TomlParser(element));
-            }
-            return result;
+            return Collections.unmodifiableList(new ArrayList<>(elements));
         }
 
         /**
@@ -896,7 +895,11 @@ public class TomlParser implements Closeable {
          */
         @NotNull
         public List<Map<String, Object>> asMapList() {
-            return Collections.unmodifiableList(elements);
+            List<Map<String, Object>> list = new ArrayList<>(elements.size());
+            for (TomlParser element : elements) {
+                list.add(element.asMap());
+            }
+            return Collections.unmodifiableList(list);
         }
 
         @Override
@@ -906,17 +909,17 @@ public class TomlParser implements Closeable {
 
         @Override
         public @NotNull Iterator<TomlParser> iterator() {
-            return elements.stream().map(TomlParser::new).iterator();
+            return elements.iterator();
         }
 
         @Override
         public void forEach(Consumer<? super TomlParser> action) {
-            elements.stream().map(TomlParser::new).forEach(action);
+            elements.forEach(action);
         }
 
         @Override
         public Spliterator<TomlParser> spliterator() {
-            return elements.stream().map(TomlParser::new).spliterator();
+            return elements.spliterator();
         }
     }
 }
