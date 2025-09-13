@@ -18,6 +18,7 @@
 package one.pkg.modpublish.ui.action;
 
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
 import one.pkg.modpublish.data.internel.ModType;
 import one.pkg.modpublish.ui.PublishModDialog;
@@ -52,7 +53,8 @@ public class PublishModAction extends AnAction {
             }
         }
         JOptionPane.showMessageDialog(null,
-                Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE);
+                Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE,
+                IconLoader.getIcon("error-circle.svg", getClass()));
     }
 
     @Override

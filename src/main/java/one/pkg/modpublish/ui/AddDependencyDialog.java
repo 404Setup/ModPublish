@@ -95,14 +95,14 @@ public class AddDependencyDialog extends BaseDialogWrapper {
     protected void doOKAction() {
         if (!selector.modrinth() && !selector.modrinthTest() && !selector.curseForge()) {
             if (selector.github())
-                showMessageDialog("message.dont-support-add-depends", "title.failed", JOptionPane.ERROR_MESSAGE);
-            else showMessageDialog("failed.8", "title.failed", JOptionPane.ERROR_MESSAGE);
+                showFailedDialog("message.dont-support-add-depends", "title.failed");
+            else showFailedDialog("failed.8", "title.failed");
             return;
         }
         String projectId = projectIdField.getText().trim();
         if (projectId.isEmpty()) {
-            showMessageDialog(
-                    "failed.9", "title.failed", JOptionPane.ERROR_MESSAGE);
+            showFailedDialog(
+                    "failed.9", "title.failed");
             return;
         }
 
@@ -116,10 +116,8 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         if (validationResult.length == 1) {
             ModInfo i = validationResult[0];
             if (i.failed() != null) {
-                JOptionPane.showMessageDialog(getContentPanel(),
-                        validationResult[0].failed(),
-                        get("title.failed"),
-                        JOptionPane.WARNING_MESSAGE);
+                showFailedDialogRaw(i.failed(),
+                        get("title.failed"));
                 return;
             }
         }

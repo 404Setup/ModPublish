@@ -123,6 +123,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         init();
         setText("button.publish", TextType.OKButton);
         setText("button.cancel", TextType.CancelButton);
+        setOKButtonDefault();
     }
 
     private void updateParser(VirtualFile primaryFile) {
@@ -188,10 +189,10 @@ public class PublishModDialog extends BaseDialogWrapper {
         formBuilder.addLabeledComponent(Lang.get("component.name.version-number"), versionNumberField);
 
         // Publish targets
-        githubCheckBox = new JBCheckBox("GitHub");
-        modrinthCheckBox = new JBCheckBox("Modrinth");
-        modrinthTestCheckBox = new JBCheckBox("Modrinth (Test Server)");
-        curseforgeCheckBox = new JBCheckBox("CurseForge");
+        githubCheckBox = getJBCheckBoxRaw("GitHub");
+        modrinthCheckBox = getJBCheckBoxRaw("Modrinth");
+        modrinthTestCheckBox = getJBCheckBoxRaw("Modrinth (Test Server)");
+        curseforgeCheckBox = getJBCheckBoxRaw("CurseForge");
 
         JPanel publishTargetsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         publishTargetsPanel.add(githubCheckBox);
@@ -215,7 +216,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         List<ModType> pTargets = modTypes.values().iterator().next();
 
         for (LauncherInfo launcher : launchers) {
-            JBCheckBox checkBox = new JBCheckBox(launcher.n);
+            JBCheckBox checkBox = getJBCheckBoxRaw(launcher.n);
             if (pTargets.contains(ModType.of(launcher.n.toLowerCase())))
                 checkBox.setSelected(true);
             loaderCheckBoxes.add(checkBox);
@@ -274,23 +275,23 @@ public class PublishModDialog extends BaseDialogWrapper {
         JBScrollPane minecraftScrollPane = new JBScrollPane(minecraftVersionList);
         minecraftScrollPane.setPreferredSize(new Dimension(200, 120));
 
-        addPlatformSection(formBuilder, get("component.name.mc-version"), "icons/list-bar.svg",
-                new FieldConfig(() -> {
+        addPlatformSection(formBuilder, get("component.name.mc-version"), "/icons/list-bar.svg",
+                FieldConfig.of(() -> {
                     JPanel minecraftPanel = new JPanel(new BorderLayout());
                     minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
                     minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
                     return minecraftPanel;
                 }),
-                new FieldConfig(() -> {
+                FieldConfig.of(() -> {
                     JButton jButton = new JButton("Update version list (WIP)");
                     jButton.addActionListener(e ->
-                            showMessageDialogRaw("Unfinished", "Unfinished", JOptionPane.ERROR_MESSAGE));
+                            showFailedDialogRaw("Unfinished", "Unfinished"));
                     return jButton;
                 }));
 
         // Changelog
-        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), "icons/clipboard.svg",
-                new FieldConfig(() -> {
+        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), "/icons/clipboard.svg",
+                FieldConfig.of(() -> {
                     try {
                         MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
                         changelogField = new EditorTextField("", project, markdownFileType);
@@ -305,8 +306,8 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }));
 
         // Dependency manager
-        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), "icons/library.svg",
-                new FieldConfig(() -> dependencyPanel = new DependencyManagerPanel(this)));
+        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), "/icons/library.svg",
+                FieldConfig.of(() -> dependencyPanel = new DependencyManagerPanel(this)));
 
         autoFillFields();
 
@@ -521,12 +522,13 @@ public class PublishModDialog extends BaseDialogWrapper {
     protected void doOKAction() {
         PublishResult fr = doOKActionFirst();
         if (fr != null) {
-            showMessageDialogRaw(get("message.failed", fr.result()),
-                    get("title.failed"), JOptionPane.ERROR_MESSAGE);
+            showFailedDialogRaw(get("message.failed", fr.result()),
+                    get("title.failed"));
             return;
         }
 
         getOKAction().setEnabled(false);
+        setOKButtonLoading();
         setText("button.publishing", TextType.OKButton);
 
         SwingUtilities.invokeLater(() -> {
@@ -535,16 +537,19 @@ public class PublishModDialog extends BaseDialogWrapper {
             PublishData publishData = collectPublishData();
 
             PublishResult result = performPublish(publishData);
-
-            if (result.result() == null || result.result().trim().isEmpty()) {
-                super.doOKAction();
-                showMessageDialog("message.success", "title.success", JOptionPane.INFORMATION_MESSAGE);
-                close(0, true);
-            } else {
-                getOKAction().setEnabled(true);
-                setText("button.publish", TextType.OKButton);
-                showMessageDialogRaw(get("message.failed", result.result()),
-                        get("title.failed"), JOptionPane.ERROR_MESSAGE);
+            try {
+                if (result.result() == null || result.result().trim().isEmpty()) {
+                    super.doOKAction();
+                    showSuccessDialog("message.success", "title.success");
+                    close(0, true);
+                } else {
+                    getOKAction().setEnabled(true);
+                    setText("button.publish", TextType.OKButton);
+                    showFailedDialogRaw(get("message.failed", result.result()),
+                            get("title.failed"));
+                }
+            } finally {
+                setOKButtonDefault();
             }
         });
     }

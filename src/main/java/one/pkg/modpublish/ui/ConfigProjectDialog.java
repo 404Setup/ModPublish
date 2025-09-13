@@ -70,28 +70,28 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         String repoLabel = get("dialog.modpublish.config-project.repo");
         String branchLabel = get("dialog.modpublish.config-project.branch");
 
-        addPlatformSection(formBuilder, "Common", null,
-                new FieldConfig(get("component.name.common.version-format"), () -> commonVersionFormatField = createTextField()));
+        addPlatformSection(formBuilder, "Common", "/icons/book.svg",
+                FieldConfig.of(get("component.name.common.version-format"), () -> commonVersionFormatField = createTextField()));
 
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
-                new FieldConfig(token, () -> modrinthTokenField = createTextField()),
-                new FieldConfig("(Test) " + token, () -> modrinthTestTokenField = createTextField()),
-                new FieldConfig(modIdLabel, () -> modrinthModIDField = createTextField()),
-                new FieldConfig("(Test) " + modIdLabel, () -> modrinthTestModIDField = createTextField()));
+                FieldConfig.of(token, () -> modrinthTokenField = createTextField()),
+                FieldConfig.of("(Test) " + token, () -> modrinthTestTokenField = createTextField()),
+                FieldConfig.of(modIdLabel, () -> modrinthModIDField = createTextField()),
+                FieldConfig.of("(Test) " + modIdLabel, () -> modrinthTestModIDField = createTextField()));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
-                new FieldConfig(token, () -> curseforgeTokenField = createTextField()),
-                new FieldConfig(studioToken, () -> curseforgeStudioTokenField = createTextField()),
-                new FieldConfig(modIdLabel, () -> curseforgeModIDField = createTextField()));
+                FieldConfig.of(token, () -> curseforgeTokenField = createTextField()),
+                FieldConfig.of(studioToken, () -> curseforgeStudioTokenField = createTextField()),
+                FieldConfig.of(modIdLabel, () -> curseforgeModIDField = createTextField()));
 
         addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
-                new FieldConfig(token, () -> githubTokenField = createTextField()),
-                new FieldConfig(repoLabel, () -> {
+                FieldConfig.of(token, () -> githubTokenField = createTextField()),
+                FieldConfig.of(repoLabel, () -> {
                     githubRepoField = createTextField();
                     githubRepoField.setToolTipText(get("dialog.modpublish.config-project.repo.tooltips"));
                     return githubRepoField;
                 }),
-                new FieldConfig(branchLabel, () -> {
+                FieldConfig.of(branchLabel, () -> {
                     githubBranchField = createTextField();
                     githubBranchField.setToolTipText(get("dialog.modpublish.config-project.branch.tooltips"));
                     return githubBranchField;

@@ -17,6 +17,7 @@
 
 package one.pkg.modpublish.util.protect;
 
+import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Cipher;
@@ -65,6 +66,14 @@ public class Protect {
         } catch (Exception e) {
             return data;
         }
+    }
+
+    public static @NotNull String decryptString(JBTextField text) {
+        return decryptString(text.getText());
+    }
+
+    public static @NotNull String decryptString(String encryptedData) {
+        return decryptString(encryptedData, HardwareFingerprint.generateSecureProjectKey());
     }
 
     public static @NotNull String decryptString(String encryptedData, String hash) {

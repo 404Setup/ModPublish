@@ -42,6 +42,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public abstract class BaseDialogWrapper extends DialogWrapper {
     final Project project;
 
@@ -214,7 +215,7 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     // This is the only way, slightly ugly but better than direct setting or no setting at all
     public void setErrorStyle(@NotNull JBCheckBox checkBox) {
         JPanel errorPanel = new JPanel(new BorderLayout());
-        errorPanel.setBackground(new Color(255, 200, 200));
+        errorPanel.setBackground(new JBColor(new Color(255, 200, 200), new Color(255, 200, 200)));
         errorPanel.setBorder(BorderFactory.createLineBorder(JBColor.RED, 2));
 
         Container parent = checkBox.getParent();
@@ -259,7 +260,30 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     public JBCheckBox getJBCheckBox(@PropertyKey(resourceBundle = Lang.File) String key) {
-        return new JBCheckBox(get(key));
+        return getJBCheckBoxRaw(get(key));
+    }
+
+    public JBCheckBox getJBCheckBoxRaw(String key) {
+        var box = getJBCheckBox();
+        box.setText(key);
+        return box;
+    }
+
+    public JBCheckBox getJBCheckBox() {
+        var box = new JBCheckBox();
+        box.setIcon(IconLoader.getIcon("/icons/checkbox-unchecked.svg", getClass()));
+        box.setSelectedIcon(IconLoader.getIcon("/icons/checkbox-checked.svg", getClass()));
+        box.setDisabledIcon(IconLoader.getIcon("/icons/checkbox-indeterminate.svg", getClass()));
+        box.setDisabledSelectedIcon(IconLoader.getIcon("/icons/checkbox-warning.svg", getClass()));
+        return box;
+    }
+
+    public void setOKButtonDefault() {
+        setOKButtonIcon(IconLoader.getIcon("/icons/send.svg", getClass()));
+    }
+
+    public void setOKButtonLoading() {
+        setOKButtonIcon(IconLoader.getIcon("/icons/arrow-clockwise-dashes.svg", getClass()));
     }
 
     @SuppressWarnings("all")
@@ -271,9 +295,55 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     @SuppressWarnings("all")
+    public void showMessageDialog(@PropertyKey(resourceBundle = Lang.File) String message,
+                                  @PropertyKey(resourceBundle = Lang.File) String title,
+                                  int messageType,
+                                  Icon icon
+    ) throws HeadlessException {
+        showMessageDialogRaw(get(message), get(title), messageType, icon);
+    }
+
+    @SuppressWarnings("all")
+    public void showMessageDialog(@PropertyKey(resourceBundle = Lang.File) String message,
+                                  @PropertyKey(resourceBundle = Lang.File) String title,
+                                  int messageType,
+                                  String icon
+    ) throws HeadlessException {
+        showMessageDialogRaw(get(message), get(title), messageType, IconLoader.getIcon(icon));
+    }
+
+    public void showSuccessDialog(@PropertyKey(resourceBundle = Lang.File) String message, @PropertyKey(resourceBundle = Lang.File) String title) {
+        showSuccessDialogRaw(get(message), get(title));
+    }
+
+    public void showFailedDialog(@PropertyKey(resourceBundle = Lang.File) String message, @PropertyKey(resourceBundle = Lang.File) String title) {
+        showFailedDialogRaw(get(message), get(title));
+    }
+
+    @SuppressWarnings("all")
     public void showMessageDialogRaw(@NotNull String message, @NotNull String title, int messageType
     ) throws HeadlessException {
         JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType);
+    }
+
+    @SuppressWarnings("all")
+    public void showMessageDialogRaw(@NotNull String message, @NotNull String title, int messageType, Icon icon
+    ) throws HeadlessException {
+        JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType, icon);
+    }
+
+    @SuppressWarnings("all")
+    public void showMessageDialogRaw(@NotNull String message, @NotNull String title, int messageType, String icon
+    ) throws HeadlessException {
+        JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType, IconLoader.getIcon(icon));
+    }
+
+    public void showSuccessDialogRaw(@NotNull String message, @NotNull String title) {
+        showMessageDialogRaw(message, title, JOptionPane.OK_CANCEL_OPTION, "/icons/checkmark-circle.svg");
+    }
+
+    public void showFailedDialogRaw(@NotNull String message, @NotNull String title) {
+        showMessageDialogRaw(message, title, JOptionPane.ERROR_MESSAGE, "/icons/dismiss-circle.svg");
     }
 
     public String get(@PropertyKey(resourceBundle = Lang.File) String key) {
@@ -325,6 +395,14 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     public record FieldConfig(String label, Supplier<JComponent> fieldSupplier) {
         public FieldConfig(Supplier<JComponent> fieldSupplier) {
             this(null, fieldSupplier);
+        }
+
+        public static FieldConfig of(String label, Supplier<JComponent> fieldSupplier) {
+            return new FieldConfig(label, fieldSupplier);
+        }
+
+        public static FieldConfig of(Supplier<JComponent> fieldSupplier) {
+            return new FieldConfig(fieldSupplier);
         }
     }
 }

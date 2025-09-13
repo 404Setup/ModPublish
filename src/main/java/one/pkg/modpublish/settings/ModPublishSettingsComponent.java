@@ -23,7 +23,6 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
-import one.pkg.modpublish.util.protect.HardwareFingerprint;
 import one.pkg.modpublish.util.protect.Protect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,35 +65,35 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         FormBuilder formBuilder = FormBuilder.createFormBuilder();
 
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
-                new FieldConfig("Token", () -> modrinthTokenText = createTextField()),
-                new FieldConfig("(Test) Token", () -> modrinthTestTokenText = createTextField()),
-                new FieldConfig(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")),
-                new FieldConfig(() -> modrinthTestTokenLink = createActionLink("Create Modrinth Test Token", "https://staging.modrinth.com/settings/pats")));
+                FieldConfig.of("Token", () -> modrinthTokenText = createTextField()),
+                FieldConfig.of("(Test) Token", () -> modrinthTestTokenText = createTextField()),
+                FieldConfig.of(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")),
+                FieldConfig.of(() -> modrinthTestTokenLink = createActionLink("Create Modrinth Test Token", "https://staging.modrinth.com/settings/pats")));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
-                new FieldConfig("Token", () -> curseforgeTokenText = createTextField()),
-                new FieldConfig("Studio Token", () -> curseforgeStudioTokenText = createTextField()),
-                new FieldConfig(() -> curseforgeStudioTokenLink = createActionLink("Create CurseForge Studio Token", "https://console.curseforge.com/?#/api-keys")),
-                new FieldConfig(() -> curseforgeTokenLink = createActionLink("Create CurseForge Token", "https://legacy.curseforge.com/account/api-tokens")));
+                FieldConfig.of("Token", () -> curseforgeTokenText = createTextField()),
+                FieldConfig.of("Studio Token", () -> curseforgeStudioTokenText = createTextField()),
+                FieldConfig.of(() -> curseforgeStudioTokenLink = createActionLink("Create CurseForge Studio Token", "https://console.curseforge.com/?#/api-keys")),
+                FieldConfig.of(() -> curseforgeTokenLink = createActionLink("Create CurseForge Token", "https://legacy.curseforge.com/account/api-tokens")));
 
         addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
-                new FieldConfig("Token", () -> githubTokenText = createTextField()),
-                new FieldConfig(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
+                FieldConfig.of("Token", () -> githubTokenText = createTextField()),
+                FieldConfig.of(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
 
         addPlatformSection(formBuilder, get("setting.network.name"), "/icons/databar.svg",
-                new FieldConfig(get("setting.network.ssl-check.name"), () -> networkEnableSSLCheckBox = new JBCheckBox()),
-                new FieldConfig(() -> createLabel(get("setting.network.ssl-check.desc"))),
-                new FieldConfig(get("setting.network.read-timeout.name"), () -> {
+                FieldConfig.of(get("setting.network.ssl-check.name"), () -> networkEnableSSLCheckBox = getJBCheckBox()),
+                FieldConfig.of(() -> createLabel(get("setting.network.ssl-check.desc"))),
+                FieldConfig.of(get("setting.network.read-timeout.name"), () -> {
                     networkReadTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
                     networkReadTimeoutText.setToolTipText(get("setting.network.read-timeout.desc"));
                     return networkReadTimeoutText;
                 }),
-                new FieldConfig(get("setting.network.write-timeout.name"), () -> {
+                FieldConfig.of(get("setting.network.write-timeout.name"), () -> {
                     networkWriteTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
                     networkWriteTimeoutText.setToolTipText(get("setting.network.write-timeout.desc"));
                     return networkWriteTimeoutText;
                 }),
-                new FieldConfig(get("setting.network.connect-timeout.name"), () -> {
+                FieldConfig.of(get("setting.network.connect-timeout.name"), () -> {
                     networkConnectTimeoutText = createSimpleNumericTextField(1, Integer.MAX_VALUE);
                     networkConnectTimeoutText.setToolTipText(get("setting.network.connect-timeout.desc"));
                     return networkConnectTimeoutText;
@@ -102,13 +101,13 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         );
 
         addPlatformSection(formBuilder, get("setting.proxy.name"), "/icons/globe.svg",
-                new FieldConfig(() -> createLabel(get("tips.3"))),
-                new FieldConfig(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = new JBCheckBox()),
-                new FieldConfig(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
-                new FieldConfig(get("setting.proxy.address"), () -> proxyAddressText = createTextField()),
-                new FieldConfig(get("setting.proxy.port"), () -> proxyPortText = createSimpleNumericTextField(1, 65535)),
-                new FieldConfig(get("setting.proxy.user"), () -> proxyUsernameText = createTextField()),
-                new FieldConfig(get("setting.proxy.pass"), () -> proxyPasswordText = createTextField())
+                FieldConfig.of(() -> createLabel(get("tips.3"))),
+                FieldConfig.of(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = getJBCheckBox()),
+                FieldConfig.of(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
+                FieldConfig.of(get("setting.proxy.address"), () -> proxyAddressText = createTextField()),
+                FieldConfig.of(get("setting.proxy.port"), () -> proxyPortText = createSimpleNumericTextField(1, 65535)),
+                FieldConfig.of(get("setting.proxy.user"), () -> proxyUsernameText = createTextField()),
+                FieldConfig.of(get("setting.proxy.pass"), () -> proxyPasswordText = createTextField())
         );
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
@@ -126,7 +125,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     @NotNull
     public String getModrinthTokenText() {
-        return Protect.decryptString(modrinthTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
+        return Protect.decryptString(modrinthTokenText);
     }
 
     public void setModrinthTokenText(@NotNull String newText) {
@@ -135,7 +134,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     @NotNull
     public String getModrinthTestTokenText() {
-        return Protect.decryptString(modrinthTestTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
+        return Protect.decryptString(modrinthTestTokenText.getText());
     }
 
     public void setModrinthTestTokenText(@NotNull String newText) {
@@ -144,7 +143,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     @NotNull
     public String getCurseforgeTokenText() {
-        return Protect.decryptString(curseforgeTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
+        return Protect.decryptString(curseforgeTokenText.getText());
     }
 
     public void setCurseforgeTokenText(@NotNull String newText) {
@@ -153,7 +152,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     @NotNull
     public String getCurseforgeStudioTokenText() {
-        return Protect.decryptString(curseforgeStudioTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
+        return Protect.decryptString(curseforgeStudioTokenText.getText());
     }
 
     public void setCurseforgeStudioTokenText(@NotNull String newText) {
@@ -162,7 +161,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     @NotNull
     public String getGithubTokenText() {
-        return Protect.decryptString(githubTokenText.getText(), HardwareFingerprint.generateSecureProjectKey());
+        return Protect.decryptString(githubTokenText.getText());
     }
 
     public void setGithubTokenText(@NotNull String newText) {
