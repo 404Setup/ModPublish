@@ -6,6 +6,7 @@
 
 ### Optimize
 - Enhanced number input field validation
+- More icons
 
 ### Translate
 - Improved translations

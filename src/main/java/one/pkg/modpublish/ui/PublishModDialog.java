@@ -274,7 +274,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         JBScrollPane minecraftScrollPane = new JBScrollPane(minecraftVersionList);
         minecraftScrollPane.setPreferredSize(new Dimension(200, 120));
 
-        addPlatformSection(formBuilder, get("component.name.mc-version"), null,
+        addPlatformSection(formBuilder, get("component.name.mc-version"), "icons/list-bar.svg",
                 new FieldConfig(() -> {
                     JPanel minecraftPanel = new JPanel(new BorderLayout());
                     minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
@@ -289,7 +289,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }));
 
         // Changelog
-        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), null,
+        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), "icons/clipboard.svg",
                 new FieldConfig(() -> {
                     try {
                         MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
@@ -305,7 +305,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }));
 
         // Dependency manager
-        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), null,
+        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), "icons/library.svg",
                 new FieldConfig(() -> dependencyPanel = new DependencyManagerPanel(this)));
 
         autoFillFields();
