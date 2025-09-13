@@ -71,6 +71,10 @@ public final class ModPublishSettings
         @NonNls
         public int proxyPort = 3366;
         @NonNls
+        public String proxyUsername = "";
+        @NonNls
+        public String proxyPassword = "";
+        @NonNls
         public boolean networkEnableSSLCheck = true;
         @NonNls
         public int networkConnectTimeout = 20;

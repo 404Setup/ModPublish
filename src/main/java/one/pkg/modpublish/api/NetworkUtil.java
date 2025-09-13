@@ -17,6 +17,7 @@
 
 package one.pkg.modpublish.api;
 
+import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import one.pkg.modpublish.settings.ModPublishSettings;
@@ -33,7 +34,8 @@ public class NetworkUtil {
     static {
         ModPublishSettings.State state = Objects.requireNonNull(ModPublishSettings.getInstance().getState());
 
-        var cb = new OkHttpClient.Builder().proxy(NetworkUtil.getProxy(state))
+        Proxy proxy = NetworkUtil.getProxy(state);
+        var cb = new OkHttpClient.Builder().proxy(proxy)
                 .connectTimeout(state.networkConnectTimeout, TimeUnit.SECONDS)
                 .readTimeout(state.networkReadTimeout, TimeUnit.SECONDS)
                 .writeTimeout(state.networkWriteTimeout, TimeUnit.SECONDS);
@@ -41,9 +43,19 @@ public class NetworkUtil {
             cb.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
                     .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager());
 
-        client = cb.build();
+        if (proxy != Proxy.NO_PROXY && !state.proxyUsername.isEmpty() && !state.proxyPassword.isEmpty()) {
+            Authenticator authenticator = (route, response) -> {
+                if (response.request().header("Proxy-Authorization") != null)
+                    return null;
 
-        //Credentials.basic("username", "password");
+                String credential = Credentials.basic(state.proxyUsername, state.proxyPassword);
+                return response.request().newBuilder()
+                        .header("Proxy-Authorization", credential)
+                        .build();
+            };
+            cb.proxyAuthenticator(authenticator);
+        }
+        client = cb.build();
     }
 
     private static boolean isValidIpAddress(String ip) {

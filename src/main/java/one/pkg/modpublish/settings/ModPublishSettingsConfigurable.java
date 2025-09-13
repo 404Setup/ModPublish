@@ -60,6 +60,8 @@ public class ModPublishSettingsConfigurable implements Configurable {
                 component.getProxyType() != state.proxyType ||
                 !component.getProxyAddress().equals(state.proxyAddress) ||
                 component.getProxyPort() != state.proxyPort ||
+                !component.getProxyUsername().equals(state.proxyUsername) ||
+                !component.getProxyPassword().equals(state.proxyPassword) ||
                 component.isNetworkEnableSSLCheck() != state.networkEnableSSLCheck ||
                 component.getNetworkConnectTimeout() != state.networkConnectTimeout ||
                 component.getNetworkReadTimeout() != state.networkReadTimeout ||
@@ -79,6 +81,8 @@ public class ModPublishSettingsConfigurable implements Configurable {
         state.proxyType = component.getProxyType();
         state.proxyAddress = component.getProxyAddress();
         state.proxyPort = component.getProxyPort();
+        state.proxyUsername = component.getProxyUsername();
+        state.proxyPassword = component.getProxyPassword();
         state.networkEnableSSLCheck = component.isNetworkEnableSSLCheck();
         state.updateNetworkConnectTimeout(component.getNetworkConnectTimeout());
         state.updateNetworkReadTimeout(component.getNetworkReadTimeout());
@@ -98,6 +102,8 @@ public class ModPublishSettingsConfigurable implements Configurable {
         component.setProxyType(state.proxyType);
         component.setProxyAddress(state.proxyAddress);
         component.setProxyPort(state.proxyPort);
+        component.setProxyUsername(state.proxyUsername);
+        component.setProxyPassword(state.proxyPassword);
         component.setNetworkEnableSSLCheck(state.networkEnableSSLCheck);
         component.setNetworkConnectTimeout(state.networkConnectTimeout);
         component.setNetworkReadTimeout(state.networkReadTimeout);

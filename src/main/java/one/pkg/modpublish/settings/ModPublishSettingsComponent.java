@@ -53,6 +53,8 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private JComboBox<Proxy.Type> proxyTypeComboBox;
     private JBTextField proxyAddressText;
     private JBTextField proxyPortText;
+    private JBTextField proxyUsernameText;
+    private JBTextField proxyPasswordText;
 
     private JBCheckBox networkEnableSSLCheckBox;
     private JBTextField networkConnectTimeoutText;
@@ -104,7 +106,10 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
                 new FieldConfig(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = new JBCheckBox()),
                 new FieldConfig(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
                 new FieldConfig(get("setting.proxy.address"), () -> proxyAddressText = createTextField()),
-                new FieldConfig(get("setting.proxy.port"), () -> proxyPortText = createSimpleNumericTextField(1, 65535)));
+                new FieldConfig(get("setting.proxy.port"), () -> proxyPortText = createSimpleNumericTextField(1, 65535)),
+                new FieldConfig(get("setting.proxy.user"), () -> proxyUsernameText = createTextField()),
+                new FieldConfig(get("setting.proxy.pass"), () -> proxyPasswordText = createTextField())
+        );
 
         panel = formBuilder.addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -198,6 +203,22 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     public void setProxyPort(int newPort) {
         proxyPortText.setText(String.valueOf(newPort));
+    }
+
+    public String getProxyUsername() {
+        return proxyUsernameText.getText();
+    }
+
+    public void setProxyUsername(@NotNull String newUsername) {
+        proxyUsernameText.setText(newUsername);
+    }
+
+    public String getProxyPassword() {
+        return proxyPasswordText.getText();
+    }
+
+    public void setProxyPassword(@NotNull String newPassword) {
+        proxyPasswordText.setText(newPassword);
     }
 
     public boolean isNetworkEnableSSLCheck() {

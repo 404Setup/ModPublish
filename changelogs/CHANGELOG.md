@@ -2,6 +2,7 @@
 
 ### Feat
 - More configurable network options
+- Support proxy auth (simple)
 
 ### Optimize
 - Enhanced number input field validation
