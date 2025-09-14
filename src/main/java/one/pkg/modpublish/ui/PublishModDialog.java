@@ -83,7 +83,6 @@ public class PublishModDialog extends BaseDialogWrapper {
     private JBCheckBox serverCheckBox;
     private JComboBox<ReleaseChannel> releaseType;
     private JComboBox<VirtualFile> primaryFile;
-    private JBCheckBox splitUpload;
 
     // Loaders
     private List<JBCheckBox> loaderCheckBoxes;
@@ -235,10 +234,6 @@ public class PublishModDialog extends BaseDialogWrapper {
                 return this;
             }
         });
-
-        // TODO - Hide it for now and write it later
-        splitUpload = new JBCheckBox("SplitUpload");
-        splitUpload.setVisible(false);
 
         JPanel primaryFilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         primaryFilePanel.add(primaryFile);
