@@ -3,6 +3,7 @@
 ### Feat
 - More configurable network options
 - Support proxy auth (simple)
+- Add pluginIcon
 
 ### Fix
 - Incorrect reading of ProxyType

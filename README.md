@@ -1,4 +1,7 @@
-# ModPublish
+<img src="./pluginIcon.png" alt="Logo" align="right" width="150">
+
+ModPublish
+====
 
 **This plugin is completely free, please download it from Jetbrains Marketplace or the official GitHub page!
 Do not download this plugin from any untrusted third party pages!**
