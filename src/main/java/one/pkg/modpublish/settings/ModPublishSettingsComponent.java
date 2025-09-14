@@ -172,7 +172,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     }
 
     public void setProxyType(int newType) {
-        proxyTypeComboBox.setSelectedItem(newType);
+        proxyTypeComboBox.setSelectedIndex(newType);
     }
 
     public String getProxyAddress() {

@@ -4,6 +4,9 @@
 - More configurable network options
 - Support proxy auth (simple)
 
+### Fix
+- Incorrect reading of ProxyType
+
 ### Optimize
 - Enhanced number input field validation
 - More icons
