@@ -44,7 +44,6 @@ public class Properties {
                     Objects.requireNonNull(ModPublishSettings.getInstance().getState());
             return switch (dataKey) {
                 case ModrinthToken -> state.getModrinthToken();
-                case ModrinthTestToken -> state.getModrinthTestToken();
                 case CurseForgeToken -> state.getCurseforgeToken();
                 case CurseForgeStudioToken -> state.getCurseforgeStudioToken();
                 case GithubToken -> state.getGithubToken();

@@ -7,12 +7,16 @@
 ### Optimize
 - Enhanced number input field validation
 - More icons
+- Improved Toml parser
 
 ### Translate
 - Improved translations
 
 ### Change
 - Java 21 is now required
+
+### Remove
+- remove modrinth test server
 
 ---
 

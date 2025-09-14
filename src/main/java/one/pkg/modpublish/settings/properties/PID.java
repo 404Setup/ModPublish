@@ -25,8 +25,7 @@ import javax.swing.*;
 
 @SuppressWarnings("unused")
 public enum PID {
-    ModrinthModID("modpublish.modrinth.modid", false), ModrinthTestModID("modpublish.modrinth.testModId", false),
-    ModrinthToken("modpublish.modrinth.token", true), ModrinthTestToken("modpublish.modrinth.testToken", true),
+    ModrinthModID("modpublish.modrinth.modid", false),ModrinthToken("modpublish.modrinth.token", true),
     CurseForgeToken("modpublish.curseforge.token", true), CurseForgeStudioToken("modpublish.curseforge.studioToken", true),
     CurseForgeModID("modpublish.curseforge.modid", false),
     GithubToken("modpublish.github.token", true), GithubRepo("modpublish.github.repo", false), GithubBranch("modpublish.github.branch", false),

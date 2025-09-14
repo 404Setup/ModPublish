@@ -93,7 +93,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (!selector.modrinth() && !selector.modrinthTest() && !selector.curseForge()) {
+        if (!selector.modrinth() && !selector.curseForge()) {
             if (selector.github())
                 showFailedDialog("message.dont-support-add-depends", "title.failed");
             else showFailedDialog("failed.8", "title.failed");
@@ -164,12 +164,6 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         API curseforgeApi = TargetType.CurseForge.api;
         if (selector.modrinth()) { // Modrinth
             if (modrinthApi.getABServer()) modrinthApi.updateABServer();
-            ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
-            if (modInfo.failed() != null) return ModInfo.of(modInfo);
-            infos[0] = modInfo;
-        }
-        if (selector.modrinthTest()) { // Modrinth Test
-            if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             ModInfo modInfo = modrinthApi.getModInfo(projectId, project);
             if (modInfo.failed() != null) return ModInfo.of(modInfo);
             infos[0] = modInfo;

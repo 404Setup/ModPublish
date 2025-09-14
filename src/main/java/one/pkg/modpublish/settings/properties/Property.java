@@ -71,25 +71,14 @@ public record Property(@NotNull ModrinthProperty modrinth, @NotNull CurseForgePr
         }
     }
 
-    public record ModrinthProperty(@NotNull Info token, @NotNull Info testToken, @NotNull String modid,
-                                   @NotNull String testModId) implements PropertyBase {
+    public record ModrinthProperty(@NotNull Info token,@NotNull String modid) implements PropertyBase {
         public static ModrinthProperty getInstance(PropertiesComponent properties) {
             return new ModrinthProperty(PID.ModrinthToken.getProtect(properties),
-                    PID.ModrinthTestToken.getProtect(properties),
-                    PID.ModrinthModID.get(properties),
-                    PID.ModrinthTestModID.get(properties));
+                    PID.ModrinthModID.get(properties));
         }
 
         @Override
         public boolean isEnabled() {
-            return isModEnabled() || isTestEnabled();
-        }
-
-        public boolean isTestEnabled() {
-            return !testToken.data().trim().isEmpty() && !testModId.trim().isEmpty();
-        }
-
-        public boolean isModEnabled() {
             return !token.data().trim().isEmpty() && !modid.trim().isEmpty();
         }
     }

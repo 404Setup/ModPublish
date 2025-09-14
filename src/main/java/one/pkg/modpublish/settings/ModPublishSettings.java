@@ -55,8 +55,6 @@ public final class ModPublishSettings
         @NonNls
         public String modrinthToken = "";
         @NonNls
-        public String modrinthTestToken = "";
-        @NonNls
         public String curseforgeToken = "";
         @NonNls
         public String curseforgeStudioToken = "";
@@ -108,14 +106,6 @@ public final class ModPublishSettings
 
         public void updateModrinthToken(String token) {
             this.modrinthToken = encryptToken(token);
-        }
-
-        public Info getModrinthTestToken() {
-            return getDecryptedToken(modrinthTestToken);
-        }
-
-        public void updateModrinthTestToken(String token) {
-            this.modrinthTestToken = encryptToken(token);
         }
 
         public Info getCurseforgeToken() {

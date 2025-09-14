@@ -19,12 +19,12 @@ package one.pkg.modpublish.data.internel;
 
 import com.intellij.ui.components.JBCheckBox;
 
-public record Selector(boolean modrinth, boolean modrinthTest, boolean curseForge, boolean github) {
-    public static Selector of(boolean modrinth, boolean modrinthTest, boolean curseForge, boolean github) {
-        return new Selector(modrinth, modrinthTest, curseForge, github);
+public record Selector(boolean modrinth, boolean curseForge, boolean github) {
+    public static Selector of(boolean modrinth, boolean curseForge, boolean github) {
+        return new Selector(modrinth, curseForge, github);
     }
 
-    public static Selector of(JBCheckBox modrinth, JBCheckBox modrinthTest, JBCheckBox curseForge, JBCheckBox github) {
-        return of(modrinth.isSelected(), modrinthTest.isSelected(), curseForge.isSelected(), github.isSelected());
+    public static Selector of(JBCheckBox modrinth, JBCheckBox curseForge, JBCheckBox github) {
+        return of(modrinth.isSelected(), curseForge.isSelected(), github.isSelected());
     }
 }

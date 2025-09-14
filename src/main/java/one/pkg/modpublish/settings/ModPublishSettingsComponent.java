@@ -36,9 +36,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
     private final JPanel panel;
 
     private JBTextField modrinthTokenText;
-    private JBTextField modrinthTestTokenText;
     private ActionLink modrinthTokenLink;
-    private ActionLink modrinthTestTokenLink;
 
     private JBTextField curseforgeTokenText;
     private JBTextField curseforgeStudioTokenText;
@@ -66,9 +64,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
                 FieldConfig.of("Token", () -> modrinthTokenText = createTextField()),
-                FieldConfig.of("(Test) Token", () -> modrinthTestTokenText = createTextField()),
-                FieldConfig.of(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")),
-                FieldConfig.of(() -> modrinthTestTokenLink = createActionLink("Create Modrinth Test Token", "https://staging.modrinth.com/settings/pats")));
+                FieldConfig.of(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
                 FieldConfig.of("Token", () -> curseforgeTokenText = createTextField()),
@@ -130,15 +126,6 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
 
     public void setModrinthTokenText(@NotNull String newText) {
         modrinthTokenText.setText(newText);
-    }
-
-    @NotNull
-    public String getModrinthTestTokenText() {
-        return Protect.decryptString(modrinthTestTokenText.getText());
-    }
-
-    public void setModrinthTestTokenText(@NotNull String newText) {
-        modrinthTestTokenText.setText(newText);
     }
 
     @NotNull

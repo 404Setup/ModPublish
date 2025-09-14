@@ -37,9 +37,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class ModrinthAPI extends API {
-    private static final String A_URL = "https://api.modrinth.com/v2/";
-    private static final String B_URL = "https://staging-api.modrinth.com/v2/";
-    private boolean ab = false;
+    private static final String URL = "https://api.modrinth.com/v2/";
 
     @Override
     public String getID() {
@@ -48,12 +46,12 @@ public class ModrinthAPI extends API {
 
     @Override
     public void updateABServer() {
-        ab = !ab;
+
     }
 
     @Override
     public boolean getABServer() {
-        return ab;
+        return true;
     }
 
     @Override
@@ -84,7 +82,7 @@ public class ModrinthAPI extends API {
     @Override
     String createJsonBody(PublishData data, Project project) {
         var json = ModrinthData.builder().releaseChannel(data.releaseChannel())
-                .projectId(ab ? PID.ModrinthTestModID.get(project) : PID.ModrinthModID.get(project))
+                .projectId(PID.ModrinthModID.get(project))
                 .versionBody(data.changelog())
                 .status(RequestStatus.Listed)
                 .featured(true)
@@ -120,9 +118,7 @@ public class ModrinthAPI extends API {
 
     Request.Builder getRequestBuilder(String url, Project project) {
         return getBaseRequestBuilder()
-                .header("Authorization",
-                        ab ? PID.ModrinthTestToken.getProtect(project).data() :
-                                PID.ModrinthToken.getProtect(project).data())
-                .url(ab ? B_URL + url : A_URL + url);
+                .header("Authorization", PID.ModrinthToken.getProtect(project).data())
+                .url(URL + url);
     }
 }

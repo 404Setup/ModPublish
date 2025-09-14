@@ -35,9 +35,14 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked"})
 public class TomlParser implements Closeable {
     private static final Logger LOG = Logger.getInstance(TomlParser.class);
+    private static final Pattern arrayTablePattern = Pattern.compile("^\\s*\\[\\[([^]]+)]]\\s*$");
+    private static final Pattern tablePattern = Pattern.compile("^\\s*\\[([^]]+)]\\s*$");
+    private static final Pattern keyValuePattern = Pattern.compile("^\\s*([^=]+)\\s*=\\s*(.+)\\s*$");
+    private static final Pattern multilineStringStartPattern = Pattern.compile("^\\s*([^=]+)\\s*=\\s*'''(.*)$");
+    private static final Pattern multilineStringEndPattern = Pattern.compile("^(.*)'''\\s*$");
 
     private final Map<String, Object> parsedData;
 
@@ -95,12 +100,6 @@ public class TomlParser implements Closeable {
         Map<String, Object> currentSection = null;
         String currentSectionName = null;
         boolean inRootSection = true;
-
-        Pattern arrayTablePattern = Pattern.compile("^\\s*\\[\\[([^]]+)]]\\s*$");
-        Pattern tablePattern = Pattern.compile("^\\s*\\[([^]]+)]\\s*$");
-        Pattern keyValuePattern = Pattern.compile("^\\s*([^=]+)\\s*=\\s*(.+)\\s*$");
-        Pattern multilineStringStartPattern = Pattern.compile("^\\s*([^=]+)\\s*=\\s*'''(.*)$");
-        Pattern multilineStringEndPattern = Pattern.compile("^(.*)'''\\s*$");
 
         String[] lines = content.split("\\r?\\n");
         boolean inMultilineString = false;

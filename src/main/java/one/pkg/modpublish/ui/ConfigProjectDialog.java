@@ -35,9 +35,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
     private JBTextField commonVersionFormatField;
 
     private JBTextField modrinthTokenField;
-    private JBTextField modrinthTestTokenField;
     private JBTextField modrinthModIDField;
-    private JBTextField modrinthTestModIDField;
 
     private JBTextField curseforgeTokenField;
     private JBTextField curseforgeStudioTokenField;
@@ -75,9 +73,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
 
         addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
                 FieldConfig.of(token, () -> modrinthTokenField = createTextField()),
-                FieldConfig.of("(Test) " + token, () -> modrinthTestTokenField = createTextField()),
-                FieldConfig.of(modIdLabel, () -> modrinthModIDField = createTextField()),
-                FieldConfig.of("(Test) " + modIdLabel, () -> modrinthTestModIDField = createTextField()));
+                FieldConfig.of(modIdLabel, () -> modrinthModIDField = createTextField()));
 
         addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
                 FieldConfig.of(token, () -> curseforgeTokenField = createTextField()),
@@ -120,11 +116,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         if (p1.modrinth().token().globalData())
             setToolTipText("dialog.modpublish.config-project.global", modrinthTokenField);
         else modrinthTokenField.setText(p1.modrinth().token().data());
-        if (p1.modrinth().testToken().globalData())
-            setToolTipText("dialog.modpublish.config-project.global", modrinthTestTokenField);
-        else modrinthTestTokenField.setText(p1.modrinth().testToken().data());
         modrinthModIDField.setText(p1.modrinth().modid());
-        modrinthTestModIDField.setText(p1.modrinth().testModId());
 
         if (p1.curseforge().token().globalData()) {
             setToolTipText("dialog.modpublish.config-project.global", curseforgeTokenField);
@@ -147,9 +139,7 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         PID.CommonVersionFormat.set(properties, commonVersionFormatField);
 
         PID.ModrinthToken.set(properties, modrinthTokenField);
-        PID.ModrinthTestToken.set(properties, modrinthTestTokenField);
         PID.ModrinthModID.set(properties, modrinthModIDField);
-        PID.ModrinthTestModID.set(properties, modrinthTestModIDField);
 
         PID.CurseForgeToken.set(properties, curseforgeTokenField);
         PID.CurseForgeStudioToken.set(properties, curseforgeStudioTokenField);

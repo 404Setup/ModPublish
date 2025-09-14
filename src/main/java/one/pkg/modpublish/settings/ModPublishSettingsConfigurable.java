@@ -52,7 +52,6 @@ public class ModPublishSettingsConfigurable implements Configurable {
         ModPublishSettings.State state =
                 Objects.requireNonNull(ModPublishSettings.getInstance().getState());
         return !component.getModrinthTokenText().equals(state.getModrinthToken().data()) ||
-                !component.getModrinthTestTokenText().equals(state.getModrinthTestToken().data()) ||
                 !component.getCurseforgeTokenText().equals(state.getCurseforgeToken().data()) ||
                 !component.getCurseforgeStudioTokenText().equals(state.getCurseforgeStudioToken().data()) ||
                 !component.getGithubTokenText().equals(state.getGithubToken().data()) ||
@@ -73,7 +72,6 @@ public class ModPublishSettingsConfigurable implements Configurable {
         ModPublishSettings.State state =
                 Objects.requireNonNull(ModPublishSettings.getInstance().getState());
         state.updateModrinthToken(component.getModrinthTokenText());
-        state.updateModrinthTestToken(component.getModrinthTestTokenText());
         state.updateCurseforgeToken(component.getCurseforgeTokenText());
         state.updateCurseforgeStudioToken(component.getCurseforgeStudioTokenText());
         state.updateGithubToken(component.getGithubTokenText());
@@ -94,7 +92,6 @@ public class ModPublishSettingsConfigurable implements Configurable {
         ModPublishSettings.State state =
                 Objects.requireNonNull(ModPublishSettings.getInstance().getState());
         component.setModrinthTokenText(state.getModrinthToken().data());
-        component.setModrinthTestTokenText(state.getModrinthTestToken().data());
         component.setCurseforgeTokenText(state.getCurseforgeToken().data());
         component.setCurseforgeStudioTokenText(state.getCurseforgeStudioToken().data());
         component.setGithubTokenText(state.getGithubToken().data());

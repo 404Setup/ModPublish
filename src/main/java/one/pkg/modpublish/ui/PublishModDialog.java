@@ -76,7 +76,6 @@ public class PublishModDialog extends BaseDialogWrapper {
     // Publish targets
     private JBCheckBox githubCheckBox;
     private JBCheckBox modrinthCheckBox;
-    private JBCheckBox modrinthTestCheckBox;
     private JBCheckBox curseforgeCheckBox;
 
     // Support targets
@@ -191,13 +190,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         // Publish targets
         githubCheckBox = getJBCheckBoxRaw("GitHub");
         modrinthCheckBox = getJBCheckBoxRaw("Modrinth");
-        modrinthTestCheckBox = getJBCheckBoxRaw("Modrinth (Test Server)");
         curseforgeCheckBox = getJBCheckBoxRaw("CurseForge");
 
         JPanel publishTargetsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         publishTargetsPanel.add(githubCheckBox);
         publishTargetsPanel.add(modrinthCheckBox);
-        publishTargetsPanel.add(modrinthTestCheckBox);
         publishTargetsPanel.add(curseforgeCheckBox);
         formBuilder.addLabeledComponent(Lang.get("component.name.targets"), publishTargetsPanel);
 
@@ -423,17 +420,11 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         Property p2 = Properties.getProperties(properties);
 
-        if (!p2.modrinth().isModEnabled()) {
+        if (!p2.modrinth().isEnabled()) {
             modrinthCheckBox.setEnabled(false);
             setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
         } else if (p2.modrinth().token().failed())
             setFailedSelect(modrinthCheckBox);
-
-        if (!p2.modrinth().isTestEnabled()) {
-            modrinthTestCheckBox.setEnabled(false);
-            setToolTipText("tooltip.modrinth.disable", modrinthTestCheckBox);
-        } else if (p2.modrinth().testToken().failed())
-            setFailedSelect(modrinthTestCheckBox);
 
         if (!p2.curseforge().isEnabled()) {
             curseforgeCheckBox.setEnabled(false);
@@ -486,7 +477,7 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     private PublishResult validatePublishTargetSelection() {
         if (!curseforgeCheckBox.isSelected() && !modrinthCheckBox.isSelected()
-                && !modrinthTestCheckBox.isSelected() && !githubCheckBox.isSelected()) {
+                && !githubCheckBox.isSelected()) {
             return PublishResult.of("failed.1");
         }
         return null;
@@ -494,7 +485,6 @@ public class PublishModDialog extends BaseDialogWrapper {
 
     private PublishResult validateModrinthCurseforgeSettings() {
         boolean hasModrinthOrCurseforge = modrinthCheckBox.isSelected()
-                || modrinthTestCheckBox.isSelected()
                 || curseforgeCheckBox.isSelected();
 
         if (hasModrinthOrCurseforge && !clientCheckBox.isSelected() && !serverCheckBox.isSelected()) {
@@ -605,13 +595,6 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
 
         if (modrinthCheckBox.isSelected()) {
-            if (modrinthApi.getABServer()) modrinthApi.updateABServer();
-            PublishResult mrResult = modrinthApi.createVersion(data, project);
-            if (mrResult.isFailure()) return mrResult;
-        }
-
-        if (modrinthTestCheckBox.isSelected()) {
-            if (!modrinthApi.getABServer()) modrinthApi.updateABServer();
             PublishResult mrResult = modrinthApi.createVersion(data, project);
             if (mrResult.isFailure()) return mrResult;
         }
@@ -628,6 +611,6 @@ public class PublishModDialog extends BaseDialogWrapper {
     }
 
     public Selector getPublishTargets() {
-        return Selector.of(modrinthCheckBox, modrinthTestCheckBox, curseforgeCheckBox, githubCheckBox);
+        return Selector.of(modrinthCheckBox, curseforgeCheckBox, githubCheckBox);
     }
 }
