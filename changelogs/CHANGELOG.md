@@ -4,6 +4,7 @@
 - More configurable network options
 - Support proxy auth (simple)
 - Add pluginIcon
+- Curseforge supports multiple file uploads (untested)
 
 ### Fix
 - Incorrect reading of ProxyType

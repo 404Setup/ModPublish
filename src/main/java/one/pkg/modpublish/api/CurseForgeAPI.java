@@ -28,10 +28,15 @@ import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.data.network.curseforge.CurseForgeData;
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation;
+import one.pkg.modpublish.data.result.BackResult;
 import one.pkg.modpublish.data.result.PublishResult;
+import one.pkg.modpublish.data.result.Result;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -55,17 +60,15 @@ public class CurseForgeAPI extends API {
         return ab;
     }
 
-    @Override
-    public PublishResult createVersion(PublishData data, Project project) {
-        if (ab) ab = false;
+    private Result create(PublishData data, Project project, File file, @Nullable BackResult bResult) {
         String modid = PID.CurseForgeModID.get(project);
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("projects/" + modid + "/upload-file", project));
-        RequestBody file = RequestBody.create(data.files()[0], MediaType.get("application/java-archive"));
+        RequestBody fileData = RequestBody.create(file, MediaType.get("application/java-archive"));
 
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", data.files()[0].getName(), file)
-                .addFormDataPart("metadata", createJsonBody(data, project))
+                .addFormDataPart("file", file.getName(), fileData)
+                .addFormDataPart("metadata", createJsonBody(data, project, bResult))
                 .build();
         Request request = requestBuilder.post(body).build();
 
@@ -75,7 +78,7 @@ public class CurseForgeAPI extends API {
             String bs = resp.body().string();
             CurseForgePublishResult result = JsonParser.fromJson(bs, CurseForgePublishResult.class);
             if (result != null && result.isSuccess())
-                return PublishResult.empty();
+                return BackResult.result(result);
             return PublishResult.create(bs);
         } catch (IOException e) {
             return PublishResult.create(this, e.getMessage());
@@ -83,10 +86,29 @@ public class CurseForgeAPI extends API {
     }
 
     @Override
+    public PublishResult createVersion(PublishData data, Project project) {
+        if (ab) ab = false;
+        BackResult bResult = null;
+        for (int i = 0; i < data.files().length; i++) {
+            File f = data.files()[i];
+            var result = create(data, project, f, bResult);
+            if (i == 0 && result instanceof BackResult br) bResult = br;
+            if (result instanceof PublishResult pr && pr.isFailure()) return pr;
+        }
+        return PublishResult.empty();
+    }
+
+    @Override
     String createJsonBody(PublishData data, Project project) {
+        return createJsonBody(data, project, null);
+    }
+
+    String createJsonBody(@NotNull PublishData data, @NotNull Project project, @Nullable BackResult bResult) {
         CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder().releaseType(data.releaseChannel())
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
+        if (bResult != null)
+            builder.parentFileID(bResult.asCurseForgePublishResult().getId());
         for (MinecraftVersion v : data.minecraftVersions()) builder.gameVersion(v);
         if (data.supportedInfo().getClient().isEnabled())
             builder.gameVersion(data.supportedInfo().getClient().getCfid());

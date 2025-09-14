@@ -97,7 +97,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         );
 
         addPlatformSection(formBuilder, get("setting.proxy.name"), "/icons/globe.svg",
-                FieldConfig.of(() -> createLabel(get("tips.3"))),
+                FieldConfig.of(() -> createLabel(get("tips.2"))),
                 FieldConfig.of(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = getJBCheckBox()),
                 FieldConfig.of(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),
                 FieldConfig.of(get("setting.proxy.address"), () -> proxyAddressText = createTextField()),

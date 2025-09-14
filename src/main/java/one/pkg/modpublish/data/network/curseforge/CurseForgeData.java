@@ -18,18 +18,21 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
+import groovy.transform.AutoClone;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import one.pkg.modpublish.data.internel.ReleaseChannel;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.util.io.JsonParser;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
 @Getter
+@AutoClone
 @Builder(toBuilder = true)
 public class CurseForgeData {
 
@@ -103,7 +106,8 @@ public class CurseForgeData {
     }
 
     public static class CurseForgeDataBuilder {
-        public CurseForgeDataBuilder changelog(String changelog) {
+        @NotNull
+        public CurseForgeDataBuilder changelog(@NotNull String changelog) {
             this.changelog = changelog;
             this.changelogType = "text";
             return this;
@@ -114,7 +118,8 @@ public class CurseForgeData {
          *
          * @param htmlChangelog Changelog in HTML format
          */
-        public CurseForgeDataBuilder htmlChangelog(String htmlChangelog) {
+        @NotNull
+        public CurseForgeDataBuilder htmlChangelog(@NotNull String htmlChangelog) {
             this.changelog = htmlChangelog;
             this.changelogType = "html";
             return this;
@@ -125,77 +130,93 @@ public class CurseForgeData {
          *
          * @param markdownChangelog Changelog in Markdown format
          */
-        public CurseForgeDataBuilder markdownChangelog(String markdownChangelog) {
+        @NotNull
+        public CurseForgeDataBuilder markdownChangelog(@NotNull String markdownChangelog) {
             this.changelog = markdownChangelog;
             this.changelogType = "markdown";
             return this;
         }
 
-        public CurseForgeDataBuilder gameVersion(MinecraftVersion version) {
+        @NotNull
+        public CurseForgeDataBuilder gameVersion(@NotNull MinecraftVersion version) {
             return version.canReleaseToCurseForge() ? gameVersion(version.id) : this;
         }
 
-        public CurseForgeDataBuilder gameVersion(Integer gameVersion) {
+        @NotNull
+        public CurseForgeDataBuilder gameVersion(@NotNull Integer gameVersion) {
             if (this.gameVersions == null) this.gameVersions = new ArrayList<>();
             if (!this.gameVersions.isEmpty() && this.gameVersions.contains(gameVersion)) return this;
             this.gameVersions.add(gameVersion);
             return this;
         }
 
+        @NotNull
         public CurseForgeDataBuilder alpha() {
             return releaseType(ReleaseChannel.Alpha);
         }
 
+        @NotNull
         public CurseForgeDataBuilder beta() {
             return releaseType(ReleaseChannel.Beta);
         }
 
+        @NotNull
         public CurseForgeDataBuilder release() {
             return releaseType(ReleaseChannel.Release);
         }
 
         @Tolerate
-        public CurseForgeDataBuilder releaseType(ReleaseChannel releaseChannel) {
+        @NotNull
+        public CurseForgeDataBuilder releaseType(@NotNull ReleaseChannel releaseChannel) {
             this.releaseType = releaseChannel.getType();
             return this;
         }
 
-        public CurseForgeDataBuilder dependency(ProjectRelation relation) {
+        @NotNull
+        public CurseForgeDataBuilder dependency(@NotNull ProjectRelation relation) {
             if (this.relations == null) this.relations = new Relations();
             if (this.relations.getProjects() == null) this.relations.setProjects(new ArrayList<>());
             this.relations.addProject(relation);
             return this;
         }
 
-        public CurseForgeDataBuilder requiredDependency(String slug) {
+        @NotNull
+        public CurseForgeDataBuilder requiredDependency(@NotNull String slug) {
             return dependency(ProjectRelation.createRequired(slug));
         }
 
-        public CurseForgeDataBuilder requiredDependency(String slug, int projectID) {
+        @NotNull
+        public CurseForgeDataBuilder requiredDependency(@NotNull String slug, int projectID) {
             return dependency(ProjectRelation.createRequired(slug, projectID));
         }
 
-        public CurseForgeDataBuilder optionalDependency(String slug) {
+        @NotNull
+        public CurseForgeDataBuilder optionalDependency(@NotNull String slug) {
             return dependency(ProjectRelation.createOptional(slug));
         }
 
-        public CurseForgeDataBuilder optionalDependency(String slug, int projectID) {
+        @NotNull
+        public CurseForgeDataBuilder optionalDependency(@NotNull String slug, int projectID) {
             return dependency(ProjectRelation.createOptional(slug, projectID));
         }
 
-        public CurseForgeDataBuilder embeddedLibrary(String slug) {
+        @NotNull
+        public CurseForgeDataBuilder embeddedLibrary(@NotNull String slug) {
             return dependency(ProjectRelation.createEmbedded(slug));
         }
 
-        public CurseForgeDataBuilder embeddedLibrary(String slug, int projectID) {
+        @NotNull
+        public CurseForgeDataBuilder embeddedLibrary(@NotNull String slug, int projectID) {
             return dependency(ProjectRelation.createEmbedded(slug, projectID));
         }
 
-        public CurseForgeDataBuilder incompatible(String slug) {
+        @NotNull
+        public CurseForgeDataBuilder incompatible(@NotNull String slug) {
             return dependency(ProjectRelation.createIncompatible(slug));
         }
 
-        public CurseForgeDataBuilder incompatible(String slug, int projectID) {
+        @NotNull
+        public CurseForgeDataBuilder incompatible(@NotNull String slug, int projectID) {
             return dependency(ProjectRelation.createIncompatible(slug, projectID));
         }
     }

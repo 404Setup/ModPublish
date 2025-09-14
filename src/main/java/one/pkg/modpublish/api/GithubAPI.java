@@ -103,7 +103,7 @@ public class GithubAPI extends API {
                     return pr;
                 }
                 BackResult br = (BackResult) releaseResult;
-                releaseResponse = JsonParser.fromJson(br.result()).getAsJsonObject();
+                releaseResponse = JsonParser.fromJson(br.asString()).getAsJsonObject();
             }
 
             String uploadUrl = releaseResponse.get("upload_url").getAsString();

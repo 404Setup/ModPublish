@@ -17,7 +17,9 @@
 
 package one.pkg.modpublish.data.result;
 
-public record BackResult(String result) implements Result {
+import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult;
+
+public record BackResult(Object result) implements Result {
     @Override
     public boolean isSuccess() {
         return true;
@@ -28,7 +30,23 @@ public record BackResult(String result) implements Result {
         return !isSuccess();
     }
 
-    public static BackResult result(String result) {
+    public static BackResult result(Object result) {
         return new BackResult(result);
+    }
+
+    public boolean isString() {
+        return result instanceof String;
+    }
+
+    public String asString() {
+        return (String) result;
+    }
+
+    public boolean isCurseForgePublishResult() {
+        return result instanceof CurseForgePublishResult;
+    }
+
+    public CurseForgePublishResult asCurseForgePublishResult() {
+        return (CurseForgePublishResult) result;
     }
 }
