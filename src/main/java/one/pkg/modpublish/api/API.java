@@ -24,6 +24,7 @@ import one.pkg.modpublish.data.internel.ModInfo;
 import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.util.resources.Lang;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -32,31 +33,38 @@ public abstract class API {
     public API() {
     }
 
+    @NotNull
     Request.Builder getBaseRequestBuilder() {
         return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
     }
 
+    @NotNull
     public abstract String getID();
 
     public abstract void updateABServer();
 
     public abstract boolean getABServer();
 
-    Request.Builder getJsonRequest(Request.Builder builder) {
+    @NotNull
+    Request.Builder getJsonRequest(@NotNull Request.Builder builder) {
         return builder.header("Accept", "application/json");
     }
 
-    Request.Builder getFormRequest(Request.Builder builder) {
+    @NotNull
+    Request.Builder getFormRequest(@NotNull Request.Builder builder) {
         return builder.header("Content-Type", "multipart/form-data");
     }
 
-    Optional<String> getContentType(Response response) {
+    @NotNull
+    Optional<String> getContentType(@NotNull Response response) {
         return Optional.ofNullable(response.header("Content-Type"));
     }
 
-    abstract String createJsonBody(PublishData data, Project project);
+    @NotNull
+    abstract String createJsonBody(@NotNull PublishData data, @NotNull Project project);
 
-    Optional<String> getStatus(Response response) {
+    @NotNull
+    Optional<String> getStatus(@NotNull Response response) {
         if (response.code() == 403)
             return Optional.of(Lang.get("api.common.err.403"));
         if (response.code() == 404)
@@ -77,7 +85,9 @@ public abstract class API {
         return Optional.empty();
     }
 
-    public abstract PublishResult createVersion(PublishData data, Project project);
+    @NotNull
+    public abstract PublishResult createVersion(@NotNull PublishData data, @NotNull Project project);
 
-    public abstract ModInfo getModInfo(String modid, Project project);
+    @NotNull
+    public abstract ModInfo getModInfo(@NotNull String modid, @NotNull Project project);
 }

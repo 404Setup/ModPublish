@@ -31,6 +31,7 @@ import one.pkg.modpublish.data.network.modrinth.ProjectRelation;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class ModrinthAPI extends API {
     private static final String URL = "https://api.modrinth.com/v2/";
 
     @Override
-    public String getID() {
+    public @NotNull String getID() {
         return "Modrinth";
     }
 
@@ -56,7 +57,7 @@ public class ModrinthAPI extends API {
 
     @Override
     @SuppressWarnings("all")
-    public PublishResult createVersion(PublishData data, Project project) {
+    public @NotNull PublishResult createVersion(@NotNull PublishData data, @NotNull Project project) {
         Request.Builder requestBuilder = getFormRequest(getRequestBuilder("version", project));
 
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
@@ -80,7 +81,8 @@ public class ModrinthAPI extends API {
     }
 
     @Override
-    String createJsonBody(PublishData data, Project project) {
+    @NotNull
+    String createJsonBody(@NotNull PublishData data, @NotNull Project project) {
         var json = ModrinthData.builder().releaseChannel(data.releaseChannel())
                 .projectId(PID.ModrinthModID.get(project))
                 .versionBody(data.changelog())
@@ -104,7 +106,7 @@ public class ModrinthAPI extends API {
     }
 
     @Override
-    public ModInfo getModInfo(String modid, Project project) {
+    public @NotNull ModInfo getModInfo(@NotNull String modid, @NotNull Project project) {
         Request req = getJsonRequest(getRequestBuilder("project/" + modid, project)).get().build();
         try (Response resp = NetworkUtil.client.newCall(req).execute()) {
             Optional<String> status = getStatus(resp);
@@ -116,7 +118,8 @@ public class ModrinthAPI extends API {
         }
     }
 
-    Request.Builder getRequestBuilder(String url, Project project) {
+    @NotNull
+    Request.Builder getRequestBuilder(@NotNull String url, @NotNull Project project) {
         return getBaseRequestBuilder()
                 .header("Authorization", PID.ModrinthToken.getProtect(project).data())
                 .url(URL + url);

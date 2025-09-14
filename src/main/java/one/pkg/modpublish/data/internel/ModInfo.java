@@ -20,6 +20,8 @@ package one.pkg.modpublish.data.internel;
 import org.jetbrains.annotations.Nullable;
 
 public record ModInfo(@Nullable String modid, @Nullable String slug, @Nullable String name, @Nullable String failed) {
+    static ModInfo EMPTY = new ModInfo(null, null, null, null);
+
     public static ModInfo of(@Nullable String failed) {
         return new ModInfo(null, null, null, failed);
     }
@@ -34,5 +36,9 @@ public record ModInfo(@Nullable String modid, @Nullable String slug, @Nullable S
 
     public static ModInfo[] of(ModInfo... modInfos) {
         return modInfos;
+    }
+
+    public static ModInfo empty() {
+        return EMPTY;
     }
 }

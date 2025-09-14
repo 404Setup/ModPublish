@@ -46,7 +46,7 @@ public class CurseForgeAPI extends API {
     private boolean ab = false;
 
     @Override
-    public String getID() {
+    public @NotNull String getID() {
         return "CurseForge";
     }
 
@@ -68,7 +68,7 @@ public class CurseForgeAPI extends API {
         MultipartBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(), fileData)
-                .addFormDataPart("metadata", createJsonBody(data, project, bResult))
+                .addFormDataPart("metadata", createJsonBody(data, bResult))
                 .build();
         Request request = requestBuilder.post(body).build();
 
@@ -86,7 +86,7 @@ public class CurseForgeAPI extends API {
     }
 
     @Override
-    public PublishResult createVersion(PublishData data, Project project) {
+    public @NotNull PublishResult createVersion(@NotNull PublishData data, @NotNull Project project) {
         if (ab) ab = false;
         BackResult bResult = null;
         for (int i = 0; i < data.files().length; i++) {
@@ -99,11 +99,13 @@ public class CurseForgeAPI extends API {
     }
 
     @Override
-    String createJsonBody(PublishData data, Project project) {
-        return createJsonBody(data, project, null);
+    @NotNull
+    String createJsonBody(@NotNull PublishData data, @NotNull Project project) {
+        return createJsonBody(data, (BackResult) null);
     }
 
-    String createJsonBody(@NotNull PublishData data, @NotNull Project project, @Nullable BackResult bResult) {
+    @NotNull
+    String createJsonBody(@NotNull PublishData data, @Nullable BackResult bResult) {
         CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder().releaseType(data.releaseChannel())
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
@@ -126,7 +128,7 @@ public class CurseForgeAPI extends API {
     }
 
     @Override
-    public ModInfo getModInfo(String modid, Project project) {
+    public @NotNull ModInfo getModInfo(@NotNull String modid, @NotNull Project project) {
         if (!ab) ab = true;
         Request req = getJsonRequest(getRequestBuilder("mods/" + modid, project)).get().build();
         try (Response resp = NetworkUtil.client.newCall(req).execute()) {
@@ -140,7 +142,8 @@ public class CurseForgeAPI extends API {
         }
     }
 
-    Request.Builder getRequestBuilder(String url, Project project) {
+    @NotNull
+    Request.Builder getRequestBuilder(@NotNull String url, @NotNull Project project) {
         Request.Builder builder = getBaseRequestBuilder();
         return ab ? builder.header("x-api-key",
                         PID.CurseForgeStudioToken.getProtect(project).data())

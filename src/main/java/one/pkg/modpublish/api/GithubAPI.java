@@ -32,6 +32,7 @@ import one.pkg.modpublish.data.result.Result;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.GitInfo;
 import one.pkg.modpublish.util.io.JsonParser;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,8 @@ public class GithubAPI extends API {
     private static final String REPO_INFO_URL = "https://api.github.com/repos/{path}";
     private static final String BRANCH_COMMIT_URL = "https://api.github.com/repos/{path}/branches/{branch}";
 
-    public Request.Builder getRequestBuilder(String url, Project project) {
+    @NotNull
+    public Request.Builder getRequestBuilder(@NotNull String url, @NotNull Project project) {
         return getBaseRequestBuilder().header("Accept", "application/vnd.github+json")
                 .header("X-GitHub-Api-Version", "2022-11-28")
                 .header("Authorization", "Bearer " + PID.GithubToken.getProtect(project).data())
@@ -51,7 +53,7 @@ public class GithubAPI extends API {
     }
 
     @Override
-    public String getID() {
+    public @NotNull String getID() {
         return "Github";
     }
 
@@ -65,7 +67,8 @@ public class GithubAPI extends API {
     }
 
     @Override
-    String createJsonBody(PublishData data, Project project) {
+    @NotNull
+    String createJsonBody(@NotNull PublishData data, @NotNull Project project) {
         String branch = PID.GithubBranch.get(project);
         if (branch.isEmpty()) branch = GitInfo.getBrach(project);
         String targetCommitish = getTargetCommitish(branch, project);
@@ -86,7 +89,7 @@ public class GithubAPI extends API {
     }
 
     @Override
-    public PublishResult createVersion(PublishData data, Project project) {
+    public @NotNull PublishResult createVersion(@NotNull PublishData data, @NotNull Project project) {
         try {
             String tagName = data.versionNumber().startsWith("v") ?
                     data.versionNumber() :
@@ -122,7 +125,8 @@ public class GithubAPI extends API {
         }
     }
 
-    private Result createRelease(PublishData data, Project project) {
+    @NotNull
+    private Result createRelease(@NotNull PublishData data, @NotNull Project project) {
         try {
             Request request = getJsonRequest(getRequestBuilder(RELEASES_URL, project))
                     .post(RequestBody.create(createJsonBody(data, project), MediaType.get("application/json")))
@@ -138,7 +142,8 @@ public class GithubAPI extends API {
         }
     }
 
-    private PublishResult uploadAsset(File file, Project project, String uploadUrl) {
+    @NotNull
+    private PublishResult uploadAsset(@NotNull File file, @NotNull Project project, @NotNull String uploadUrl) {
         try {
             String fileName = file.getName();
             String assetUrl = uploadUrl + "?name=" + fileName;
@@ -161,7 +166,8 @@ public class GithubAPI extends API {
         }
     }
 
-    private Optional<JsonObject> checkExistingRelease(String tagName, Project project) {
+    @NotNull
+    private Optional<JsonObject> checkExistingRelease(@NotNull String tagName, @NotNull Project project) {
         try {
             String url = RELEASES_URL + "/tags/" + tagName;
             Request request = getRequestBuilder(url, project)
@@ -184,19 +190,21 @@ public class GithubAPI extends API {
         }
     }
 
-    private String getTargetCommitish(String branch, Project project) {
+    @NotNull
+    private String getTargetCommitish(@NotNull String branch, @NotNull Project project) {
         try {
-            if (branch == null || branch.trim().isEmpty()) {
+            if (branch.trim().isEmpty()) {
                 return getDefaultBranch(project);
             } else {
                 return getLatestCommitHash(branch, project);
             }
         } catch (Exception e) {
-            return branch != null && !branch.trim().isEmpty() ? branch : "main";
+            return !branch.trim().isEmpty() ? branch : "main";
         }
     }
 
-    private String getDefaultBranch(Project project) throws IOException {
+    @NotNull
+    private String getDefaultBranch(@NotNull Project project) throws IOException {
         Request request = getRequestBuilder(REPO_INFO_URL, project)
                 .get()
                 .build();
@@ -210,7 +218,8 @@ public class GithubAPI extends API {
         return "main";
     }
 
-    private String getLatestCommitHash(String branch, Project project) throws IOException {
+    @NotNull
+    private String getLatestCommitHash(@NotNull String branch, @NotNull Project project) throws IOException {
         String url = BRANCH_COMMIT_URL.replace("{branch}", branch);
         Request request = getRequestBuilder(url, project)
                 .get()
@@ -228,7 +237,7 @@ public class GithubAPI extends API {
 
 
     @Override
-    public ModInfo getModInfo(String modid, Project project) {
-        return null;
+    public @NotNull ModInfo getModInfo(@NotNull String modid, @NotNull Project project) {
+        return ModInfo.empty();
     }
 }

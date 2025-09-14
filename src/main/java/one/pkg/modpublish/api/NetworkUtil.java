@@ -22,6 +22,7 @@ import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import one.pkg.modpublish.settings.ModPublishSettings;
 import one.tranic.t.proxy.ProxyConfigReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -58,7 +59,7 @@ public class NetworkUtil {
         client = cb.build();
     }
 
-    private static boolean isValidIpAddress(String ip) {
+    private static boolean isValidIpAddress(@NotNull String ip) {
         try {
             String[] parts = ip.split("\\.");
             if (parts.length == 4) {
@@ -82,7 +83,8 @@ public class NetworkUtil {
         }
     }
 
-    static Proxy getProxy(ModPublishSettings.State state) {
+    @NotNull
+    static Proxy getProxy(@NotNull ModPublishSettings.State state) {
         if (state.autoProxy) return ProxyConfigReader.getProxy(Proxy.NO_PROXY);
         if (state.proxyAddress.isBlank() || state.proxyPort < 1 || state.proxyPort > 65535 || !isValidIpAddress(state.proxyAddress))
             return Proxy.NO_PROXY;
