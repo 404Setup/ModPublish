@@ -17,12 +17,10 @@
 
 package one.pkg.modpublish.data.local;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import one.pkg.modpublish.data.internel.ModInfo;
 
-@Getter
-@Setter
+@Data
 @SuppressWarnings("unused")
 public class DependencyInfo {
     private String projectId;

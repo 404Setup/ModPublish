@@ -17,12 +17,10 @@
 
 package one.pkg.modpublish.data.internel;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 
-@Getter
-@Setter
+@Data
 public class MinecraftVersionItem {
     private final MinecraftVersion version;
     private boolean selected;
