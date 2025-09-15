@@ -7,16 +7,15 @@
 - Curseforge supports multiple file uploads (untested)
 - When the previous publication target fails, the later publishing tasks will not be canceled
 - When publishing fails, all error messages are displayed
+
+### Performance
 - PublishTask is now parallel
 - PublishTask no longer freezes PublishUI
-
-### Fix
-- Incorrect reading of ProxyType
+- Improved Toml parser
 
 ### Optimize
 - Enhanced number input field validation
 - More icons
-- Improved Toml parser
 
 ### Translate
 - Improved translations
@@ -26,6 +25,9 @@
 
 ### Remove
 - remove modrinth test server
+
+### Fix
+- Incorrect reading of ProxyType
 
 ---
 
@@ -38,8 +40,8 @@
 - When API errors occur, should return API ID
 - Support using proxy server. Need to configure in settings.
 - Support auto detecting current Git branch
-
-### Optimize
+- 
+### Performance
 - Don't process Minecraft version list synchronously when creating UI
 - Cache isn't used effectively
 
