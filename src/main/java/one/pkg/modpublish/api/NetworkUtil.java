@@ -44,7 +44,8 @@ public class NetworkUtil {
             cb.hostnameVerifier(SSLSocketClient.getHostnameVerifier())
                     .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager());
 
-        if (proxy != Proxy.NO_PROXY && !state.proxyUsername.isEmpty() && !state.proxyPassword.isEmpty()) {
+        if ((proxy != Proxy.NO_PROXY || !state.proxyAddress.isBlank() && state.proxyPort > 0) &&
+                !state.proxyUsername.isEmpty() && !state.proxyPassword.isEmpty()) {
             Authenticator authenticator = (route, response) -> {
                 if (response.request().header("Proxy-Authorization") != null)
                     return null;
