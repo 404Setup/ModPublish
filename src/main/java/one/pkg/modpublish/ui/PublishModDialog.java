@@ -42,6 +42,7 @@ import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
+import one.pkg.modpublish.util.io.Async;
 import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.io.JsonParser;
 import one.pkg.modpublish.util.resources.Lang;
@@ -60,6 +61,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class PublishModDialog extends BaseDialogWrapper {
     @Getter
@@ -519,11 +522,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         setOKButtonLoading();
         setText("button.publishing", TextType.OKButton);
 
-        SwingUtilities.invokeLater(() -> {
-            savePersistedData();
+        savePersistedData();
 
-            PublishData publishData = collectPublishData();
+        final PublishData publishData = collectPublishData();
 
+        Async.runAsync(() -> {
             List<PublishResult> result = performPublish(publishData);
             boolean isOk = true;
             StringBuilder builder = new StringBuilder();
@@ -544,20 +547,23 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }
             }
 
-            try {
-                if (isOk) {
-                    super.doOKAction();
-                    showSuccessDialog("message.success", "title.success");
-                    close(0, true);
-                } else {
-                    getOKAction().setEnabled(true);
-                    setText("button.publish", TextType.OKButton);
-                    showFailedDialogRaw(get("message.failed", builder.toString()),
-                            get("title.failed"));
+            boolean finalIsOk = isOk;
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    if (finalIsOk) {
+                        super.doOKAction();
+                        showSuccessDialog("message.success", "title.success");
+                        close(0, true);
+                    } else {
+                        getOKAction().setEnabled(true);
+                        setText("button.publish", TextType.OKButton);
+                        showFailedDialogRaw(get("message.failed", builder.toString()),
+                                get("title.failed"));
+                    }
+                } finally {
+                    setOKButtonDefault();
                 }
-            } finally {
-                setOKButtonDefault();
-            }
+            });
         });
     }
 
@@ -604,29 +610,45 @@ public class PublishModDialog extends BaseDialogWrapper {
             return results;
         }
 
-        //try {
-        var modrinthApi = TargetType.Modrinth.api;
-        var curseforgeApi = TargetType.CurseForge.api;
-        var githubApi = TargetType.Github.api;
-        if (curseforgeCheckBox.isSelected()) {
-            PublishResult cfResult = curseforgeApi.createVersion(data, project);
-            if (cfResult.isFailure()) results.add(cfResult);
-        }
+        try {
+            var modrinthApi = TargetType.Modrinth.api;
+            var curseforgeApi = TargetType.CurseForge.api;
+            var githubApi = TargetType.Github.api;
 
-        if (modrinthCheckBox.isSelected()) {
-            PublishResult mrResult = modrinthApi.createVersion(data, project);
-            if (mrResult.isFailure()) results.add(mrResult);
-        }
+            CompletableFuture<PublishResult> curseForgeTask = Async.runAsync(() -> {
+                if (curseforgeCheckBox.isSelected()) {
+                    PublishResult cfResult = curseforgeApi.createVersion(data, project);
+                    if (cfResult.isFailure()) return cfResult;
+                }
+                return null;
+            });
 
-        if (githubCheckBox.isSelected()) {
-            PublishResult ghResult = githubApi.createVersion(data, project);
-            if (ghResult.isFailure()) results.add(ghResult);
-        }
+            CompletableFuture<PublishResult> modrinthTask = Async.runAsync(() -> {
+                if (modrinthCheckBox.isSelected()) {
+                    PublishResult mrResult = modrinthApi.createVersion(data, project);
+                    if (mrResult.isFailure()) return mrResult;
+                }
+                return null;
+            });
 
+            CompletableFuture<PublishResult> githubTask = Async.runAsync(() -> {
+                if (githubCheckBox.isSelected()) {
+                    PublishResult ghResult = githubApi.createVersion(data, project);
+                    if (ghResult.isFailure()) return ghResult;
+                }
+                return null;
+            });
+
+            PublishResult curseForgeResult = curseForgeTask.join();
+            PublishResult modrinthResult = modrinthTask.join();
+            PublishResult githubResult = githubTask.join();
+            if (curseForgeResult != null) results.add(curseForgeResult);
+            if (modrinthResult != null) results.add(modrinthResult);
+            if (githubResult != null) results.add(githubResult);
+        } catch (CompletionException e) {
+            results.add(PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error"));
+        }
         return results;
-        /*} catch (InterruptedException e) {
-            return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
-        }*/
     }
 
     public Selector getPublishTargets() {

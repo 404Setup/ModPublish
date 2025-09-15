@@ -7,6 +7,8 @@
 - Curseforge supports multiple file uploads (untested)
 - When the previous publication target fails, the later publishing tasks will not be canceled
 - When publishing fails, all error messages are displayed
+- PublishTask is now parallel
+- PublishTask no longer freezes PublishUI
 
 ### Fix
 - Incorrect reading of ProxyType
