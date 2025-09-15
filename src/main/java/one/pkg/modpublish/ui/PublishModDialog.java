@@ -524,16 +524,37 @@ public class PublishModDialog extends BaseDialogWrapper {
 
             PublishData publishData = collectPublishData();
 
-            PublishResult result = performPublish(publishData);
+            List<PublishResult> result = performPublish(publishData);
+            boolean isOk = true;
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < result.size(); i++) {
+                PublishResult r = result.get(i);
+                if (r.ID().isBlank() && r.isFailure()) {
+                    isOk = false;
+                    builder.append(r.result());
+                    break;
+                }
+                if (r.isFailure()) {
+                    if (isOk) {
+                        isOk = false;
+                        builder.append("\n");
+                    }
+                    builder.append(r.ID());
+                    builder.append(": ");
+                    builder.append(r.result());
+                    if (i != result.size() - 1) builder.append("\n");
+                }
+            }
+
             try {
-                if (result.result() == null || result.result().trim().isEmpty()) {
+                if (isOk) {
                     super.doOKAction();
                     showSuccessDialog("message.success", "title.success");
                     close(0, true);
                 } else {
                     getOKAction().setEnabled(true);
                     setText("button.publish", TextType.OKButton);
-                    showFailedDialogRaw(get("message.failed", result.result()),
+                    showFailedDialogRaw(get("message.failed", builder.toString()),
                             get("title.failed"));
                 }
             } finally {
@@ -578,9 +599,11 @@ public class PublishModDialog extends BaseDialogWrapper {
         );
     }
 
-    private PublishResult performPublish(PublishData data) {
+    private List<PublishResult> performPublish(PublishData data) {
+        List<PublishResult> results = new ArrayList<>();
         if (data.minecraftVersions() == null || data.minecraftVersions().isEmpty()) {
-            return PublishResult.of("failed.4");
+            results.add(PublishResult.of("failed.4"));
+            return results;
         }
 
         //try {
@@ -589,20 +612,20 @@ public class PublishModDialog extends BaseDialogWrapper {
         var githubApi = TargetType.Github.api;
         if (curseforgeCheckBox.isSelected()) {
             PublishResult cfResult = curseforgeApi.createVersion(data, project);
-            if (cfResult.isFailure()) return cfResult;
+            if (cfResult.isFailure()) results.add(cfResult);
         }
 
         if (modrinthCheckBox.isSelected()) {
             PublishResult mrResult = modrinthApi.createVersion(data, project);
-            if (mrResult.isFailure()) return mrResult;
+            if (mrResult.isFailure()) results.add(mrResult);
         }
 
         if (githubCheckBox.isSelected()) {
             PublishResult ghResult = githubApi.createVersion(data, project);
-            if (ghResult.isFailure()) return ghResult;
+            if (ghResult.isFailure()) results.add(ghResult);
         }
 
-        return PublishResult.empty();
+        return results;
         /*} catch (InterruptedException e) {
             return PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error");
         }*/

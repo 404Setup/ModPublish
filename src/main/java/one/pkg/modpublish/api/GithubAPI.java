@@ -138,7 +138,7 @@ public class GithubAPI extends API {
                 return BackResult.result(response.body().string());
             }
         } catch (IOException e) {
-            return PublishResult.create("Network error: " + e.getMessage());
+            return PublishResult.create(this, "Network error: " + e.getMessage());
         }
     }
 
@@ -162,7 +162,7 @@ public class GithubAPI extends API {
                 return status.map(s -> PublishResult.create(this, "Failed to upload asset: " + s)).orElseGet(PublishResult::empty);
             }
         } catch (IOException e) {
-            return PublishResult.create("Failed to upload asset: " + e.getMessage());
+            return PublishResult.create(this, "Failed to upload asset: " + e.getMessage());
         }
     }
 
