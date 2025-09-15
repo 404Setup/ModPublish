@@ -25,6 +25,7 @@ import one.pkg.modpublish.data.internel.PublishData;
 import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -63,26 +64,26 @@ public abstract class API {
     @NotNull
     abstract String createJsonBody(@NotNull PublishData data, @NotNull Project project);
 
-    @NotNull
-    Optional<String> getStatus(@NotNull Response response) {
+    @Nullable
+    String getStatus(@NotNull Response response) {
         if (response.code() == 403)
-            return Optional.of(Lang.get("api.common.err.403"));
+            return Lang.get("api.common.err.403");
         if (response.code() == 404)
-            return Optional.of(Lang.get("api.common.err.404"));
+            return Lang.get("api.common.err.404");
         if (response.code() == 500)
-            return Optional.of(Lang.get("api.common.err.500"));
+            return Lang.get("api.common.err.500");
         if (response.code() == 302)
-            return Optional.of("Duplicate resource");
+            return "Duplicate resource";
         try {
             if (response.code() == 400 || response.code() == 401 || response.code() == 422)
-                return Optional.of(response.body().string());
+                return response.body().string();
         } catch (Exception ignored) {
-            return Optional.of("HTTP " + response.code());
+            return "HTTP " + response.code();
         }
         Optional<String> ct = getContentType(response);
         if (ct.isEmpty() || !ct.get().contains("application/json"))
-            return Optional.of(Lang.get("api.common.err.format", ct.orElse("Unknown")));
-        return Optional.empty();
+            return Lang.get("api.common.err.format", ct.orElse("Unknown"));
+        return null;
     }
 
     @NotNull

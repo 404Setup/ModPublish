@@ -32,10 +32,10 @@ import one.pkg.modpublish.data.result.PublishResult;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 public class ModrinthAPI extends API {
     private static final String URL = "https://api.modrinth.com/v2/";
@@ -73,8 +73,8 @@ public class ModrinthAPI extends API {
         Request request = requestBuilder.post(bodyBuilder.build()).build();
 
         try (Response resp = NetworkUtil.client.newCall(request).execute()) {
-            Optional<String> status = getStatus(resp);
-            return status.map(s -> PublishResult.create(this, s)).orElseGet(PublishResult::empty);
+            @Nullable String status = getStatus(resp);
+            return status != null ? PublishResult.create(this, status) : PublishResult.empty();
         } catch (IOException e) {
             return PublishResult.create(this, e.getMessage());
         }
@@ -109,8 +109,8 @@ public class ModrinthAPI extends API {
     public @NotNull ModInfo getModInfo(@NotNull String modid, @NotNull Project project) {
         Request req = getJsonRequest(getRequestBuilder("project/" + modid, project)).get().build();
         try (Response resp = NetworkUtil.client.newCall(req).execute()) {
-            Optional<String> status = getStatus(resp);
-            if (status.isPresent()) return ModInfo.of(status.get());
+            @Nullable String status = getStatus(resp);
+            if (status != null) return ModInfo.of(status);
             JsonObject object = JsonParser.getJsonObject(resp.body().byteStream());
             return ModInfo.of(modid, object.get("title").getAsString(), object.get("slug").getAsString());
         } catch (IOException e) {

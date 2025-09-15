@@ -33,10 +33,10 @@ import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.util.io.GitInfo;
 import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 public class GithubAPI extends API {
     private static final String RELEASES_URL = "https://api.github.com/repos/{path}/releases";
@@ -95,21 +95,17 @@ public class GithubAPI extends API {
                     data.versionNumber() :
                     "v" + data.versionNumber();
 
-            Optional<JsonObject> existingRelease = checkExistingRelease(tagName, project);
+            @Nullable JsonObject existingRelease = checkExistingRelease(tagName, project);
 
-            JsonObject releaseResponse;
-            if (existingRelease.isPresent()) {
-                releaseResponse = existingRelease.get();
-            } else {
+            if (existingRelease == null) {
                 Result releaseResult = createRelease(data, project);
-                if (releaseResult instanceof PublishResult pr) {
+                if (releaseResult instanceof PublishResult pr)
                     return pr;
-                }
                 BackResult br = (BackResult) releaseResult;
-                releaseResponse = JsonParser.fromJson(br.asString()).getAsJsonObject();
+                existingRelease = JsonParser.fromJson(br.asString()).getAsJsonObject();
             }
 
-            String uploadUrl = releaseResponse.get("upload_url").getAsString();
+            String uploadUrl = existingRelease.get("upload_url").getAsString();
             uploadUrl = uploadUrl.split("\\{")[0];
 
             PublishResult result = PublishResult.empty();
@@ -133,8 +129,8 @@ public class GithubAPI extends API {
                     .build();
 
             try (Response response = NetworkUtil.client.newCall(request).execute()) {
-                Optional<String> status = getStatus(response);
-                if (status.isPresent()) return PublishResult.create(this, "Failed to create release: " + status.get());
+                @Nullable String status = getStatus(response);
+                if (status != null) return PublishResult.create(this, "Failed to create release: " + status);
                 return BackResult.result(response.body().string());
             }
         } catch (IOException e) {
@@ -156,18 +152,20 @@ public class GithubAPI extends API {
                     .build();
 
             try (Response response = NetworkUtil.client.newCall(request).execute()) {
-                Optional<String> status = getStatus(response);
+                @Nullable String status = getStatus(response);
                 /*JsonObject assetResponse = JsonParser.getJsonObject(response.body().byteStream());
                 String downloadUrl = assetResponse.get("browser_download_url").getAsString();*/
-                return status.map(s -> PublishResult.create(this, "Failed to upload asset: " + s)).orElseGet(PublishResult::empty);
+                return status != null ?
+                        PublishResult.create(this, "Failed to upload asset: " + status) :
+                        PublishResult.empty();
             }
         } catch (IOException e) {
             return PublishResult.create(this, "Failed to upload asset: " + e.getMessage());
         }
     }
 
-    @NotNull
-    private Optional<JsonObject> checkExistingRelease(@NotNull String tagName, @NotNull Project project) {
+    @Nullable
+    private JsonObject checkExistingRelease(@NotNull String tagName, @NotNull Project project) {
         try {
             String url = RELEASES_URL + "/tags/" + tagName;
             Request request = getRequestBuilder(url, project)
@@ -175,18 +173,10 @@ public class GithubAPI extends API {
                     .build();
 
             try (Response response = NetworkUtil.client.newCall(request).execute()) {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    JsonObject releaseInfo = JsonParser.fromJson(responseBody);
-                    return Optional.of(releaseInfo);
-                } else if (response.code() == 404) {
-                    return Optional.empty();
-                } else {
-                    return Optional.empty();
-                }
+                return response.isSuccessful() ? JsonParser.fromJson(response.body().string()) : null;
             }
         } catch (IOException e) {
-            return Optional.empty();
+            return null;
         }
     }
 

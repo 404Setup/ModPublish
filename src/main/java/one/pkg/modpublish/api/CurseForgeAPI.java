@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 public class CurseForgeAPI extends API {
     private static final String A_URL = "https://minecraft.curseforge.com/api/";
@@ -73,8 +72,8 @@ public class CurseForgeAPI extends API {
         Request request = requestBuilder.post(body).build();
 
         try (Response resp = NetworkUtil.client.newCall(request).execute()) {
-            Optional<String> status = getStatus(resp);
-            if (status.isPresent()) return PublishResult.create(this, status.get());
+            @Nullable String status = getStatus(resp);
+            if (status != null) return PublishResult.create(this, status);
             String bs = resp.body().string();
             CurseForgePublishResult result = JsonParser.fromJson(bs, CurseForgePublishResult.class);
             if (result != null && result.isSuccess())
@@ -132,8 +131,8 @@ public class CurseForgeAPI extends API {
         if (!ab) ab = true;
         Request req = getJsonRequest(getRequestBuilder("mods/" + modid, project)).get().build();
         try (Response resp = NetworkUtil.client.newCall(req).execute()) {
-            Optional<String> status = getStatus(resp);
-            if (status.isPresent()) return ModInfo.of(status.get());
+            @Nullable String status = getStatus(resp);
+            if (status != null) return ModInfo.of(status);
             JsonObject object = JsonParser.getJsonObject(resp.body().byteStream());
             JsonObject data = object.getAsJsonObject("data");
             return ModInfo.of(modid, data.get("name").getAsString(), data.get("slug").getAsString());
