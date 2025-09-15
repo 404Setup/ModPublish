@@ -522,11 +522,10 @@ public class PublishModDialog extends BaseDialogWrapper {
         setOKButtonLoading();
         setText("button.publishing", TextType.OKButton);
 
-        savePersistedData();
-
-        final PublishData publishData = collectPublishData();
-
         Async.runAsync(() -> {
+            savePersistedData();
+            PublishData publishData = collectPublishData();
+
             List<PublishResult> result = performPublish(publishData);
             boolean isOk = true;
             StringBuilder builder = new StringBuilder();
