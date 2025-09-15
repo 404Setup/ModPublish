@@ -527,8 +527,7 @@ public class PublishModDialog extends BaseDialogWrapper {
             List<PublishResult> result = performPublish(publishData);
             boolean isOk = true;
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < result.size(); i++) {
-                PublishResult r = result.get(i);
+            for (PublishResult r : result) {
                 if (r.ID().isBlank() && r.isFailure()) {
                     isOk = false;
                     builder.append(r.result());
@@ -537,12 +536,11 @@ public class PublishModDialog extends BaseDialogWrapper {
                 if (r.isFailure()) {
                     if (isOk) {
                         isOk = false;
-                        builder.append("\n");
                     }
+                    builder.append("\n");
                     builder.append(r.ID());
                     builder.append(": ");
                     builder.append(r.result());
-                    if (i != result.size() - 1) builder.append("\n");
                 }
             }
 
