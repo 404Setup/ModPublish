@@ -40,6 +40,7 @@ import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
+import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
 import one.pkg.modpublish.util.io.Async;
@@ -273,7 +274,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         JBScrollPane minecraftScrollPane = new JBScrollPane(minecraftVersionList);
         minecraftScrollPane.setPreferredSize(new Dimension(200, 120));
 
-        addPlatformSection(formBuilder, get("component.name.mc-version"), "/icons/list-bar.svg",
+        addPlatformSection(formBuilder, get("component.name.mc-version"), Icons.Static.ListBar,
                 FieldConfig.of(() -> {
                     JPanel minecraftPanel = new JPanel(new BorderLayout());
                     minecraftPanel.add(minecraftScrollPane, BorderLayout.CENTER);
@@ -288,7 +289,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }));
 
         // Changelog
-        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), "/icons/clipboard.svg",
+        addPlatformSection(formBuilder, Lang.get("component.name.changelog"), Icons.Static.Clipboard,
                 FieldConfig.of(() -> {
                     try {
                         MarkdownFileType markdownFileType = MarkdownFileType.INSTANCE;
@@ -304,7 +305,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                 }));
 
         // Dependency manager
-        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), "/icons/library.svg",
+        addPlatformSection(formBuilder, Lang.get("component.name.dependencies"), Icons.Static.Library,
                 FieldConfig.of(() -> dependencyPanel = new DependencyManagerPanel(this)));
 
         autoFillFields();
@@ -548,19 +549,17 @@ public class PublishModDialog extends BaseDialogWrapper {
 
             boolean finalIsOk = isOk;
             SwingUtilities.invokeLater(() -> {
-                try {
-                    if (finalIsOk) {
-                        super.doOKAction();
-                        showSuccessDialog("message.success", "title.success");
-                        close(0, true);
-                    } else {
-                        getOKAction().setEnabled(true);
-                        setText("button.publish", TextType.OKButton);
-                        showFailedDialogRaw(get("message.failed", builder.toString()),
-                                get("title.failed"));
-                    }
-                } finally {
-                    setOKButtonDefault();
+                setOKButtonDefault();
+                getOKAction().setEnabled(true);
+                setText("button.publish", TextType.OKButton);
+
+                if (finalIsOk) {
+                    super.doOKAction();
+                    showSuccessDialog("message.success", "title.success");
+                    close(0, true);
+                } else {
+                    showFailedDialogRaw(get("message.failed", builder.toString()),
+                            get("title.failed"));
                 }
             });
         });

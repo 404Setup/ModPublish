@@ -20,13 +20,13 @@ package one.pkg.modpublish.ui.base;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorComponent;
 import com.intellij.ui.components.*;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.util.resources.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -271,19 +271,19 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
 
     public JBCheckBox getJBCheckBox() {
         var box = new JBCheckBox();
-        box.setIcon(IconLoader.getIcon("/icons/checkbox-unchecked.svg", getClass()));
-        box.setSelectedIcon(IconLoader.getIcon("/icons/checkbox-checked.svg", getClass()));
-        box.setDisabledIcon(IconLoader.getIcon("/icons/checkbox-indeterminate.svg", getClass()));
-        box.setDisabledSelectedIcon(IconLoader.getIcon("/icons/checkbox-warning.svg", getClass()));
+        box.setIcon(Icons.Static.UncheckedCheckBox);
+        box.setSelectedIcon(Icons.Static.CheckedCheckBox);
+        box.setDisabledIcon(Icons.Static.DisabledCheckBox);
+        box.setDisabledSelectedIcon(Icons.Static.DisabledSelectedCheckBox);
         return box;
     }
 
     public void setOKButtonDefault() {
-        setOKButtonIcon(IconLoader.getIcon("/icons/send.svg", getClass()));
+        setOKButtonIcon(Icons.Static.Send);
     }
 
     public void setOKButtonLoading() {
-        setOKButtonIcon(IconLoader.getIcon("/icons/arrow-clockwise-dashes.svg", getClass()));
+        setOKButtonIcon(Icons.Animated.Dashes);
     }
 
     @SuppressWarnings("all")
@@ -301,15 +301,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
                                   Icon icon
     ) throws HeadlessException {
         showMessageDialogRaw(get(message), get(title), messageType, icon);
-    }
-
-    @SuppressWarnings("all")
-    public void showMessageDialog(@PropertyKey(resourceBundle = Lang.File) String message,
-                                  @PropertyKey(resourceBundle = Lang.File) String title,
-                                  int messageType,
-                                  String icon
-    ) throws HeadlessException {
-        showMessageDialogRaw(get(message), get(title), messageType, IconLoader.getIcon(icon));
     }
 
     public void showSuccessDialog(@PropertyKey(resourceBundle = Lang.File) String message, @PropertyKey(resourceBundle = Lang.File) String title) {
@@ -332,18 +323,12 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType, icon);
     }
 
-    @SuppressWarnings("all")
-    public void showMessageDialogRaw(@NotNull String message, @NotNull String title, int messageType, String icon
-    ) throws HeadlessException {
-        JOptionPane.showMessageDialog(getContentPanel(), message, title, messageType, IconLoader.getIcon(icon));
-    }
-
     public void showSuccessDialogRaw(@NotNull String message, @NotNull String title) {
-        showMessageDialogRaw(message, title, JOptionPane.OK_CANCEL_OPTION, "/icons/checkmark-circle.svg");
+        showMessageDialogRaw(message, title, JOptionPane.OK_CANCEL_OPTION, Icons.Static.Success);
     }
 
     public void showFailedDialogRaw(@NotNull String message, @NotNull String title) {
-        showMessageDialogRaw(message, title, JOptionPane.ERROR_MESSAGE, "/icons/dismiss-circle.svg");
+        showMessageDialogRaw(message, title, JOptionPane.ERROR_MESSAGE, Icons.Static.Failed);
     }
 
     public String get(@PropertyKey(resourceBundle = Lang.File) String key) {
@@ -355,10 +340,8 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
     }
 
     protected void addPlatformSection(@NotNull FormBuilder formBuilder, @NotNull String platformName,
-                                      @Nullable String iconPath, FieldConfig... fields) {
-        formBuilder.addComponent(createSectionLabel(platformName,
-                iconPath == null ? null : IconLoader.getIcon(iconPath, getClass())
-        ));
+                                      @Nullable Icon icon, FieldConfig... fields) {
+        formBuilder.addComponent(createSectionLabel(platformName, icon));
         formBuilder.addComponent(new SeparatorComponent(JBUI.scale(5)));
 
         for (FieldConfig field : fields) {

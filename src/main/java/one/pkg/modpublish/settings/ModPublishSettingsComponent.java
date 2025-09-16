@@ -22,6 +22,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
+import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.util.protect.Protect;
 import org.jetbrains.annotations.NotNull;
@@ -62,21 +63,21 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
         super(null);
         FormBuilder formBuilder = FormBuilder.createFormBuilder();
 
-        addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
+        addPlatformSection(formBuilder, "Modrinth", Icons.Target.Modrinth,
                 FieldConfig.of("Token", () -> modrinthTokenText = createTextField()),
                 FieldConfig.of(() -> modrinthTokenLink = createActionLink("Create Modrinth Token", "https://modrinth.com/settings/pats")));
 
-        addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
+        addPlatformSection(formBuilder, "CurseForge", Icons.Target.CurseForge,
                 FieldConfig.of("Token", () -> curseforgeTokenText = createTextField()),
                 FieldConfig.of("Studio Token", () -> curseforgeStudioTokenText = createTextField()),
                 FieldConfig.of(() -> curseforgeStudioTokenLink = createActionLink("Create CurseForge Studio Token", "https://console.curseforge.com/?#/api-keys")),
                 FieldConfig.of(() -> curseforgeTokenLink = createActionLink("Create CurseForge Token", "https://legacy.curseforge.com/account/api-tokens")));
 
-        addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
+        addPlatformSection(formBuilder, "GitHub",  Icons.Target.Github,
                 FieldConfig.of("Token", () -> githubTokenText = createTextField()),
                 FieldConfig.of(() -> githubTokenLink = createActionLink("Create GitHub Token", "https://github.com/settings/personal-access-tokens")));
 
-        addPlatformSection(formBuilder, get("setting.network.name"), "/icons/databar.svg",
+        addPlatformSection(formBuilder, get("setting.network.name"), Icons.Static.DataBar,
                 FieldConfig.of(get("setting.network.ssl-check.name"), () -> networkEnableSSLCheckBox = getJBCheckBox()),
                 FieldConfig.of(() -> createLabel(get("setting.network.ssl-check.desc"))),
                 FieldConfig.of(get("setting.network.read-timeout.name"), () -> {
@@ -96,7 +97,7 @@ public class ModPublishSettingsComponent extends BaseDialogWrapper {
                 })
         );
 
-        addPlatformSection(formBuilder, get("setting.proxy.name"), "/icons/globe.svg",
+        addPlatformSection(formBuilder, get("setting.proxy.name"), Icons.Static.Globe,
                 FieldConfig.of(() -> createLabel(get("tips.2"))),
                 FieldConfig.of(get("setting.proxy.auto-proxy"), () -> autoProxyCheckBox = getJBCheckBox()),
                 FieldConfig.of(get("setting.proxy.type"), () -> proxyTypeComboBox = new JComboBox<>(new Proxy.Type[]{Proxy.Type.SOCKS, Proxy.Type.HTTP})),

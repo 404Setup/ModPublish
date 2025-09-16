@@ -21,6 +21,7 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
@@ -68,19 +69,19 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         String repoLabel = get("dialog.modpublish.config-project.repo");
         String branchLabel = get("dialog.modpublish.config-project.branch");
 
-        addPlatformSection(formBuilder, "Common", "/icons/book.svg",
+        addPlatformSection(formBuilder, "Common", Icons.Static.Book,
                 FieldConfig.of(get("component.name.common.version-format"), () -> commonVersionFormatField = createTextField()));
 
-        addPlatformSection(formBuilder, "Modrinth", "/icons/modrinth.svg",
+        addPlatformSection(formBuilder, "Modrinth", Icons.Target.Modrinth,
                 FieldConfig.of(token, () -> modrinthTokenField = createTextField()),
                 FieldConfig.of(modIdLabel, () -> modrinthModIDField = createTextField()));
 
-        addPlatformSection(formBuilder, "CurseForge", "/icons/curseforge.svg",
+        addPlatformSection(formBuilder, "CurseForge", Icons.Target.CurseForge,
                 FieldConfig.of(token, () -> curseforgeTokenField = createTextField()),
                 FieldConfig.of(studioToken, () -> curseforgeStudioTokenField = createTextField()),
                 FieldConfig.of(modIdLabel, () -> curseforgeModIDField = createTextField()));
 
-        addPlatformSection(formBuilder, "GitHub", "/icons/github.svg",
+        addPlatformSection(formBuilder, "GitHub", Icons.Target.Github,
                 FieldConfig.of(token, () -> githubTokenField = createTextField()),
                 FieldConfig.of(repoLabel, () -> {
                     githubRepoField = createTextField();
