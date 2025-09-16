@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <ns0:g transform="rotate(24.0 12 12)">
+    <ns0:g transform="rotate(228.0 12 12)">
         <ns0:animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 12 12" to="360 12 12" dur="2s" repeatCount="indefinite" />
         
         <ns0:g fill="none">

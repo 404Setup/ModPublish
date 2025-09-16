@@ -54,11 +54,13 @@ public class Icons {
         public static final Icon Dashes = createDashesIcon();
 
         private static Icon createDashesIcon() {
-            Icon[] frames = new Icon[12];
-            for (int i = 0; i < 12; i++) {
-                frames[i] = getIcon("/icons/arrow-clockwise-dashes/frame_" + i + ".svg");
+            int frames = 60;
+            Icon[] icons = new Icon[frames];
+
+            for (int i = 0; i < frames; i++) {
+                icons[i] = getIcon("/icons/arrow-clockwise-dashes/frame_" + i + ".svg");
             }
-            return new AnimatedIcon(50, frames);
+            return new AnimatedIcon(33, icons);
         }
     }
 }
