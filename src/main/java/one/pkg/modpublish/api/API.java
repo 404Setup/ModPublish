@@ -35,7 +35,7 @@ public abstract class API {
     }
 
     @NotNull
-    Request.Builder getBaseRequestBuilder() {
+    final Request.Builder getBaseRequestBuilder() {
         return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
     }
 
@@ -47,17 +47,17 @@ public abstract class API {
     public abstract boolean getABServer();
 
     @NotNull
-    Request.Builder getJsonRequest(@NotNull Request.Builder builder) {
+    final Request.Builder getJsonRequest(@NotNull Request.Builder builder) {
         return builder.header("Accept", "application/json");
     }
 
     @NotNull
-    Request.Builder getFormRequest(@NotNull Request.Builder builder) {
+    final Request.Builder getFormRequest(@NotNull Request.Builder builder) {
         return builder.header("Content-Type", "multipart/form-data");
     }
 
     @NotNull
-    Optional<String> getContentType(@NotNull Response response) {
+    final Optional<String> getContentType(@NotNull Response response) {
         return Optional.ofNullable(response.header("Content-Type"));
     }
 
@@ -65,7 +65,7 @@ public abstract class API {
     abstract String createJsonBody(@NotNull PublishData data, @NotNull Project project);
 
     @Nullable
-    String getStatus(@NotNull Response response) {
+    final String getStatus(@NotNull Response response) {
         if (response.code() == 403)
             return Lang.get("api.common.err.403");
         if (response.code() == 404)
