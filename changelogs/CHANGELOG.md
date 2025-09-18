@@ -26,6 +26,9 @@
 ### Remove
 - remove modrinth test server
 
+### Chore
+- Bump minecraft version list
+
 ### Fix
 - Incorrect reading of ProxyType
 
