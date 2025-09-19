@@ -40,6 +40,7 @@ import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -398,6 +399,14 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
 
         public static FieldConfig of(Supplier<JComponent> fieldSupplier) {
             return new FieldConfig(fieldSupplier);
+        }
+
+        public static FieldConfig of(Consumer<JButton> buttonConsumer) {
+            return new FieldConfig(() -> {
+                JButton button = new JButton();
+                buttonConsumer.accept(button);
+                return button;
+            });
         }
     }
 }

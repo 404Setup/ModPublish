@@ -283,9 +283,10 @@ public class PublishModDialog extends BaseDialogWrapper {
                     minecraftPanel.add(showSnapshotsCheckBox, BorderLayout.SOUTH);
                     return minecraftPanel;
                 }),
-                FieldConfig.of(() -> {
-                    JButton jButton = new JButton(get("component.name.update-version-list"));
+                FieldConfig.of((jButton) -> {
+                    jButton.setText(get("component.name.update-version-list"));
                     jButton.setIcon(Icons.Static.Sync);
+                    jButton.setToolTipText(get("component.tooltip.update-version-list"));
                     jButton.addActionListener(e -> Async.runAsync(() -> {
                         jButton.setEnabled(false);
                         setButtonLoading(jButton);
@@ -299,11 +300,11 @@ public class PublishModDialog extends BaseDialogWrapper {
                         jButton.setIcon(Icons.Static.Sync);
                         jButton.setEnabled(true);
                     }));
-                    return jButton;
                 }),
-                FieldConfig.of(() -> {
-                    JButton jButton = new JButton(get("component.name.reset-version-list"));
+                FieldConfig.of((jButton) -> {
+                    jButton.setText(get("component.name.reset-version-list"));
                     jButton.setIcon(Icons.Static.WrenchScrewdriver);
+                    jButton.setToolTipText(get("component.tooltip.reset-version-list"));
                     jButton.addActionListener(e -> Async.runAsync(() -> {
                         File f = FileAPI.getUserDataFile("minecraft.version.json");
                         if (f.exists()) f.delete();
@@ -311,7 +312,6 @@ public class PublishModDialog extends BaseDialogWrapper {
                         updateVersionList = true;
                         updateMinecraftVersions();
                     }));
-                    return jButton;
                 }));
 
         // Changelog
