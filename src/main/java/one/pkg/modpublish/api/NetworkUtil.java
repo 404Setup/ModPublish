@@ -17,6 +17,7 @@
 
 package one.pkg.modpublish.api;
 
+import lombok.Getter;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
@@ -30,6 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class NetworkUtil {
+    @Getter
     final static OkHttpClient client;
 
     static {

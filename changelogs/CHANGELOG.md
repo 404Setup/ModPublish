@@ -7,6 +7,7 @@
 - Curseforge supports multiple file uploads (untested)
 - When the previous publication target fails, the later publishing tasks will not be canceled
 - When publishing fails, all error messages are displayed
+- Supports hot updates of the Minecraft version list
 
 ### Performance
 - PublishTask is now parallel

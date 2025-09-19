@@ -40,10 +40,12 @@ public class Icons {
         public static final Icon DataBar = getIcon("/icons/databar.svg");
         public static final Icon ListBar = getIcon("/icons/list-bar.svg");
         public static final Icon Globe = getIcon("/icons/globe.svg");
+        public static final Icon Sync = getIcon("/icons/sync.svg");
         public static final Icon Success = getIcon("/icons/checkmark-circle.svg");
         public static final Icon Failed = getIcon("/icons/dismiss-circle.svg");
         public static final Icon Warning = getIcon("/icons/error-circle.svg");
         public static final Icon Send = getIcon("/icons/send.svg");
+        public static final Icon WrenchScrewdriver = getIcon("/icons/wrench-screwdriver.svg");
         public static final Icon UncheckedCheckBox = getIcon("/icons/checkbox-unchecked.svg");
         public static final Icon CheckedCheckBox = getIcon("/icons/checkbox-checked.svg");
         public static final Icon DisabledCheckBox = getIcon("/icons/checkbox-indeterminate.svg");

@@ -286,6 +286,18 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         setOKButtonIcon(Icons.Animated.Dashes);
     }
 
+    public void setButtonDefault(JButton button) {
+        button.setIcon(Icons.Static.Send);
+    }
+
+    public void setButtonLoading(JButton button) {
+        button.setIcon(Icons.Animated.Dashes);
+    }
+
+    public void setButtonNull(JButton button) {
+        button.setIcon(null);
+    }
+
     @SuppressWarnings("all")
     public void showMessageDialog(@PropertyKey(resourceBundle = Lang.File) String message,
                                   @PropertyKey(resourceBundle = Lang.File) String title,

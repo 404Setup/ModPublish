@@ -17,22 +17,16 @@
 
 package one.pkg.modpublish.util.io;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.Strictness;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.lang.reflect.Type;
 
 @SuppressWarnings("unused")
 public class JsonParser {
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static JsonObject getJsonObject(Reader reader) throws JsonParseException {
         try {
@@ -57,6 +51,10 @@ public class JsonParser {
         return gson.toJson(obj);
     }
 
+    public static void toJson(Object obj, Writer writer) {
+        gson.toJson(obj, writer);
+    }
+
     public static JsonObject fromJson(String json) {
         return gson.fromJson(json, JsonObject.class);
     }
@@ -71,6 +69,14 @@ public class JsonParser {
 
     public static <T> T fromJson(String json, Type typeOfT) {
         return gson.fromJson(json, typeOfT);
+    }
+
+    public static <T> T fromJson(JsonElement element, TypeToken<T> typeToken) {
+        return gson.fromJson(element, typeToken.getType());
+    }
+
+    public static <T> T fromJson(JsonElement element, Type typeOfT) {
+        return gson.fromJson(element, typeOfT);
     }
 
     public static JsonObject fromJson(Reader reader) throws JsonParseException {

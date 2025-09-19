@@ -46,6 +46,7 @@ import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;
 import one.pkg.modpublish.util.io.Async;
 import one.pkg.modpublish.util.io.FileAPI;
 import one.pkg.modpublish.util.io.JsonParser;
+import one.pkg.modpublish.util.io.VersionProcessor;
 import one.pkg.modpublish.util.resources.Lang;
 import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.util.version.constraint.VersionConstraint;
@@ -72,6 +73,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private VirtualFile[] jarFile;
     private LocalModInfo modInfo;
     private VersionConstraint parser;
+    private boolean updateVersionList;
 
     // UI Components
     private JBTextField versionNameField;
@@ -282,9 +284,33 @@ public class PublishModDialog extends BaseDialogWrapper {
                     return minecraftPanel;
                 }),
                 FieldConfig.of(() -> {
-                    JButton jButton = new JButton("Update version list (WIP)");
-                    jButton.addActionListener(e ->
-                            showFailedDialogRaw("Unfinished", "Unfinished"));
+                    JButton jButton = new JButton(get("component.name.update-version-list"));
+                    jButton.setIcon(Icons.Static.Sync);
+                    jButton.addActionListener(e -> Async.runAsync(() -> {
+                        jButton.setEnabled(false);
+                        setButtonLoading(jButton);
+                        if (VersionProcessor.updateVersions()) {
+                            updateVersionList = true;
+                            showSuccessDialog("message.update.success", "title.success");
+                            updateMinecraftVersions();
+                        } else {
+                            showFailedDialog("message.update.failed", "title.failed");
+                        }
+                        jButton.setIcon(Icons.Static.Sync);
+                        jButton.setEnabled(true);
+                    }));
+                    return jButton;
+                }),
+                FieldConfig.of(() -> {
+                    JButton jButton = new JButton(get("component.name.reset-version-list"));
+                    jButton.setIcon(Icons.Static.WrenchScrewdriver);
+                    jButton.addActionListener(e -> Async.runAsync(() -> {
+                        File f = FileAPI.getUserDataFile("minecraft.version.json");
+                        if (f.exists()) f.delete();
+                        showSuccessDialog("message.update.success", "title.success");
+                        updateVersionList = true;
+                        updateMinecraftVersions();
+                    }));
                     return jButton;
                 }));
 
@@ -318,7 +344,10 @@ public class PublishModDialog extends BaseDialogWrapper {
             minecraftVersionModel.clear();
             boolean includeSnapshots = showSnapshotsCheckBox.isSelected();
 
-            if (minecraftVersions == null) minecraftVersions = LocalResources.getMinecraftVersions();
+            if (minecraftVersions == null || updateVersionList) {
+                updateVersionList = false;
+                minecraftVersions = LocalResources.getMinecraftVersions();
+            }
 
             for (MinecraftVersion version : minecraftVersions) {
                 if ("release".equals(version.type) || (includeSnapshots && "snapshot".equals(version.type))) {
