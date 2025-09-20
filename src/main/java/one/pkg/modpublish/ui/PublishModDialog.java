@@ -73,7 +73,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private final Map<VirtualFile, List<ModType>> modTypes;
     private VirtualFile[] jarFile;
     private LocalModInfo modInfo;
-    private VersionConstraint parser;
+    private VersionConstraint parser = null;
     private boolean updateVersionList;
 
     // UI Components
@@ -139,9 +139,14 @@ public class PublishModDialog extends BaseDialogWrapper {
                 if (modType.equals(ModType.Rift)) continue;
                 this.modInfo = modType.getMod(primaryFile);
                 if (this.modInfo != null) {
-                    this.parser = modInfo.versionRange() != null && !modInfo.versionRange().isEmpty() ?
-                            VersionConstraintParser.parse(modInfo.versionRange()) :
-                            null;
+                    if (modInfo.versionRange() != null && !modInfo.versionRange().isEmpty()) {
+                        try {
+                            this.parser = VersionConstraintParser.parse(modInfo.versionRange());
+                        } catch (Exception e) {
+                            this.parser = null;
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 }
             }
@@ -373,8 +378,14 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         if (modInfo != null) {
             version = modInfo.version();
-            String lowVersion = parser.getLowVersion();
-            String highVersion = parser.getMaxVersion();
+            String lowVersion = "";
+            String highVersion = "";
+            if (parser != null) {
+                lowVersion = parser.getLowVersion();
+                highVersion = parser.getMaxVersion();
+            } else if (modInfo.versionRange() != null && !modInfo.versionRange().isEmpty()) {
+                lowVersion = modInfo.versionRange();
+            }
 
             if (!versionNameFormat.isEmpty()) {
                 versionName =
@@ -575,7 +586,7 @@ public class PublishModDialog extends BaseDialogWrapper {
             SwingUtilities.invokeLater(() -> {
                 setOKButtonDefault();
                 getOKAction().setEnabled(true);
-                setOKButtonText(get("button.publishing"));
+                setOKButtonText(get("button.publish"));
 
                 if (finalIsOk) {
                     super.doOKAction();

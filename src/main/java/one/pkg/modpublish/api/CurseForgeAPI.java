@@ -105,17 +105,20 @@ public class CurseForgeAPI extends API {
 
     @NotNull
     String createJsonBody(@NotNull PublishData data, @Nullable BackResult bResult) {
-        CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder().releaseType(data.releaseChannel())
+        CurseForgeData.CurseForgeDataBuilder builder = CurseForgeData.builder()
+                .releaseType(data.releaseChannel())
                 .markdownChangelog(data.changelog())
                 .displayName(data.versionName());
-        if (bResult != null)
+        if (bResult != null) {
             builder.parentFileID(bResult.asCurseForgePublishResult().getId());
-        for (MinecraftVersion v : data.minecraftVersions()) builder.gameVersion(v);
-        if (data.supportedInfo().getClient().isEnabled())
-            builder.gameVersion(data.supportedInfo().getClient().getCfid());
-        if (data.supportedInfo().getServer().isEnabled())
-            builder.gameVersion(data.supportedInfo().getServer().getCfid());
-        for (LauncherInfo l : data.loaders()) if (l.getCfid() > 0) builder.gameVersion(l.getCfid());
+        } else {
+            for (MinecraftVersion v : data.minecraftVersions()) builder.gameVersion(v);
+            if (data.supportedInfo().getClient().isEnabled())
+                builder.gameVersion(data.supportedInfo().getClient().getCfid());
+            if (data.supportedInfo().getServer().isEnabled())
+                builder.gameVersion(data.supportedInfo().getServer().getCfid());
+            for (LauncherInfo l : data.loaders()) if (l.getCfid() > 0) builder.gameVersion(l.getCfid());
+        }
         for (DependencyInfo d : data.dependencies()) {
             ModInfo info = d.getCurseforgeModInfo();
             if (info == null || info.modid() == null || info.modid().isBlank() ||

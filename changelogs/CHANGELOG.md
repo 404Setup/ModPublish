@@ -4,7 +4,7 @@
 - More configurable network options
 - Support proxy auth (simple)
 - Add pluginIcon
-- Curseforge supports multiple file uploads (untested)
+- Curseforge supports multiple file uploads
 - When the previous publication target fails, the later publishing tasks will not be canceled
 - When publishing fails, all error messages are displayed
 - Supports hot updates of the Minecraft version list
@@ -32,6 +32,7 @@
 
 ### Fix
 - Incorrect reading of ProxyType
+- In some cases, the GUI could not start due to VersionRangeParser initialization failure.
 
 ---
 
