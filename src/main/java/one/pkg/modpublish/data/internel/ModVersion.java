@@ -18,19 +18,20 @@
 package one.pkg.modpublish.data.internel;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ModVersion {
-    public static String extractVersionNumber(VirtualFile file) {
+    public static @NotNull String extractVersionNumber(@NotNull VirtualFile file) {
         String name = file.getNameWithoutExtension();
         String extractedVersion = extractVersionFromPattern(name);
         return validateAndNormalizeVersion(extractedVersion);
     }
 
-    private static String extractVersionFromPattern(String filename) {
+    private static @Nullable String extractVersionFromPattern(@NotNull String filename) {
         int lastDash = filename.lastIndexOf('-');
         if (lastDash > 0 && lastDash < filename.length() - 1) {
             String candidate = filename.substring(lastDash + 1);
@@ -55,10 +56,10 @@ public class ModVersion {
             lastMatch = matcher.group(1);
         }
 
-        return isValidVersionPattern(lastMatch) ?  lastMatch : null;
+        return isValidVersionPattern(lastMatch) ? lastMatch : null;
     }
 
-    private static boolean isValidVersionPattern(String version) {
+    private static boolean isValidVersionPattern(@Nullable String version) {
         if (version == null || version.trim().isEmpty()) {
             return false;
         }
@@ -69,7 +70,7 @@ public class ModVersion {
         return version.matches(versionPattern);
     }
 
-    private static String validateAndNormalizeVersion(@Nullable String version) {
+    private static @NotNull String validateAndNormalizeVersion(@Nullable String version) {
         if (version == null) return "1.0.0";
 
         version = version.trim().replaceFirst("^[vV]", "");
@@ -81,7 +82,7 @@ public class ModVersion {
         return normalizeVersionFormat(version);
     }
 
-    private static String normalizeVersionFormat(String version) {
+    private static @NotNull String normalizeVersionFormat(@NotNull String version) {
         String[] parts = version.split("[-.](?=alpha|beta|rc|snapshot|dev|final|release)", 2);
         String mainVersion = parts[0];
         String preRelease = parts.length > 1 ? parts[1] : null;

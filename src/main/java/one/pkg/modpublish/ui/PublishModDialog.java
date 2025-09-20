@@ -30,6 +30,7 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
 import one.pkg.modpublish.PluginMain;
+import one.pkg.modpublish.api.API;
 import one.pkg.modpublish.data.internel.*;
 import one.pkg.modpublish.data.local.DependencyInfo;
 import one.pkg.modpublish.data.local.LauncherInfo;
@@ -52,6 +53,7 @@ import one.pkg.modpublish.util.resources.LocalResources;
 import one.pkg.modpublish.util.version.constraint.VersionConstraint;
 import one.pkg.modpublish.util.version.constraint.VersionConstraintParser;
 import org.intellij.plugins.markdown.lang.MarkdownFileType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -59,16 +61,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class PublishModDialog extends BaseDialogWrapper {
     @Getter
     private final Project project;
+    @NotNull
     private final Map<VirtualFile, List<ModType>> modTypes;
     private VirtualFile[] jarFile;
     private LocalModInfo modInfo;
@@ -107,7 +108,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private List<LauncherInfo> launchers;
     private SupportedInfo supportedInfo;
 
-    public PublishModDialog(Project project, VirtualFile... jarFile) {
+    public PublishModDialog(@Nullable Project project, VirtualFile... jarFile) {
         super(project);
         this.project = project;
         this.jarFile = jarFile;
@@ -131,7 +132,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         setOKButtonDefault();
     }
 
-    private void updateParser(VirtualFile primaryFile) {
+    private void updateParser(@NotNull VirtualFile primaryFile) {
         List<ModType> type = this.modTypes.get(primaryFile);
         if (type != null) {
             for (ModType modType : type) {
@@ -156,7 +157,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
     }
 
-    private void updateJarFiles(VirtualFile current) {
+    private void updateJarFiles(@NotNull VirtualFile current) {
         VirtualFile[] newJarFiles = new VirtualFile[jarFile.length];
         newJarFiles[0] = current;
         int index = 1;
@@ -183,7 +184,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     }
 
     @Override
-    protected JComponent createCenterPanel() {
+    protected @NotNull JComponent createCenterPanel() {
         FormBuilder formBuilder = FormBuilder.createFormBuilder();
 
         // Version name and number
@@ -359,18 +360,14 @@ public class PublishModDialog extends BaseDialogWrapper {
         });
     }
 
-    private String extractVersionName(VirtualFile file) {
-        return file.getNameWithoutExtension();
-    }
-
     private void autoFillFields() {
         loadModInfo(this.jarFile[0]);
         loadPersistedData();
     }
 
-    private void loadModInfo(VirtualFile current) {
+    private void loadModInfo(@NotNull VirtualFile current) {
         String version = null;
-        String versionName = extractVersionName(current);
+        String versionName = current.getNameWithoutExtension();
         String versionNameFormat = PID.CommonVersionFormat.get(project);
         ModType modType = modTypes.get(current).getFirst();
 
@@ -381,8 +378,8 @@ public class PublishModDialog extends BaseDialogWrapper {
 
             if (!versionNameFormat.isEmpty()) {
                 versionName =
-                        versionNameFormat.replace("{version}", version)
-                                .replace("{name}", modInfo.name())
+                        versionNameFormat.replace("{version}", Objects.requireNonNull(version))
+                                .replace("{name}", Objects.requireNonNull(modInfo.name()))
                                 .replace("{loader}", modType.getName());
                 if (!lowVersion.isEmpty()) versionName = versionName.replace("{low-version}", lowVersion);
                 if (!highVersion.isEmpty()) versionName = versionName.replace("{high-version}", highVersion);
@@ -440,7 +437,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         }
     }
 
-    private void setFailedSelect(JBCheckBox jbCheckBox) {
+    private void setFailedSelect(@NotNull JBCheckBox jbCheckBox) {
         jbCheckBox.setEnabled(false);
         setErrorStyle(jbCheckBox);
         setToolTipText("tooltip.decrypt.failed", jbCheckBox);
@@ -506,7 +503,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         return validateVersionFields();
     }
 
-    private PublishResult validatePublishTargetSelection() {
+    private @Nullable PublishResult validatePublishTargetSelection() {
         if (!curseforgeCheckBox.isSelected() && !modrinthCheckBox.isSelected()
                 && !githubCheckBox.isSelected()) {
             return PublishResult.of("failed.1");
@@ -529,7 +526,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         return null;
     }
 
-    private PublishResult validateVersionFields() {
+    private @Nullable PublishResult validateVersionFields() {
         if (versionNameField.getText() == null || versionNameField.getText().trim().isEmpty()) {
             return PublishResult.of("failed.5");
         }
@@ -566,9 +563,7 @@ public class PublishModDialog extends BaseDialogWrapper {
                     break;
                 }
                 if (r.isFailure()) {
-                    if (isOk) {
-                        isOk = false;
-                    }
+                    if (isOk) isOk = false;
                     builder.append("\n");
                     builder.append(r.ID());
                     builder.append(": ");
@@ -594,7 +589,7 @@ public class PublishModDialog extends BaseDialogWrapper {
         });
     }
 
-    private PublishData collectPublishData() {
+    private @NotNull PublishData collectPublishData() {
         List<LauncherInfo> selectedLoaders = new ArrayList<>();
         for (int i = 0; i < loaderCheckBoxes.size(); i++) {
             if (loaderCheckBoxes.get(i).isSelected())
@@ -630,52 +625,47 @@ public class PublishModDialog extends BaseDialogWrapper {
         );
     }
 
-    private List<PublishResult> performPublish(PublishData data) {
+    private @NotNull List<PublishResult> performPublish(@NotNull PublishData data) {
         List<PublishResult> results = new ArrayList<>();
-        if (data.minecraftVersions() == null || data.minecraftVersions().isEmpty()) {
+        if (data.minecraftVersions().isEmpty()) {
             results.add(PublishResult.of("failed.4"));
             return results;
         }
 
         try {
-            var modrinthApi = TargetType.Modrinth.api;
-            var curseforgeApi = TargetType.CurseForge.api;
-            var githubApi = TargetType.Github.api;
+            @Nullable CompletableFuture<@Nullable PublishResult> curseForgeTask =
+                    createPublishTask(TargetType.CurseForge.api, curseforgeCheckBox, data);
 
-            CompletableFuture<PublishResult> curseForgeTask = Async.runAsync(() -> {
-                if (curseforgeCheckBox.isSelected()) {
-                    PublishResult cfResult = curseforgeApi.createVersion(data, project);
-                    if (cfResult.isFailure()) return cfResult;
-                }
-                return null;
-            });
+            @Nullable CompletableFuture<@Nullable PublishResult> modrinthTask =
+                    createPublishTask(TargetType.Modrinth.api, modrinthCheckBox, data);
 
-            CompletableFuture<PublishResult> modrinthTask = Async.runAsync(() -> {
-                if (modrinthCheckBox.isSelected()) {
-                    PublishResult mrResult = modrinthApi.createVersion(data, project);
-                    if (mrResult.isFailure()) return mrResult;
-                }
-                return null;
-            });
+            @Nullable CompletableFuture<@Nullable PublishResult> githubTask =
+                    createPublishTask(TargetType.Github.api, githubCheckBox, data);
 
-            CompletableFuture<PublishResult> githubTask = Async.runAsync(() -> {
-                if (githubCheckBox.isSelected()) {
-                    PublishResult ghResult = githubApi.createVersion(data, project);
-                    if (ghResult.isFailure()) return ghResult;
-                }
-                return null;
-            });
-
-            PublishResult curseForgeResult = curseForgeTask.join();
-            PublishResult modrinthResult = modrinthTask.join();
-            PublishResult githubResult = githubTask.join();
-            if (curseForgeResult != null) results.add(curseForgeResult);
-            if (modrinthResult != null) results.add(modrinthResult);
-            if (githubResult != null) results.add(githubResult);
+            joinResult(results, curseForgeTask, modrinthTask, githubTask);
         } catch (CompletionException e) {
             results.add(PublishResult.of("failed.7", e.getMessage() != null ? e.getMessage() : "Unknown error"));
         }
         return results;
+    }
+
+    @Nullable
+    final CompletableFuture<@Nullable PublishResult> createPublishTask(@NotNull API api, @NotNull JBCheckBox checkBox, @NotNull PublishData data) {
+        return checkBox.isSelected() ? Async.runAsync(() -> {
+            PublishResult result = api.createVersion(data, project);
+            if (result.isFailure()) return result;
+            return null;
+        }) : null;
+    }
+
+    @SafeVarargs
+    final void joinResult(@NotNull List<PublishResult> list, @Nullable CompletableFuture<@Nullable PublishResult>... futures) {
+        if (futures == null) return;
+        for (@Nullable CompletableFuture<@Nullable PublishResult> future : futures) {
+            if (future == null || future.isCancelled()) continue;
+            @Nullable PublishResult result = future.join();
+            if (result != null) list.add(result);
+        }
     }
 
     public Selector getPublishTargets() {

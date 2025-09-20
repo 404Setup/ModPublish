@@ -45,14 +45,14 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public abstract class BaseDialogWrapper extends DialogWrapper {
-    final Project project;
+    @Nullable final Project project;
 
-    public BaseDialogWrapper(Project project) {
+    public BaseDialogWrapper(@Nullable Project project) {
         super(project);
         this.project = project;
     }
 
-    public BaseDialogWrapper(@NotNull Project project, boolean canBeParent) {
+    public BaseDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
         this.project = project;
     }

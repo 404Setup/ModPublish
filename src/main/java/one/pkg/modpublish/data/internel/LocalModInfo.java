@@ -17,5 +17,7 @@
 
 package one.pkg.modpublish.data.internel;
 
-public record LocalModInfo(String name, String version, String versionRange) {
+import org.jetbrains.annotations.Nullable;
+
+public record LocalModInfo(@Nullable String name, @Nullable String version, @Nullable String versionRange) {
 }
