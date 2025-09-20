@@ -35,7 +35,7 @@ public abstract class API {
     }
 
     @NotNull
-    final Request.Builder getBaseRequestBuilder() {
+    public static Request.Builder getBaseRequestBuilder() {
         return new Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)");
     }
 

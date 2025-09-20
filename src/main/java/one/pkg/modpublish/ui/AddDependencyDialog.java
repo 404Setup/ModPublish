@@ -46,7 +46,7 @@ public class AddDependencyDialog extends BaseDialogWrapper {
         super(parent.getProject(), true);
         this.project = parent.getProject();
         this.selector = selector;
-        setText("title.add-dependency", TextType.Title);
+        setTitle("title.add-dependency");
         init();
     }
 

@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.Request;
 import okhttp3.Response;
+import one.pkg.modpublish.api.API;
 import one.pkg.modpublish.api.NetworkUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +48,7 @@ public class VersionProcessor {
 
         try {
             LOG.info("Fetching Minecraft version data from Mojang API..");
-            Request request = new Request.Builder().url(MOJANG_URL).build();
+            Request request = API.getBaseRequestBuilder().url(MOJANG_URL).build();
             try (Response response = NetworkUtil.getClient().newCall(request).execute()) {
 
                 if (!response.isSuccessful()) {
@@ -96,7 +97,7 @@ public class VersionProcessor {
     private static List<Map<String, Object>> fetchCurseforgeVersions() {
         try {
             LOG.info("Fetching version data from CurseForge API...");
-            Request request = new Request.Builder().url(CURSEFORGE_URL).build();
+            Request request = API.getBaseRequestBuilder().url(CURSEFORGE_URL).build();
             try (Response response = NetworkUtil.getClient().newCall(request).execute()) {
 
                 if (!response.isSuccessful()) {

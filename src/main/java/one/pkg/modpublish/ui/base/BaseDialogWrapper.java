@@ -34,18 +34,14 @@ import org.jetbrains.annotations.PropertyKey;
 
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public abstract class BaseDialogWrapper extends DialogWrapper {
-    @Nullable final Project project;
+    @Nullable
+    final Project project;
 
     public BaseDialogWrapper(@Nullable Project project) {
         super(project);
@@ -82,101 +78,14 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         return field;
     }
 
-    private JBTextField createNumericTextField() {
-        JBTextField field = new JBTextField();
-        field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
-
-        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string != null && string.matches("\\d*")) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-
-            @Override
-            public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text != null && text.matches("\\d*")) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-        });
-
-        return field;
-    }
-
     public @NotNull JBTextField createSimpleNumericTextField(int minValue, int maxValue) {
         if (minValue >= maxValue)
             throw new IllegalArgumentException("minValue must be greater than maxValue");
         JBTextField field = new JBTextField();
         field.setPreferredSize(new Dimension(250, field.getPreferredSize().height));
 
-        field.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != '-') {
-                    e.consume();
-                }
-                // Only allow minus sign at the beginning and if minValue is negative
-                if (c == '-' && (field.getCaretPosition() != 0 || minValue >= 0)) {
-                    e.consume();
-                }
-            }
-        });
-
-        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string == null) return;
-                String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
-                if (isValidNumber(newText)) {
-                    super.insertString(fb, offset, string, attr);
-                    adjustValueIfNeeded(fb);
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (text == null) return;
-                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
-                if (isValidNumber(newText)) {
-                    super.replace(fb, offset, length, text, attrs);
-                    adjustValueIfNeeded(fb);
-                }
-            }
-
-            private boolean isValidNumber(String text) {
-                if (text.isEmpty() || text.equals("-")) return true;
-                try {
-                    Long.parseLong(text);
-                    return true;
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            }
-
-            private void adjustValueIfNeeded(FilterBypass fb) throws BadLocationException {
-                String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-                if (text.isEmpty() || text.equals("-")) return;
-
-                try {
-                    long value = Long.parseLong(text);
-                    String newText;
-                    if (value < minValue) {
-                        newText = String.valueOf(minValue);
-                    } else if (value > maxValue) {
-                        newText = String.valueOf(maxValue);
-                    } else {
-                        return;
-                    }
-
-                    fb.replace(0, fb.getDocument().getLength(), newText, null);
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        });
+        field.addKeyListener(new SimpleNumericTextKeyAdapter(field, minValue));
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new SimpleNumericTextDocumentFilter(minValue, maxValue));
 
         return field;
     }
@@ -244,18 +153,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         super.setTitle(get(key, params));
     }
 
-    public void setText(@PropertyKey(resourceBundle = Lang.File) String key, TextType type) {
-        type.setText(key, this);
-    }
-
-    public void setToolTipText(@PropertyKey(resourceBundle = Lang.File) String key, JComponent jComponent) {
-        jComponent.setToolTipText(get(key));
-    }
-
-    public void setToolTipText(@PropertyKey(resourceBundle = Lang.File) String key, JComponent jComponent, Object... params) {
-        jComponent.setToolTipText(get(key, params));
-    }
-
     public JBLabel getJBLabel(@PropertyKey(resourceBundle = Lang.File) String key) {
         return new JBLabel(get(key));
     }
@@ -293,10 +190,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
 
     public void setButtonLoading(JButton button) {
         button.setIcon(Icons.Animated.Dashes);
-    }
-
-    public void setButtonNull(JButton button) {
-        button.setIcon(null);
     }
 
     @SuppressWarnings("all")
@@ -363,29 +256,6 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
             else formBuilder.addLabeledComponent(createFieldLabel(field.label), field.fieldSupplier.get());
         }
         formBuilder.addVerticalGap(JBUI.scale(15));
-    }
-
-    public enum TextType {
-        OKButton() {
-            @Override
-            void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper) {
-                dialogWrapper.setOKButtonText(Lang.get(key));
-            }
-        },
-        CancelButton() {
-            @Override
-            void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper) {
-                dialogWrapper.setCancelButtonText(Lang.get(key));
-            }
-        },
-        Title() {
-            @Override
-            void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper) {
-                dialogWrapper.setTitle(key);
-            }
-        };
-
-        abstract void setText(@PropertyKey(resourceBundle = Lang.File) String key, BaseDialogWrapper dialogWrapper);
     }
 
     public record FieldConfig(String label, Supplier<JComponent> fieldSupplier) {

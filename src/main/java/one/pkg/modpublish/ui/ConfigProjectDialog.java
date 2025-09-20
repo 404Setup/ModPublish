@@ -21,11 +21,11 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
+import one.pkg.modpublish.ui.icon.Icons;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -54,8 +54,8 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         setModal(true);
 
         init();
-        setText("button.save", TextType.OKButton);
-        setText("button.cancel", TextType.CancelButton);
+        setOKButtonText(get("button.save"));
+        setCancelButtonText(get("button.cancel"));
         //getContentPanel().setPreferredSize(new Dimension(500, 400));
     }
 
@@ -115,21 +115,21 @@ public class ConfigProjectDialog extends BaseDialogWrapper {
         commonVersionFormatField.setText(p1.common().versionFormat());
 
         if (p1.modrinth().token().globalData())
-            setToolTipText("dialog.modpublish.config-project.global", modrinthTokenField);
+            modrinthTokenField.setToolTipText(get("dialog.modpublish.config-project.global"));
         else modrinthTokenField.setText(p1.modrinth().token().data());
         modrinthModIDField.setText(p1.modrinth().modid());
 
         if (p1.curseforge().token().globalData()) {
-            setToolTipText("dialog.modpublish.config-project.global", curseforgeTokenField);
+            curseforgeTokenField.setToolTipText(get("dialog.modpublish.config-project.global"));
         } else curseforgeTokenField.setText(p1.curseforge().token().data());
         if (p1.curseforge().studioToken().globalData()) {
-            setToolTipText("dialog.modpublish.config-project.global", curseforgeStudioTokenField);
+            curseforgeStudioTokenField.setToolTipText(get("dialog.modpublish.config-project.global"));
         } else curseforgeStudioTokenField.setText(p1.curseforge().studioToken().data());
         curseforgeModIDField.setText(p1.curseforge().modid());
 
         githubTokenField.setText(p1.github().token().globalData() ? "" : p1.github().token().data());
         if (p1.github().token().globalData())
-            setToolTipText("dialog.modpublish.config-project.global", githubTokenField);
+            githubTokenField.setToolTipText(get("dialog.modpublish.config-project.global"));
         githubRepoField.setText(p1.github().repo());
         githubBranchField.setText(p1.github().branch());
     }

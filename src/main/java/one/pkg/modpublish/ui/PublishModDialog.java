@@ -127,8 +127,8 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         loadConfigData();
         init();
-        setText("button.publish", TextType.OKButton);
-        setText("button.cancel", TextType.CancelButton);
+        setOKButtonText(get("button.publish"));
+        setCancelButtonText(get("button.cancel"));
         setOKButtonDefault();
     }
 
@@ -440,7 +440,7 @@ public class PublishModDialog extends BaseDialogWrapper {
     private void setFailedSelect(@NotNull JBCheckBox jbCheckBox) {
         jbCheckBox.setEnabled(false);
         setErrorStyle(jbCheckBox);
-        setToolTipText("tooltip.decrypt.failed", jbCheckBox);
+        jbCheckBox.setToolTipText(get("tooltip.decrypt.failed"));
     }
 
     private void loadPersistedData() {
@@ -450,19 +450,19 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         if (!p2.modrinth().isEnabled()) {
             modrinthCheckBox.setEnabled(false);
-            setToolTipText("tooltip.modrinth.disable", modrinthCheckBox);
+            modrinthCheckBox.setToolTipText(get("tooltip.modrinth.disable"));
         } else if (p2.modrinth().token().failed())
             setFailedSelect(modrinthCheckBox);
 
         if (!p2.curseforge().isEnabled()) {
             curseforgeCheckBox.setEnabled(false);
-            setToolTipText("tooltip.curseforge.disable", curseforgeCheckBox);
+            curseforgeCheckBox.setToolTipText(get("tooltip.curseforge.disable"));
         } else if (p2.curseforge().token().failed() || p2.curseforge().studioToken().failed())
             setFailedSelect(curseforgeCheckBox);
 
         if (!p2.github().isEnabled()) {
             githubCheckBox.setEnabled(false);
-            setToolTipText("tooltip.git.disable", githubCheckBox, "Github");
+            githubCheckBox.setToolTipText(get("tooltip.git.disable", "Github"));
         } else if (p2.github().token().failed())
             setFailedSelect(githubCheckBox);
 
@@ -547,7 +547,7 @@ public class PublishModDialog extends BaseDialogWrapper {
 
         getOKAction().setEnabled(false);
         setOKButtonLoading();
-        setText("button.publishing", TextType.OKButton);
+        setOKButtonText(get("button.publishing"));
 
         Async.runAsync(() -> {
             savePersistedData();
@@ -575,7 +575,7 @@ public class PublishModDialog extends BaseDialogWrapper {
             SwingUtilities.invokeLater(() -> {
                 setOKButtonDefault();
                 getOKAction().setEnabled(true);
-                setText("button.publish", TextType.OKButton);
+                setOKButtonText(get("button.publishing"));
 
                 if (finalIsOk) {
                     super.doOKAction();
