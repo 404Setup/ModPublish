@@ -18,7 +18,6 @@
 package one.pkg.modpublish.data.network.curseforge;
 
 import com.google.gson.annotations.SerializedName;
-import groovy.transform.AutoClone;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -32,7 +31,6 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @Getter
-@AutoClone
 @Builder(toBuilder = true)
 public class CurseForgeData {
 
