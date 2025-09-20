@@ -2,7 +2,7 @@
 
 ### Feat
 - More configurable network options
-- Support proxy auth (simple)
+- Support proxy simple auth
 - Add pluginIcon
 - Curseforge supports multiple file uploads
 - When the previous publication target fails, the later publishing tasks will not be canceled
@@ -45,7 +45,7 @@
 - When API errors occur, should return API ID
 - Support using proxy server. Need to configure in settings.
 - Support auto detecting current Git branch
-- 
+
 ### Performance
 - Don't process Minecraft version list synchronously when creating UI
 - Cache isn't used effectively
