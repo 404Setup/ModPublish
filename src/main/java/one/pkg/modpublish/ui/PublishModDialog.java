@@ -390,8 +390,8 @@ public class PublishModDialog extends BaseDialogWrapper {
 
             if (!versionNameFormat.isEmpty()) {
                 versionName =
-                        versionNameFormat.replace("{version}", Objects.requireNonNull(version))
-                                .replace("{name}", Objects.requireNonNull(modInfo.name()))
+                        versionNameFormat.replace("{version}", version)
+                                .replace("{name}", modInfo.name())
                                 .replace("{loader}", modType.getName());
                 if (!lowVersion.isEmpty()) versionName = versionName.replace("{low-version}", lowVersion);
                 if (!highVersion.isEmpty()) versionName = versionName.replace("{high-version}", highVersion);
