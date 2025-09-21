@@ -1,3 +1,13 @@
+## v0.0.7
+
+### Refactor
+- Refactoring part of the code using Kotlin
+
+### Fix
+- Fix file selector and ReleaseChannel to the left side of the page to resolve the issue where they sometimes moved to the center.
+
+---
+
 ## v0.0.6
 
 ### Feat

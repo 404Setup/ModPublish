@@ -24,11 +24,11 @@ import org.jetbrains.annotations.PropertyKey;
 public record PublishResult(String result, String ID) implements Result {
     public static final PublishResult EMPTY = new PublishResult("", "");
 
-    public static PublishResult of(@PropertyKey(resourceBundle = Lang.File) String result) {
+    public static PublishResult of(@PropertyKey(resourceBundle = Lang.FILE) String result) {
         return new PublishResult(Lang.get(result), "");
     }
 
-    public static PublishResult of(@PropertyKey(resourceBundle = Lang.File) String result, Object... params) {
+    public static PublishResult of(@PropertyKey(resourceBundle = Lang.FILE) String result, Object... params) {
         return new PublishResult(Lang.get(result, params), "");
     }
 
@@ -37,7 +37,7 @@ public record PublishResult(String result, String ID) implements Result {
     }
 
     public static PublishResult create(API api, String result) {
-        return new PublishResult(result, api.getID());
+        return new PublishResult(result, api.getId());
     }
 
     public static PublishResult empty() {

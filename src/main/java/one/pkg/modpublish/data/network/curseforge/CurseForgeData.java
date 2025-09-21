@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import one.pkg.modpublish.data.internel.ReleaseChannel;
+import one.pkg.modpublish.data.internal.ReleaseChannel;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.NotNull;
@@ -137,7 +137,7 @@ public class CurseForgeData {
 
         @NotNull
         public CurseForgeDataBuilder gameVersion(@NotNull MinecraftVersion version) {
-            return version.canReleaseToCurseForge() ? gameVersion(version.id) : this;
+            return version.canReleaseToCurseForge() ? gameVersion(version.getId()) : this;
         }
 
         @NotNull

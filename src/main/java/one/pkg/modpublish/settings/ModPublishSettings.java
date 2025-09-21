@@ -21,12 +21,13 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import one.pkg.modpublish.data.internel.Info;
+import one.pkg.modpublish.data.internal.Info;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.Proxy;
 
+// Don't migrate it to Kotlin
 @State(
         name = "org.intellij.sdk.settings.AppSettings",
         storages = @Storage("ModPublish.xml")
@@ -36,12 +37,14 @@ public final class ModPublishSettings
 
     private State myState = new State();
 
+    @NotNull
     public static ModPublishSettings getInstance() {
         return ApplicationManager.getApplication()
                 .getService(ModPublishSettings.class);
     }
 
     @Override
+    @NotNull
     public State getState() {
         return myState;
     }

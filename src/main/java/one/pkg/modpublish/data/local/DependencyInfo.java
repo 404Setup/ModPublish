@@ -18,7 +18,7 @@
 package one.pkg.modpublish.data.local;
 
 import lombok.Data;
-import one.pkg.modpublish.data.internel.ModInfo;
+import one.pkg.modpublish.data.internal.ModInfo;
 
 @Data
 @SuppressWarnings("unused")

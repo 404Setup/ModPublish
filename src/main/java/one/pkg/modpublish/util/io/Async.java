@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class Async {
     private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
-    public static <T> CompletableFuture<T> runAsync(Supplier<T> callable) {
+    public static <T> CompletableFuture<T> runRAsync(Supplier<T> callable) {
         CompletableFuture<T> future = new CompletableFuture<>();
         return future.completeAsync(callable, executor);
     }

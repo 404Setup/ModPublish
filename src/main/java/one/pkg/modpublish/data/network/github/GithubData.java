@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import one.pkg.modpublish.data.internel.ReleaseChannel;
+import one.pkg.modpublish.data.internal.ReleaseChannel;
 import one.pkg.modpublish.util.io.JsonParser;
 
 @SuppressWarnings("unused")

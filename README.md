@@ -154,7 +154,7 @@ Build steps:
 - Do not introduce third party dependencies unless necessary
 - Do not write duplicate code
 - Ensure code has good readability
-- Only use Java
+- ~~Only use Java~~
 - Tests are optional, but functionality must be manually verified before submission
 - Comments are not mandatory. But if there are any, please use English.
 - Variable/method/parameter names should not be too long

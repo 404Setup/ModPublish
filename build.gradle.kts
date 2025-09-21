@@ -2,6 +2,9 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 
 plugins {
     id("java")
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.lombok") version "2.2.20"
+
     id("org.jetbrains.intellij.platform") version "2.8.0"
 }
 
@@ -34,10 +37,15 @@ tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Xdiags:verbose")
 }
 
+kotlin {
+    jvmToolchain(targetJavaVersion)
+}
+
 dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2025.2")
         bundledPlugin("com.intellij.java")
+        bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("org.intellij.plugins.markdown")
         bundledPlugin("Git4Idea")
     }
