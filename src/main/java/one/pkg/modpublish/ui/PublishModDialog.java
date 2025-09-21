@@ -41,6 +41,7 @@ import one.pkg.modpublish.settings.properties.PID;
 import one.pkg.modpublish.settings.properties.Properties;
 import one.pkg.modpublish.settings.properties.Property;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
+import one.pkg.modpublish.ui.base.FieldConfig;
 import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel;
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer;

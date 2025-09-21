@@ -35,8 +35,6 @@ import org.jetbrains.annotations.PropertyKey;
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 import java.awt.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public abstract class BaseDialogWrapper extends DialogWrapper {
@@ -251,32 +249,11 @@ public abstract class BaseDialogWrapper extends DialogWrapper {
         formBuilder.addComponent(new SeparatorComponent(JBUI.scale(5)));
 
         for (FieldConfig field : fields) {
-            if (field.label == null || field.label.isEmpty())
-                formBuilder.addComponent(field.fieldSupplier.get());
-            else formBuilder.addLabeledComponent(createFieldLabel(field.label), field.fieldSupplier.get());
+            if (field.label() == null || field.label().isEmpty())
+                formBuilder.addComponent(field.fieldSupplier().get());
+            else formBuilder.addLabeledComponent(createFieldLabel(field.label()), field.fieldSupplier().get());
         }
         formBuilder.addVerticalGap(JBUI.scale(15));
     }
 
-    public record FieldConfig(String label, Supplier<JComponent> fieldSupplier) {
-        public FieldConfig(Supplier<JComponent> fieldSupplier) {
-            this(null, fieldSupplier);
-        }
-
-        public static FieldConfig of(String label, Supplier<JComponent> fieldSupplier) {
-            return new FieldConfig(label, fieldSupplier);
-        }
-
-        public static FieldConfig of(Supplier<JComponent> fieldSupplier) {
-            return new FieldConfig(fieldSupplier);
-        }
-
-        public static FieldConfig of(Consumer<JButton> buttonConsumer) {
-            return new FieldConfig(() -> {
-                JButton button = new JButton();
-                buttonConsumer.accept(button);
-                return button;
-            });
-        }
-    }
 }

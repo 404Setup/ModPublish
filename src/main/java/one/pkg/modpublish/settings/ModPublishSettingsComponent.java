@@ -22,6 +22,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import lombok.Getter;
+import one.pkg.modpublish.ui.base.FieldConfig;
 import one.pkg.modpublish.ui.icon.Icons;
 import one.pkg.modpublish.ui.base.BaseDialogWrapper;
 import one.pkg.modpublish.util.protect.Protect;
