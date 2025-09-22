@@ -6,9 +6,8 @@ build/
 !**/src/test/**/build/
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
+.idea/*.xml
+.idea/*/*.xml
 .idea/libraries/
 *.iws
 *.iml
@@ -16,6 +15,7 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+!.idea/*.svg
 
 ### Eclipse ###
 .apt_generated
@@ -42,7 +42,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-.idea
 .intellijPlatform
 *.crt
 *.pem
