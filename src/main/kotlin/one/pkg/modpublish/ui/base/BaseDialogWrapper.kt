@@ -149,18 +149,6 @@ abstract class BaseDialogWrapper(
         disabledSelectedIcon = Icons.Static.DisabledSelectedCheckBox
     }
 
-    fun jButton(text: String, action: (JButton) -> Unit): JButton {
-        val button = JButton(text)
-        action(button)
-        return button
-    }
-
-    fun jButton(action: (JButton) -> Unit): JButton {
-        val button = JButton()
-        action(button)
-        return button
-    }
-
     fun setOKButtonDefault() = setOKButtonIcon(Icons.Static.Send)
     fun setOKButtonLoading() = setOKButtonIcon(Icons.Animated.Dashes)
     fun setButtonDefault(button: JButton) = button.setIcon(Icons.Static.Send)

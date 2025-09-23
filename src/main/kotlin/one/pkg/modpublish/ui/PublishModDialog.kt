@@ -244,30 +244,30 @@ class PublishModDialog(
                 }
             },
             FieldConfig.of {
-                val button1 = jButton(get("component.name.update-version-list")) {
-                    it.icon = Icons.Static.Sync
-                    it.toolTipText = get("component.tooltip.update-version-list")
-                    it.addActionListener { _ ->
+                val button1 = JButton(get("component.name.update-version-list")).apply {
+                    icon = Icons.Static.Sync
+                    toolTipText = get("component.tooltip.update-version-list")
+                    addActionListener { _ ->
                         Async.runAsync {
-                            it.isEnabled = false
-                            setButtonLoading(it)
+                            isEnabled = false
+                            setButtonLoading(this)
                             if (VersionProcessor.updateVersions()) {
                                 updateVersionList = true
                                 showSuccessDialog("message.update.success", "title.success")
                                 updateMinecraftVersions()
                             } else showFailedDialog("message.update.failed", "title.failed")
-                            it.icon = Icons.Static.Sync
-                            it.isEnabled = true
+                            icon = Icons.Static.Sync
+                            isEnabled = true
                         }
                     }
                 }
 
-                val button2 = jButton(get("component.name.reset-version-list")) {
-                    it.icon = Icons.Static.WrenchScrewdriver
-                    it.toolTipText = get("component.tooltip.reset-version-list")
-                    it.addActionListener { _ ->
+                val button2 = JButton(get("component.name.reset-version-list")).apply {
+                    icon = Icons.Static.WrenchScrewdriver
+                    toolTipText = get("component.tooltip.reset-version-list")
+                    addActionListener { _ ->
                         Async.runAsync {
-                            FileAPI.getUserDataFile("minecraft.version.json").takeIf { f -> f.exists() }?.delete()
+                            FileAPI.getUserDataFile("minecraft.version.json").takeIf { it.exists() }?.delete()
                             showSuccessDialog("message.update.success", "title.success")
                             updateVersionList = true
                             updateMinecraftVersions()
