@@ -80,7 +80,7 @@ class GithubAPI : API() {
                 this,
                 "Failed to get upload URL"
             )
-        data.files.fold(PublishResult.empty()) { acc, file ->
+        data.files.fold(PublishResult.EMPTY) { acc, file ->
             if (!acc.isSuccess) acc else uploadAsset(file, project, uploadUrl)
         }
     } catch (e: Exception) {
@@ -110,7 +110,7 @@ class GithubAPI : API() {
 
         client.newCall(request).execute().use { resp ->
             getStatus(resp)?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
-            PublishResult.empty()
+            PublishResult.EMPTY
         }
     } catch (e: IOException) {
         PublishResult.create(this, "Failed to upload asset: ${e.message}")

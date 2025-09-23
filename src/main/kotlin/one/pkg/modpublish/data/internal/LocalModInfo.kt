@@ -14,19 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish.data.internal;
-
-import lombok.Getter;
-
-@Getter
-public enum RequestStatus {
-    Listed("listed"), Archived("archived"), Draft("draft"), Unlisted("unlisted"), Scheduled("scheduled");
-
-    private final String status;
-
-    RequestStatus(String status) {
-        this.status = status;
-    }
-
-}
+@JvmRecord
+data class LocalModInfo(val name: String, val version: String, val versionRange: String?)

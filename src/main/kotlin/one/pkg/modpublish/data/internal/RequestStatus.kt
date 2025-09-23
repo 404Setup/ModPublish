@@ -14,24 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish.data.internal;
 
-import lombok.Data;
-import one.pkg.modpublish.data.local.MinecraftVersion;
-
-@Data
-public class MinecraftVersionItem {
-    private final MinecraftVersion version;
-    private boolean selected;
-
-    public MinecraftVersionItem(MinecraftVersion version, boolean selected) {
-        this.version = version;
-        this.selected = selected;
-    }
-
-    @Override
-    public String toString() {
-        return version.getVersion();
-    }
+enum class RequestStatus(val status: String) {
+    Listed("listed"), Archived("archived"), Draft("draft"), Unlisted("unlisted"), Scheduled("scheduled");
 }

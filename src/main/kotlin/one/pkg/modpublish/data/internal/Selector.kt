@@ -14,24 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish;
+import com.intellij.ui.components.JBCheckBox
 
-import com.intellij.openapi.components.Service;
-import com.intellij.openapi.project.Project;
-import lombok.Getter;
+@JvmRecord
+data class Selector(val modrinth: Boolean, val curseForge: Boolean, val github: Boolean) {
+    companion object {
+        fun of(modrinth: Boolean, curseForge: Boolean, github: Boolean): Selector {
+            return Selector(modrinth, curseForge, github)
+        }
 
-@Service(Service.Level.PROJECT)
-public final class PluginMain {
-    @Getter
-    private static Project project;
-
-    public PluginMain(Project project) {
-        PluginMain.project = project;
-    }
-
-    public static void updateProject(Project project) {
-        if (PluginMain.project == null || !PluginMain.project.equals(project))
-            PluginMain.project = project;
+        fun of(modrinth: JBCheckBox, curseForge: JBCheckBox, github: JBCheckBox): Selector {
+            return of(modrinth.isSelected, curseForge.isSelected, github.isSelected)
+        }
     }
 }

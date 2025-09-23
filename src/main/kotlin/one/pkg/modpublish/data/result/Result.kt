@@ -14,23 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package one.pkg.modpublish.ui.base
+package one.pkg.modpublish.data.result
 
-import javax.swing.JComponent
+interface Result {
+    val isSuccess: Boolean
 
-@JvmRecord
-data class FieldConfig(@JvmField val label: String?, @JvmField val fieldBlock: () -> JComponent) {
-    constructor(fieldBlock: () -> JComponent) : this(null, fieldBlock)
-
-    companion object {
-        @JvmStatic
-        fun of(label: String?, fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(label, fieldBlock)
-        }
-
-        @JvmStatic
-        fun of(fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(fieldBlock)
-        }
-    }
+    val isFailure: Boolean
 }

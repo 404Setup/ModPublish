@@ -14,23 +14,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.result
 
-package one.pkg.modpublish.util.io;
+import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
+@JvmRecord
+data class BackResult(val result: Any) : Result {
+    override val isSuccess: Boolean
+        get() = true
 
-public class Async {
-    private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+    override val isFailure: Boolean
+        get() = !isSuccess
 
-    public static <T> CompletableFuture<T> runRAsync(Supplier<T> callable) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        return future.completeAsync(callable, executor);
+    val isString: Boolean
+        get() = result is String
+
+    fun asString(): String {
+        return result as String
     }
 
-    public static void runAsync(Runnable runnable) {
-        executor.submit(runnable);
+    val isCurseForgePublishResult: Boolean
+        get() = result is CurseForgePublishResult
+
+    fun asCurseForgePublishResult(): CurseForgePublishResult {
+        return result as CurseForgePublishResult
+    }
+
+    companion object {
+        fun result(result: Any): BackResult {
+            return BackResult(result)
+        }
     }
 }

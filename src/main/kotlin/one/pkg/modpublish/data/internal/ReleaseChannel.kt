@@ -14,11 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish.data.internal;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-public record LocalModInfo(@NotNull String name, @NotNull String version, @Nullable String versionRange) {
+enum class ReleaseChannel(val type: String) {
+    Release("release"), Beta("beta"), Alpha("alpha");
 }

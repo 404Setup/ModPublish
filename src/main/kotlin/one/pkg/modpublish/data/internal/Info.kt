@@ -14,17 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish.data.internal;
+@JvmRecord
+data class Info(val data: String, val failed: Boolean, val globalData: Boolean) {
+    companion object {
+        val INSTANCE: Info = Info("", failed = false, globalData = false)
 
-public record Info(String data, boolean failed, boolean globalData) {
-    public static final Info INSTANCE = new Info("", false, false);
+        fun of(data: String, failed: Boolean, globalData: Boolean): Info {
+            return Info(data, failed, globalData)
+        }
 
-    public static Info of(String data, boolean failed, boolean globalData) {
-        return new Info(data, failed, globalData);
-    }
-
-    public static Info of(String data) {
-        return new Info(data, false, false);
+        fun of(data: String): Info {
+            return Info(data, failed = false, globalData = false)
+        }
     }
 }

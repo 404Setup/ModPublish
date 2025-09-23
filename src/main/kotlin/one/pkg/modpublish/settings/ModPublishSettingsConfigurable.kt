@@ -39,10 +39,10 @@ class ModPublishSettingsConfigurable : Configurable {
         val state = Objects.requireNonNull(ModPublishSettings.getInstance().state)
         val c = component ?: return false
 
-        return c.modrinthTokenTextValue != state.getModrinthToken().data() ||
-                c.curseforgeTokenTextValue != state.getCurseforgeToken().data() ||
-                c.curseforgeStudioTokenTextValue != state.getCurseforgeStudioToken().data() ||
-                c.githubTokenTextValue != state.getGithubToken().data() ||
+        return c.modrinthTokenTextValue != state.getModrinthToken().data ||
+                c.curseforgeTokenTextValue != state.getCurseforgeToken().data ||
+                c.curseforgeStudioTokenTextValue != state.getCurseforgeStudioToken().data ||
+                c.githubTokenTextValue != state.getGithubToken().data ||
                 c.isAutoProxyEnabled != state.autoProxy ||
                 c.proxyType != state.proxyType ||
                 c.proxyAddress != state.proxyAddress ||
@@ -79,10 +79,10 @@ class ModPublishSettingsConfigurable : Configurable {
         val state = Objects.requireNonNull(ModPublishSettings.getInstance().state)
         val c = component ?: return
 
-        c.modrinthTokenTextValue = state.getModrinthToken().data()
-        c.curseforgeTokenTextValue = state.getCurseforgeToken().data()
-        c.curseforgeStudioTokenTextValue = state.getCurseforgeStudioToken().data()
-        c.githubTokenTextValue = state.getGithubToken().data()
+        c.modrinthTokenTextValue = state.getModrinthToken().data
+        c.curseforgeTokenTextValue = state.getCurseforgeToken().data
+        c.curseforgeStudioTokenTextValue = state.getCurseforgeStudioToken().data
+        c.githubTokenTextValue = state.getGithubToken().data
         c.isAutoProxyEnabled = state.autoProxy
         c.proxyType = state.proxyType
         c.proxyAddress = state.proxyAddress

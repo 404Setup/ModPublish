@@ -14,17 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish
 
-package one.pkg.modpublish.data.internal;
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.project.Project
 
-import com.intellij.ui.components.JBCheckBox;
-
-public record Selector(boolean modrinth, boolean curseForge, boolean github) {
-    public static Selector of(boolean modrinth, boolean curseForge, boolean github) {
-        return new Selector(modrinth, curseForge, github);
-    }
-
-    public static Selector of(JBCheckBox modrinth, JBCheckBox curseForge, JBCheckBox github) {
-        return of(modrinth.isSelected(), curseForge.isSelected(), github.isSelected());
-    }
+@Service(Service.Level.PROJECT)
+class PluginMain(project: Project) {
 }

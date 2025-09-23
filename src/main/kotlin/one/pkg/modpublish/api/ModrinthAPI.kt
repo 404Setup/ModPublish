@@ -55,7 +55,7 @@ class ModrinthAPI : API() {
         return try {
             client.newCall(request).execute().use { resp ->
                 getStatus(resp)?.let { return PublishResult.create(this, it) }
-                PublishResult.empty()
+                PublishResult.EMPTY
             }
         } catch (e: IOException) {
             PublishResult.create(this, e.message)

@@ -14,11 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.util.io
 
-package one.pkg.modpublish.data.result;
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-public interface Result {
-    boolean isSuccess();
+object Async {
+    private val executor: ExecutorService = Executors.newVirtualThreadPerTaskExecutor()
 
-    boolean isFailure();
+    @JvmStatic
+    fun <T> rAsync(callable: () -> T): CompletableFuture<T> {
+        return CompletableFuture<T>().completeAsync(callable, executor)
+    }
+
+    @JvmStatic
+    fun async(callable: () -> Unit) {
+        executor.submit { run(callable) }
+    }
 }

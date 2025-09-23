@@ -14,19 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.internal
 
-package one.pkg.modpublish.data.internal;
+import one.pkg.modpublish.api.API
+import one.pkg.modpublish.api.CurseForgeAPI
+import one.pkg.modpublish.api.GithubAPI
+import one.pkg.modpublish.api.ModrinthAPI
 
-import lombok.Getter;
-
-@Getter
-public enum ReleaseChannel {
-    Release("release"), Beta("beta"), Alpha("alpha");
-
-    private final String type;
-
-    ReleaseChannel(String type) {
-        this.type = type;
-    }
-
+enum class TargetType(val api: API) {
+    Modrinth(ModrinthAPI()), CurseForge(CurseForgeAPI()),
+    Github(GithubAPI());
 }

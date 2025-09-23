@@ -15,17 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package one.pkg.modpublish.data.internal;
+package one.pkg.modpublish.data.internal
 
-import one.pkg.modpublish.api.*;
-
-public enum TargetType {
-    Modrinth(new ModrinthAPI()), CurseForge(new CurseForgeAPI()),
-    Github(new GithubAPI());
-
-    public final API api;
-
-    TargetType(API api) {
-        this.api = api;
-    }
-}
+data class ModInfos(val modrinth: ModInfo?, val curseForge: ModInfo?)

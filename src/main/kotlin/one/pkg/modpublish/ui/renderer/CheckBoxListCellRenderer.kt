@@ -34,7 +34,7 @@ class CheckBoxListCellRenderer : JCheckBox(), ListCellRenderer<MinecraftVersionI
         isSelected: Boolean,
         cellHasFocus: Boolean
     ): Component {
-        setSelected(value.isSelected)
+        setSelected(value.selected)
         setText(value.version.version)
 
         if (isSelected) {

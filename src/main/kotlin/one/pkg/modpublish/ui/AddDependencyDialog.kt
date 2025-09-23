@@ -20,6 +20,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import one.pkg.modpublish.data.internal.ModInfo
+import one.pkg.modpublish.data.internal.ModInfos
 import one.pkg.modpublish.data.internal.Selector
 import one.pkg.modpublish.data.internal.TargetType
 import one.pkg.modpublish.data.local.DependencyInfo
@@ -72,9 +73,9 @@ class AddDependencyDialog(
     }
 
     override fun doOKAction() {
-        if (!selector.modrinth() && !selector.curseForge()) {
+        if (!selector.modrinth && !selector.curseForge) {
             showFailedDialog(
-                if (selector.github()) "message.dont-support-add-depends" else "failed.8",
+                if (selector.github) "message.dont-support-add-depends" else "failed.8",
                 "title.failed"
             )
             return
@@ -89,54 +90,53 @@ class AddDependencyDialog(
         val selectedType = dependencyTypeCombo.selectedItem as DependencyType
         resultDependency = DependencyInfo(projectId, selectedType, null)
 
-        val validationResult = validateDependency(resultDependency)
-        validationResult.forEachIndexed { _, modInfo ->
-            modInfo?.failed()?.let { showFailedDialogRaw(it, get("title.failed")); return }
-        }
+        validateDependency(resultDependency).apply {
+            modrinth?.failed?.let { showFailedDialogRaw(it, get("title.failed")) }
 
-        validationResult[0]?.let { resultDependency.apply { customTitle = it.name(); modrinthModInfo = it } }
-        validationResult[1]?.let { resultDependency.apply { customTitle = it.name(); curseforgeModInfo = it } }
+            modrinth?.let { resultDependency.apply { customTitle = it.name; modrinthModInfo = it } }
+            curseForge?.let { resultDependency.apply { customTitle = it.name; curseforgeModInfo = it } }
+        }
 
         isDone = true
         super.doOKAction()
     }
 
-    private fun validateDependency(dependency: DependencyInfo): Array<ModInfo?> {
+    private fun validateDependency(dependency: DependencyInfo): ModInfos {
         val projectId = dependency.projectId
-        if (projectId.isNullOrBlank()) return ModInfo.ofs("Project ID cannot be empty")
+        if (projectId.isNullOrBlank()) return ModInfos(ModInfo.of("Project ID cannot be empty"), null)
 
         if (projectId.contains(",")) {
             val parts = projectId.split(",", limit = 2)
-            if (parts.size != 2) return ModInfo.ofs("Invalid project ID format")
+            if (parts.size != 2) return ModInfos(ModInfo.of("Invalid project ID format"), null)
 
-            val modrinthInfo = if (selector.modrinth() && parts[0].isNotBlank()) {
+            val modrinthInfo = if (selector.modrinth && parts[0].isNotBlank()) {
                 TargetType.Modrinth.api.getModInfo(parts[0], project!!).also {
-                    if (it.failed() != null) return arrayOf(it, null)
+                    if (it.failed != null) return ModInfos(it, null)
                 }
             } else null
 
-            val curseforgeInfo = if (selector.curseForge() && parts[1].isNotBlank()) {
+            val curseforgeInfo = if (selector.curseForge && parts[1].isNotBlank()) {
                 TargetType.CurseForge.api.getModInfo(parts[1], project!!).also {
-                    if (it.failed() != null) return arrayOf(null, it)
+                    if (it.failed != null) return ModInfos(null, it)
                 }
             } else null
 
-            return arrayOf(modrinthInfo, curseforgeInfo)
+            return ModInfos(modrinthInfo, curseforgeInfo)
         } else {
-            val modrinthInfo = if (selector.modrinth()) {
+            val modrinthInfo = if (selector.modrinth) {
                 TargetType.Modrinth.api.apply { if (getAB()) updateAB() }
                     .getModInfo(projectId, project!!).also {
-                        if (it.failed() != null) return arrayOf(it, null)
+                        if (it.failed != null) return ModInfos(it, null)
                     }
             } else null
 
-            val curseforgeInfo = if (selector.curseForge()) {
+            val curseforgeInfo = if (selector.curseForge) {
                 TargetType.CurseForge.api.getModInfo(projectId, project!!).also {
-                    if (it.failed() != null) return arrayOf(null, it)
+                    if (it.failed != null) return ModInfos(null, it)
                 }
             } else null
 
-            return arrayOf(modrinthInfo, curseforgeInfo)
+            return ModInfos(modrinthInfo, curseforgeInfo)
         }
     }
 

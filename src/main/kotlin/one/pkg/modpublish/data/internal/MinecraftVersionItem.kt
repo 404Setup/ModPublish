@@ -14,23 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package one.pkg.modpublish.ui.base
+package one.pkg.modpublish.data.internal
 
-import javax.swing.JComponent
+import one.pkg.modpublish.data.local.MinecraftVersion
 
-@JvmRecord
-data class FieldConfig(@JvmField val label: String?, @JvmField val fieldBlock: () -> JComponent) {
-    constructor(fieldBlock: () -> JComponent) : this(null, fieldBlock)
-
-    companion object {
-        @JvmStatic
-        fun of(label: String?, fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(label, fieldBlock)
-        }
-
-        @JvmStatic
-        fun of(fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(fieldBlock)
-        }
+data class MinecraftVersionItem(val version: MinecraftVersion, var selected: Boolean) {
+    override fun toString(): String {
+        return version.version
     }
 }

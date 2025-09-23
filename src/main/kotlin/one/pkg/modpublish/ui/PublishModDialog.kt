@@ -27,7 +27,6 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
-import one.pkg.modpublish.PluginMain
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
 import one.pkg.modpublish.data.local.DependencyInfo
@@ -98,7 +97,6 @@ class PublishModDialog(
 
     init {
         updateParser(jarFiles.first())
-        PluginMain.updateProject(project)
 
         setTitle("title.publish", jarFiles.first().name)
         isModal = true
@@ -114,7 +112,7 @@ class PublishModDialog(
         parser = modTypes[primaryFile]
             ?.firstOrNull { it != ModType.Rift }
             ?.getMod(primaryFile)
-            ?.versionRange()
+            ?.versionRange
             ?.takeIf { it.isNotEmpty() }
             ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }
     }
@@ -220,7 +218,7 @@ class PublishModDialog(
                 override fun mouseClicked(e: MouseEvent) {
                     locationToIndex(e.point).takeIf { it != -1 }?.let { index ->
                         val item = minecraftVersionModel.getElementAt(index)
-                        item.isSelected = !item.isSelected
+                        item.selected = !item.selected
                         repaint()
                     }
                 }
@@ -248,7 +246,7 @@ class PublishModDialog(
                     icon = Icons.Static.Sync
                     toolTipText = get("component.tooltip.update-version-list")
                     addActionListener { _ ->
-                        Async.runAsync {
+                        Async.async {
                             isEnabled = false
                             setButtonLoading(this)
                             if (VersionProcessor.updateVersions()) {
@@ -266,7 +264,7 @@ class PublishModDialog(
                     icon = Icons.Static.WrenchScrewdriver
                     toolTipText = get("component.tooltip.reset-version-list")
                     addActionListener { _ ->
-                        Async.runAsync {
+                        Async.async {
                             FileAPI.getUserDataFile("minecraft.version.json").takeIf { it.exists() }?.delete()
                             showSuccessDialog("message.update.success", "title.success")
                             updateVersionList = true
@@ -335,11 +333,11 @@ class PublishModDialog(
         val (version, versionName) = modInfo?.let { info ->
             val lowVersion = parser?.lowVersion.orEmpty()
             val highVersion = parser?.maxVersion.orEmpty()
-            val v = info.version()
+            val v = info.version
 
             val name = versionNameFormat.takeIf { it.isNotEmpty() }?.run {
                 replace("{version}", v)
-                    .replace("{name}", info.name())
+                    .replace("{name}", info.name)
                     .replace("{loader}", modType?.displayName.orEmpty())
                     .replace("{low-version}", lowVersion)
                     .replace("{high-version}", highVersion)
@@ -373,7 +371,7 @@ class PublishModDialog(
             }
 
         indicesToSelect.toList().onEach { idx ->
-            minecraftVersionModel.getElementAt(idx).isSelected = true
+            minecraftVersionModel.getElementAt(idx).selected = true
         }
 
         minecraftVersionList.repaint()
@@ -393,21 +391,21 @@ class PublishModDialog(
         if (!p2.modrinth.isEnabled()) {
             modrinthCheckBox.isEnabled = false
             modrinthCheckBox.toolTipText = get("tooltip.modrinth.disable")
-        } else if (p2.modrinth.token.failed()) {
+        } else if (p2.modrinth.token.failed) {
             modrinthCheckBox.setFailedSelect()
         }
 
         if (!p2.curseforge.isEnabled()) {
             curseforgeCheckBox.isEnabled = false
             curseforgeCheckBox.toolTipText = get("tooltip.curseforge.disable")
-        } else if (p2.curseforge.token.failed() || p2.curseforge.studioToken.failed()) {
+        } else if (p2.curseforge.token.failed || p2.curseforge.studioToken.failed) {
             curseforgeCheckBox.setFailedSelect()
         }
 
         if (!p2.github.isEnabled()) {
             githubCheckBox.isEnabled = false
             githubCheckBox.toolTipText = get("tooltip.git.disable", "Github")
-        } else if (p2.github.token.failed()) {
+        } else if (p2.github.token.failed) {
             githubCheckBox.setFailedSelect()
         }
 
@@ -472,7 +470,7 @@ class PublishModDialog(
 
     override fun doOKAction() {
         doOKActionFirst()?.let {
-            showFailedDialogRaw(get("message.failed", it.result()), get("title.failed"))
+            showFailedDialogRaw(get("message.failed", it.result!!), get("title.failed"))
             return
         }
 
@@ -480,7 +478,7 @@ class PublishModDialog(
         setOKButtonLoading()
         setOKButtonText(get("button.publishing"))
 
-        Async.runAsync {
+        Async.async {
             savePersistedData()
             val publishData = collectPublishData()
             val result = performPublish(publishData)
@@ -488,7 +486,7 @@ class PublishModDialog(
             val (isOk, failureMessage) = result.fold(true to "") { acc, r ->
                 val (_, msg) = acc
                 if (r.isFailure) {
-                    val newMsg = if (r.ID().isBlank()) r.result() else ("$msg\n${r.ID()}: ${r.result()}")
+                    val newMsg = if (r.id.isBlank()) r.result!! else ("$msg\n${r.id}: ${r.result!!}")
                     false to newMsg
                 } else {
                     acc
@@ -516,7 +514,7 @@ class PublishModDialog(
             .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) launchers[index] else null }
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
-            .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.isSelected }?.version }
+            .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }
 
         val rT = releaseType.getItemAt(releaseType.selectedIndex)
 
@@ -541,7 +539,7 @@ class PublishModDialog(
 
     private fun performPublish(data: PublishData): List<PublishResult> {
         val results = mutableListOf<PublishResult>()
-        if (data.minecraftVersions().isEmpty()) {
+        if (data.minecraftVersions.isEmpty()) {
             results.add(PublishResult.of("failed.4"))
             return results
         }
@@ -572,9 +570,8 @@ class PublishModDialog(
         data: PublishData
     ): CompletableFuture<PublishResult>? {
         return if (checkBox.isSelected) {
-            Async.runRAsync {
-                val result = api.createVersion(data, requireNotNull(project))
-                if (result.isFailure) result else null
+            Async.rAsync {
+                api.createVersion(data, requireNotNull(project))
             }
         } else null
     }

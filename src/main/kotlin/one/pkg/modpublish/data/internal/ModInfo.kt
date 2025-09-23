@@ -14,23 +14,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package one.pkg.modpublish.ui.base
-
-import javax.swing.JComponent
+package one.pkg.modpublish.data.internal
 
 @JvmRecord
-data class FieldConfig(@JvmField val label: String?, @JvmField val fieldBlock: () -> JComponent) {
-    constructor(fieldBlock: () -> JComponent) : this(null, fieldBlock)
-
+data class ModInfo(val modid: String?, val slug: String?, val name: String?, val failed: String?) {
     companion object {
-        @JvmStatic
-        fun of(label: String?, fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(label, fieldBlock)
+        var EMPTY: ModInfo = ModInfo(null, null, null, null)
+
+        fun ofs(failed: String?): Array<ModInfo> {
+            return arrayOf(of(failed))
         }
 
-        @JvmStatic
-        fun of(fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(fieldBlock)
+        fun of(failed: String?): ModInfo {
+            return ModInfo(null, null, null, failed)
+        }
+
+        fun of(modid: String?, slug: String?, name: String?): ModInfo {
+            return ModInfo(modid, slug, name, null)
+        }
+
+        fun of(vararg modInfos: ModInfo): Array<ModInfo> {
+            return arrayOf(*modInfos)
+        }
+
+        fun empty(): ModInfo {
+            return EMPTY
         }
     }
 }

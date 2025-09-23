@@ -81,7 +81,7 @@ class CurseForgeAPI : API() {
                 is PublishResult -> if (result.isFailure) return result
             }
         }
-        return PublishResult.empty()
+        return PublishResult.EMPTY
     }
 
     override fun createJsonBody(data: PublishData, project: Project): String =
@@ -101,7 +101,7 @@ class CurseForgeAPI : API() {
             data.dependencies.forEach { dep ->
                 dep.curseforgeModInfo?.let { info ->
                     if (!info.modid.isNullOrBlank() && !info.slug.isNullOrBlank()) {
-                        dependency(ProjectRelation.create(info.slug, info.modid!!.toInt(), dep.type))
+                        dependency(ProjectRelation.create(info.slug, info.modid.toInt(), dep.type))
                     }
                 }
             }
