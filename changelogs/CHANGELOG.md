@@ -3,6 +3,9 @@
 ### Refactor
 - Refactoring part of the code using Kotlin
 
+### Chore
+- Bump minecraft version list
+
 ### Fix
 - Fix file selector and ReleaseChannel to the left side of the page to resolve the issue where they sometimes moved to the center.
 
