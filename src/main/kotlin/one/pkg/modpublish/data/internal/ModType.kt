@@ -24,6 +24,7 @@ import one.pkg.modpublish.util.metadata.ModJsonParser
 import one.pkg.modpublish.util.metadata.ModTomlParser
 import java.io.File
 import java.io.InputStream
+import java.util.Locale
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 
@@ -51,6 +52,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     fun getEntry(jar: JarFile): ZipEntry? = jar.getEntry(fileName)
 
     fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { FileAPI.open(jar, it) }
+
+    fun getID(): String = displayName.lowercase(Locale.ENGLISH)
 
     protected fun getFabricMod(file: File): LocalModInfo? = try {
         file.toJarFile().use { jar ->

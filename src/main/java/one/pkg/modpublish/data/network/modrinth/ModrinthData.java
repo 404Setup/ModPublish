@@ -189,7 +189,7 @@ public class ModrinthData {
         }
 
         public ModrinthDataBuilder loader(ModType info) {
-            return loader(info.getDisplayName().toLowerCase(Locale.ENGLISH));
+            return loader(info.getID());
         }
 
         @Tolerate
