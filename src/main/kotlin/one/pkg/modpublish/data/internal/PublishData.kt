@@ -17,7 +17,6 @@
 package one.pkg.modpublish.data.internal
 
 import one.pkg.modpublish.data.local.DependencyInfo
-import one.pkg.modpublish.data.local.LauncherInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
 import java.io.File
@@ -25,7 +24,7 @@ import java.io.File
 @JvmRecord
 data class PublishData(
     val versionName: String, val versionNumber: String, val enabled: Selector,
-    val releaseChannel: ReleaseChannel, val loaders: List<LauncherInfo>,
+    val releaseChannel: ReleaseChannel, val loaders: List<ModType>,
     val supportedInfo: SupportedInfo, val minecraftVersions: List<MinecraftVersion>,
     val changelog: String, val dependencies: List<DependencyInfo>,
     val files: Array<File>

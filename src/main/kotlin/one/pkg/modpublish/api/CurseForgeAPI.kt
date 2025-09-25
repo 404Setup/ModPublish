@@ -96,7 +96,7 @@ class CurseForgeAPI : API() {
                 data.minecraftVersions.forEach { gameVersion(it) }
                 if (data.supportedInfo.client.enabled) gameVersion(data.supportedInfo.client.cfid)
                 if (data.supportedInfo.server.enabled) gameVersion(data.supportedInfo.server.cfid)
-                data.loaders.filter { it.getCfid() > 0 }.forEach { gameVersion(it.getCfid()) }
+                data.loaders.filter { it.curseForgeVersion > 0 }.forEach { gameVersion(it.curseForgeVersion) }
             }
             data.dependencies.forEach { dep ->
                 dep.curseforgeModInfo?.let { info ->

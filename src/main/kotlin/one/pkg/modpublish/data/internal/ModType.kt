@@ -27,20 +27,20 @@ import java.io.InputStream
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 
-enum class ModType(val fileName: String, val displayName: String) {
-    Fabric("fabric.mod.json", "Fabric") {
+enum class ModType(val fileName: String, val displayName: String, val curseForgeVersion: Int) {
+    Fabric("fabric.mod.json", "Fabric", 7499) {
         override fun getMod(file: File): LocalModInfo? = getFabricMod(file)
     },
-    Quilt("quilt.mod.json", "Quilt") {
+    Quilt("quilt.mod.json", "Quilt", 9153) {
         override fun getMod(file: File): LocalModInfo? = getFabricMod(file)
     },
-    Forge("META-INF/mods.toml", "Forge") {
+    Forge("META-INF/mods.toml", "Forge", 7498) {
         override fun getMod(file: File): LocalModInfo? = getForgeMod(file)
     },
-    NeoForge("META-INF/neoforge.mods.toml", "NeoForge") {
+    NeoForge("META-INF/neoforge.mods.toml", "NeoForge", 10150) {
         override fun getMod(file: File): LocalModInfo? = getForgeMod(file)
     },
-    Rift("riftmod.json", "Rift") {
+    Rift("riftmod.json", "Rift", 7500) {
         override fun getMod(file: File): LocalModInfo? = null // RiftMod version reading not supported
     };
 
@@ -52,13 +52,33 @@ enum class ModType(val fileName: String, val displayName: String) {
 
     fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { FileAPI.open(jar, it) }
 
+    protected fun getFabricMod(file: File): LocalModInfo? = try {
+        file.toJarFile().use { jar ->
+            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.get() }
+        }
+    } catch (_: Exception) {
+        null
+    }
+
+    protected fun getForgeMod(file: File): LocalModInfo? = try {
+        file.toJarFile().use { jar ->
+            jar?.let { getStream(it) }.use { stream -> stream?.let { ModTomlParser.of(it) }?.get() }
+        }
+    } catch (_: Exception) {
+        null
+    }
+
+    override fun toString(): String = displayName
+
     companion object {
-        private val valuesList = entries
+        val valuesList = entries
 
         @JvmStatic
         fun of(file: File): ModType? = try {
             JarFile(file).use { jar -> of(jar) }
-        } catch (_: Exception) { null }
+        } catch (_: Exception) {
+            null
+        }
 
         @JvmStatic
         fun of(jar: JarFile): ModType? = valuesList.firstOrNull { it.getEntry(jar) != null }
@@ -69,23 +89,11 @@ enum class ModType(val fileName: String, val displayName: String) {
         @JvmStatic
         fun getAll(file: File): List<ModType> = try {
             JarFile(file).use { jar -> valuesList.filter { it.getEntry(jar) != null } }
-        } catch (_: Exception) { emptyList() }
+        } catch (_: Exception) {
+            emptyList()
+        }
 
         @JvmStatic
         fun getAll(file: VirtualFile): List<ModType> = getAll(file.toFile())
     }
-
-    protected fun getFabricMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.get() }
-        }
-    } catch (_: Exception) { null }
-
-    protected fun getForgeMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModTomlParser.of(it) }?.get() }
-        }
-    } catch (_: Exception) { null }
-
-    override fun toString(): String = displayName
 }

@@ -19,6 +19,8 @@ package one.pkg.modpublish.data.local;
 
 import lombok.Getter;
 
+import java.util.Locale;
+
 @Getter
 public enum DependencyType {
     EMBEDDED("Embedded", "embeddedLibrary"),
@@ -35,7 +37,7 @@ public enum DependencyType {
     }
 
     public String getModrinthName() {
-        return displayName.toLowerCase();
+        return displayName.toLowerCase(Locale.ENGLISH);
     }
 
     @Override

@@ -30,7 +30,6 @@ import com.intellij.util.ui.FormBuilder
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
 import one.pkg.modpublish.data.local.DependencyInfo
-import one.pkg.modpublish.data.local.LauncherInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
 import one.pkg.modpublish.data.result.PublishResult
@@ -92,7 +91,6 @@ class PublishModDialog(
     private lateinit var dependencyPanel: DependencyManagerPanel
 
     private var minecraftVersions: List<MinecraftVersion>? = null
-    private lateinit var launchers: List<LauncherInfo>
     private lateinit var supportedInfo: SupportedInfo
 
     init {
@@ -118,7 +116,6 @@ class PublishModDialog(
     }
 
     private fun loadConfigData() {
-        launchers = LocalResources.getLauncherInfo()
         supportedInfo = LocalResources.getSupportedInfo()
     }
 
@@ -175,9 +172,9 @@ class PublishModDialog(
         )
 
         // Loaders
-        loaderCheckBoxes = launchers.map { launcher ->
-            JBCheckBox(launcher.n).apply {
-                isSelected = modTypes.values.first().contains(ModType.of(launcher.n.lowercase()))
+        loaderCheckBoxes = ModType.valuesList.map { launcher ->
+            JBCheckBox(launcher.displayName).apply {
+                isSelected = modTypes.values.first().contains(launcher)
             }
         }
 
@@ -511,7 +508,7 @@ class PublishModDialog(
 
     private fun collectPublishData(): PublishData {
         val selectedLoaders = loaderCheckBoxes
-            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) launchers[index] else null }
+            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) ModType.valuesList[index] else null }
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
             .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }

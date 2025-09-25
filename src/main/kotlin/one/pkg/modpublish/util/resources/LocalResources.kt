@@ -17,9 +17,8 @@
 package one.pkg.modpublish.util.resources
 
 import com.google.gson.reflect.TypeToken
-import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.DependencyInfo
-import one.pkg.modpublish.data.local.LauncherInfo
+import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
 import one.pkg.modpublish.util.io.FileAPI
 import one.pkg.modpublish.util.io.JsonParser.fromJson
@@ -31,7 +30,6 @@ object LocalResources {
     @JvmStatic
     val dpType: Type = object : TypeToken<List<DependencyInfo>>() {}.type
     private val mvType = object : TypeToken<List<MinecraftVersion>>() {}.type
-    private val liType = object : TypeToken<List<LauncherInfo>>() {}.type
 
     @JvmStatic
     fun getSupportedInfo(): SupportedInfo = runCatching {
@@ -40,15 +38,6 @@ object LocalResources {
                 reader.fromJson(SupportedInfo::class.java)
             }
         } ?: throw Exception("supported.info.json not found")
-    }.getOrElse { throw RuntimeException(it) }
-
-    @JvmStatic
-    fun getLauncherInfo(): List<LauncherInfo> = runCatching {
-        LocalResources::class.java.getResourceAsStream("/META-INF/launcher.info.json")?.use { stream ->
-            InputStreamReader(stream).use { reader ->
-                reader.fromJson<List<LauncherInfo>>(liType)
-            }
-        } ?: throw Exception("launcher.info.json not found")
     }.getOrElse { throw RuntimeException(it) }
 
     @JvmStatic

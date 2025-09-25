@@ -21,9 +21,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
+import one.pkg.modpublish.data.internal.ModType;
 import one.pkg.modpublish.data.internal.ReleaseChannel;
 import one.pkg.modpublish.data.internal.RequestStatus;
-import one.pkg.modpublish.data.local.LauncherInfo;
 import one.pkg.modpublish.data.local.MinecraftVersion;
 import one.pkg.modpublish.util.io.JsonParser;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Comment: Why are many parameters here inconsistent with the API docs?
@@ -187,8 +188,8 @@ public class ModrinthData {
             return this;
         }
 
-        public ModrinthDataBuilder loader(LauncherInfo info) {
-            return loader(info.getId());
+        public ModrinthDataBuilder loader(ModType info) {
+            return loader(info.getDisplayName().toLowerCase(Locale.ENGLISH));
         }
 
         @Tolerate
