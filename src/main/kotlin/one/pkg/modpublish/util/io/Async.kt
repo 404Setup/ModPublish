@@ -16,20 +16,23 @@
  */
 package one.pkg.modpublish.util.io
 
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 
 object Async {
-    private val executor: ExecutorService = Executors.newVirtualThreadPerTaskExecutor()
-
     @JvmStatic
-    fun <T> rAsync(callable: () -> T): CompletableFuture<T> {
-        return CompletableFuture<T>().completeAsync(callable, executor)
+    fun <T> rAsync(block: suspend () -> T): Deferred<T> {
+        return CoroutineScope(Dispatchers.Default).async {
+            block()
+        }
     }
 
     @JvmStatic
     fun async(callable: () -> Unit) {
-        executor.submit { run(callable) }
+        CoroutineScope(Dispatchers.Default).async {
+            callable()
+        }
     }
 }

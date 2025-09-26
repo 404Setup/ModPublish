@@ -3,6 +3,10 @@
 ### Refactor
 - Refactoring part of the code using Kotlin
 
+### Change
+- Java 17 is now required
+- Use Kotlin coroutines instead of JVM virtual threads
+
 ### Chore
 - Bump minecraft version list
 

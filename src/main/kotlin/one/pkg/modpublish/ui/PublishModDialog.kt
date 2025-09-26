@@ -27,6 +27,9 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
 import one.pkg.modpublish.data.local.DependencyInfo
@@ -57,7 +60,6 @@ import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import javax.swing.*
 
@@ -549,7 +551,9 @@ class PublishModDialog(
             val githubTask =
                 createPublishTask(TargetType.Github.api, githubCheckBox, data)
 
-            joinResult(results, curseForgeTask, modrinthTask, githubTask)
+            runBlocking {
+                joinResult(results, curseForgeTask, modrinthTask, githubTask)
+            }
         } catch (e: CompletionException) {
             results.add(
                 PublishResult.of(
@@ -565,7 +569,7 @@ class PublishModDialog(
         api: API,
         checkBox: JBCheckBox,
         data: PublishData
-    ): CompletableFuture<PublishResult>? {
+    ): Deferred<PublishResult>? {
         return if (checkBox.isSelected) {
             Async.rAsync {
                 api.createVersion(data, requireNotNull(project))
@@ -573,8 +577,8 @@ class PublishModDialog(
         } else null
     }
 
-    private fun joinResult(list: MutableList<PublishResult>, vararg futures: CompletableFuture<PublishResult>?) {
-        list.addAll(futures.filterNotNull().filterNot { it.isCancelled }.mapNotNull { it.join() })
+    private suspend fun joinResult(list: MutableList<PublishResult>, vararg futures: Deferred<PublishResult>?) {
+        list.addAll(futures.filterNotNull().filterNot { it.isCancelled }.awaitAll())
     }
 
     fun getPublishTargets(): Selector {

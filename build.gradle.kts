@@ -10,7 +10,7 @@ plugins {
 
 group = "one.pkg"
 version = "0.0.7-dev"
-val targetJavaVersion = 21
+val targetJavaVersion = 17
 
 repositories {
     mavenCentral()
@@ -51,6 +51,8 @@ dependencies {
     }
 
     implementation("one.tranic:t-proxy:1.0.1")
+
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
     compileOnly("org.projectlombok:lombok:1.18.40")
     annotationProcessor("org.projectlombok:lombok:1.18.40")
