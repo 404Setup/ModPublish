@@ -17,7 +17,6 @@
 package one.pkg.modpublish.ui
 
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
@@ -29,7 +28,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
@@ -266,7 +264,7 @@ class PublishModDialog(
                     icon = Icons.Static.WrenchScrewdriver
                     toolTipText = get("component.tooltip.reset-version-list")
                     addActionListener { _ ->
-                        Dispatchers.IO.async {
+                        async {
                             FileAPI.getUserDataFile("minecraft.version.json").takeIf { it.exists() }?.delete()
                             showSuccessDialog("message.update.success", "title.success")
                             updateVersionList = true
@@ -306,7 +304,7 @@ class PublishModDialog(
     }
 
     private fun updateMinecraftVersions() {
-        Dispatchers.EDT.async {
+        SwingUtilities.invokeLater {
             minecraftVersionModel.clear()
             val includeSnapshots = showSnapshotsCheckBox.isSelected
 
@@ -495,7 +493,7 @@ class PublishModDialog(
                 }
             }
 
-            Dispatchers.EDT.async {
+            async {
                 setOKButtonDefault()
                 okAction.isEnabled = true
                 setOKButtonText(get("button.publish"))
