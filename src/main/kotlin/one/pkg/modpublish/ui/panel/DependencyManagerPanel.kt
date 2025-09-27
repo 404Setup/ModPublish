@@ -25,7 +25,6 @@ import one.pkg.modpublish.util.resources.Lang
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
-import java.awt.event.ActionEvent
 import javax.swing.*
 
 class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPanel(BorderLayout()) {
@@ -33,23 +32,30 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
     private val dependencyListPanel: JPanel
 
     init {
-        val titleLabel = JBLabel(Lang.get("component.name.depend-manager"))
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f))
+        val titleLabel = JBLabel(Lang.get("component.name.depend-manager")).apply {
+            font = font.deriveFont(Font.BOLD, 14f)
+        }
 
-        val addButton = JButton(Lang.get("title.add-dependency"))
-        addButton.addActionListener { _: ActionEvent -> this.onAddDependency() }
+        val addButton = JButton(Lang.get("title.add-dependency")).apply {
+            addActionListener {
+                onAddDependency()
+            }
+        }
 
-        val headerPanel = JPanel(BorderLayout())
-        headerPanel.add(titleLabel, BorderLayout.WEST)
-        headerPanel.add(addButton, BorderLayout.EAST)
+        val headerPanel = JPanel(BorderLayout()).apply {
+            add(titleLabel, BorderLayout.WEST)
+            add(addButton, BorderLayout.EAST)
+        }
 
-        dependencyListPanel = JPanel()
-        dependencyListPanel.setLayout(BoxLayout(dependencyListPanel, BoxLayout.Y_AXIS))
+        dependencyListPanel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        }
 
-        val scrollPane = JBScrollPane(dependencyListPanel)
-        scrollPane.preferredSize = Dimension(600, 150)
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED)
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        val scrollPane = JBScrollPane(dependencyListPanel).apply {
+            preferredSize = Dimension(600, 150)
+            setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED)
+            setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        }
 
         add(headerPanel, BorderLayout.NORTH)
         add(scrollPane, BorderLayout.CENTER)
@@ -85,27 +91,25 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
     }
 
     private fun createDependencyPanel(dependency: DependencyInfo): JPanel {
-        val panel = JPanel(BorderLayout())
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
+        return JPanel(BorderLayout()).apply {
+            setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
 
-        val displayText = String.format(
-            "%s (%s) - %s",
-            if (dependency.customTitle != null && !dependency.customTitle.isBlank())
-                dependency.customTitle
-            else "Unknown Dependency",
-            dependency.projectId,
-            dependency.type.displayName
-        )
+            val displayText = String.format(
+                "%s (%s) - %s",
+                if (dependency.customTitle != null && !dependency.customTitle.isBlank())
+                    dependency.customTitle
+                else "Unknown Dependency",
+                dependency.projectId,
+                dependency.type.displayName
+            )
 
-        val depLabel = JBLabel(displayText)
-
-        val removeButton = JButton(Lang.get("button.delete"))
-        removeButton.addActionListener { _: ActionEvent -> removeDependency(dependency) }
-
-        panel.add(depLabel, BorderLayout.CENTER)
-        panel.add(removeButton, BorderLayout.EAST)
-
-        return panel
+            add(JBLabel(displayText), BorderLayout.CENTER)
+            add(JButton(Lang.get("button.delete")).apply {
+                addActionListener {
+                    removeDependency(dependency)
+                }
+            }, BorderLayout.EAST)
+        }
     }
 
     fun getDependencies(): List<DependencyInfo> {
