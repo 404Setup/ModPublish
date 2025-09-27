@@ -76,7 +76,9 @@ intellijPlatform {
     }
 }
 
-task("generateChangeNotes") {
+tasks.register("generateChangeNotes")
+
+tasks.named("generateChangeNotes") {
     description = "Generate change-notes from markdown files"
 
     doLast {
