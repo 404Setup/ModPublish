@@ -18,17 +18,17 @@ package one.pkg.modpublish.util.metadata
 
 import com.intellij.openapi.diagnostic.Logger
 import one.pkg.modpublish.data.internal.LocalModInfo
-import one.pkg.modpublish.util.io.TomlParser
+import one.pkg.modpublish.util.io.toml.KTomlParser
 import java.io.InputStream
 import java.lang.AutoCloseable
 
 @Suppress("unused")
 @JvmRecord
-data class ModTomlParser(val parser: TomlParser) : AutoCloseable {
+data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     fun get(): LocalModInfo? {
         return try {
             val mods = parser.getAsTomlParser("mods")
-            if (mods == null || mods.isEmpty) {
+            if (mods == null || mods.isEmpty()) {
                 LOG.warn("No mods section found in TOML file")
                 return null
             }
@@ -64,7 +64,7 @@ data class ModTomlParser(val parser: TomlParser) : AutoCloseable {
 
         @JvmStatic
         fun of(inputStream: InputStream): ModTomlParser {
-            return ModTomlParser(TomlParser.fromStream(inputStream))
+            return ModTomlParser(KTomlParser.fromStream(inputStream))
         }
     }
 }

@@ -184,9 +184,9 @@ abstract class BaseDialogWrapper(
         addComponent(SeparatorComponent(JBUI.scale(5)))
         for (field in fields) {
             if (field.label.isNullOrEmpty()) {
-                addComponent(field.fieldBlock.invoke())
+                addComponent(field.fieldBlock())
             } else {
-                addLabeledComponent(createFieldLabel(field.label), field.fieldBlock.invoke())
+                addLabeledComponent(createFieldLabel(field.label), field.fieldBlock())
             }
         }
         addVerticalGap(JBUI.scale(15))

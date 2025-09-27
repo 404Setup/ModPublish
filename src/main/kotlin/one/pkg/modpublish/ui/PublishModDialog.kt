@@ -17,6 +17,7 @@
 package one.pkg.modpublish.ui
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
@@ -28,6 +29,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
@@ -44,6 +46,7 @@ import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer
 import one.pkg.modpublish.util.io.Async
+import one.pkg.modpublish.util.io.Async.async
 import one.pkg.modpublish.util.io.FileAPI
 import one.pkg.modpublish.util.io.FileAPI.toFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
@@ -245,7 +248,7 @@ class PublishModDialog(
                     icon = Icons.Static.Sync
                     toolTipText = get("component.tooltip.update-version-list")
                     addActionListener { _ ->
-                        Async.async {
+                        async {
                             isEnabled = false
                             setButtonLoading(this)
                             if (VersionProcessor.updateVersions()) {
@@ -263,7 +266,7 @@ class PublishModDialog(
                     icon = Icons.Static.WrenchScrewdriver
                     toolTipText = get("component.tooltip.reset-version-list")
                     addActionListener { _ ->
-                        Async.async {
+                        Dispatchers.IO.async {
                             FileAPI.getUserDataFile("minecraft.version.json").takeIf { it.exists() }?.delete()
                             showSuccessDialog("message.update.success", "title.success")
                             updateVersionList = true
@@ -303,7 +306,7 @@ class PublishModDialog(
     }
 
     private fun updateMinecraftVersions() {
-        SwingUtilities.invokeLater {
+        Dispatchers.EDT.async {
             minecraftVersionModel.clear()
             val includeSnapshots = showSnapshotsCheckBox.isSelected
 
@@ -477,7 +480,7 @@ class PublishModDialog(
         setOKButtonLoading()
         setOKButtonText(get("button.publishing"))
 
-        Async.async {
+        async {
             savePersistedData()
             val publishData = collectPublishData()
             val result = performPublish(publishData)
@@ -492,7 +495,7 @@ class PublishModDialog(
                 }
             }
 
-            SwingUtilities.invokeLater {
+            Dispatchers.EDT.async {
                 setOKButtonDefault()
                 okAction.isEnabled = true
                 setOKButtonText(get("button.publish"))
