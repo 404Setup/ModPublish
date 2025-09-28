@@ -14,28 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.local
 
-package one.pkg.modpublish.data.local;
+import one.pkg.modpublish.data.internal.ModInfo
 
-import lombok.Data;
-import one.pkg.modpublish.data.internal.ModInfo;
-
-@Data
-@SuppressWarnings("unused")
-public class DependencyInfo {
-    private String projectId;
-    private ModInfo modrinthModInfo;
-    private ModInfo curseforgeModInfo;
-    private DependencyType type;
-    private String customTitle;
-
-    public DependencyInfo() {
-    }
-
-    public DependencyInfo(String projectId, DependencyType type, String customTitle) {
-        this.projectId = projectId;
-        this.type = type;
-        this.customTitle = customTitle;
-    }
-
+@Suppress("unused")
+data class DependencyInfo(
+    var projectId: String? = null,
+    var modrinthModInfo: ModInfo? = null,
+    var curseforgeModInfo: ModInfo? = null,
+    var type: DependencyType,
+    var customTitle: String?
+) {
+    constructor(projectId: String, type: DependencyType, customTitle: String?) : this(
+        projectId,
+        null,
+        null,
+        type,
+        customTitle
+    )
 }

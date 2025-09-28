@@ -21,6 +21,7 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.util.*
 import java.util.function.Consumer
 
+@Suppress("UNUSED")
 class KTomlArray internal constructor(elements: List<Map<String, Any?>>) : Iterable<KTomlParser> {
     private val elements: MutableList<KTomlParser> = ArrayList<KTomlParser>(elements.size)
 

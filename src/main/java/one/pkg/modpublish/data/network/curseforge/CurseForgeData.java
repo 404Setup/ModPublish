@@ -180,42 +180,42 @@ public class CurseForgeData {
 
         @NotNull
         public CurseForgeDataBuilder requiredDependency(@NotNull String slug) {
-            return dependency(ProjectRelation.createRequired(slug));
+            return dependency(ProjectRelation.Companion.createRequired(slug));
         }
 
         @NotNull
         public CurseForgeDataBuilder requiredDependency(@NotNull String slug, int projectID) {
-            return dependency(ProjectRelation.createRequired(slug, projectID));
+            return dependency(ProjectRelation.Companion.createRequired(slug, projectID));
         }
 
         @NotNull
         public CurseForgeDataBuilder optionalDependency(@NotNull String slug) {
-            return dependency(ProjectRelation.createOptional(slug));
+            return dependency(ProjectRelation.Companion.createOptional(slug));
         }
 
         @NotNull
         public CurseForgeDataBuilder optionalDependency(@NotNull String slug, int projectID) {
-            return dependency(ProjectRelation.createOptional(slug, projectID));
+            return dependency(ProjectRelation.Companion.createOptional(slug, projectID));
         }
 
         @NotNull
         public CurseForgeDataBuilder embeddedLibrary(@NotNull String slug) {
-            return dependency(ProjectRelation.createEmbedded(slug));
+            return dependency(ProjectRelation.Companion.createEmbedded(slug));
         }
 
         @NotNull
         public CurseForgeDataBuilder embeddedLibrary(@NotNull String slug, int projectID) {
-            return dependency(ProjectRelation.createEmbedded(slug, projectID));
+            return dependency(ProjectRelation.Companion.createEmbedded(slug, projectID));
         }
 
         @NotNull
         public CurseForgeDataBuilder incompatible(@NotNull String slug) {
-            return dependency(ProjectRelation.createIncompatible(slug));
+            return dependency(ProjectRelation.Companion.createIncompatible(slug));
         }
 
         @NotNull
         public CurseForgeDataBuilder incompatible(@NotNull String slug, int projectID) {
-            return dependency(ProjectRelation.createIncompatible(slug, projectID));
+            return dependency(ProjectRelation.Companion.createIncompatible(slug, projectID));
         }
     }
 }

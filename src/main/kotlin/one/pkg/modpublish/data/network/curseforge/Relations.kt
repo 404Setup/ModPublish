@@ -14,39 +14,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.network.curseforge
 
-package one.pkg.modpublish.data.network.curseforge;
+import com.google.gson.annotations.SerializedName
 
-import com.google.gson.annotations.SerializedName;
-import lombok.Data;
-
-import java.util.List;
-
-@Data
-@SuppressWarnings("unused")
-public class Relations {
+@Suppress("UNUSED")
+data class Relations(
     /**
      * Project relations list
      */
     @SerializedName("projects")
-    private List<ProjectRelation> projects;
-
-    public Relations() {
-    }
-
-    public Relations(List<ProjectRelation> projects) {
-        this.projects = projects;
-    }
+    var projects: MutableList<ProjectRelation>? = null
+) {
+    constructor() : this(null)
 
     /**
      * Add a project relation
      *
      * @param relation Project relation to add
      */
-    public void addProject(ProjectRelation relation) {
-        if (projects != null) {
-            projects.add(relation);
-        }
+    fun addProject(relation: ProjectRelation) {
+        projects?.add(relation)
     }
 
     /**
@@ -54,8 +42,8 @@ public class Relations {
      *
      * @return true if there are project relations
      */
-    public boolean hasProjects() {
-        return projects != null && !projects.isEmpty();
+    fun hasProjects(): Boolean {
+        return projects != null && !projects!!.isEmpty()
     }
 
     /**
@@ -63,15 +51,6 @@ public class Relations {
      *
      * @return Number of project relations
      */
-    public int getProjectCount() {
-        return projects != null ? projects.size() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "Relations{" +
-                "projects=" + projects +
-                '}';
-    }
-
+    val projectCount: Int
+        get() = projects?.size ?: 0
 }

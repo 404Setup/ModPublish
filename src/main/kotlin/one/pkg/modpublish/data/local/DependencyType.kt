@@ -14,34 +14,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package one.pkg.modpublish.data.local
 
-package one.pkg.modpublish.data.local;
-
-import lombok.Getter;
-
-import java.util.Locale;
-
-@Getter
-public enum DependencyType {
+enum class DependencyType(val displayName: String, val curseForgeName: String) {
     EMBEDDED("Embedded", "embeddedLibrary"),
     REQUIRED("Required", "requiredDependency"),
     OPTIONAL("Optional", "optionalDependency"),
     INCOMPATIBLE("Incompatible", "incompatible");
 
-    private final String displayName;
-    private final String curseForgeName;
+    val modrinthName: String
+        get() = displayName.lowercase()
 
-    DependencyType(String displayName, String curseForgeName) {
-        this.displayName = displayName;
-        this.curseForgeName = curseForgeName;
-    }
-
-    public String getModrinthName() {
-        return displayName.toLowerCase(Locale.ENGLISH);
-    }
-
-    @Override
-    public String toString() {
-        return displayName;
+    override fun toString(): String {
+        return displayName
     }
 }

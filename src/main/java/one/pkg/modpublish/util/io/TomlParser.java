@@ -886,7 +886,7 @@ public class TomlParser implements Closeable {
          */
         @NotNull
         public List<TomlParser> asList() {
-            return Collections.unmodifiableList(new ArrayList<>(elements));
+            return List.copyOf(elements);
         }
 
         /**

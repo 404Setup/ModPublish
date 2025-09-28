@@ -16,7 +16,6 @@
  */
 package one.pkg.modpublish.data.internal
 
-@JvmRecord
 data class ModInfo(val modid: String?, val slug: String?, val name: String?, val failed: String?) {
     companion object {
         var EMPTY: ModInfo = ModInfo(null, null, null, null)
