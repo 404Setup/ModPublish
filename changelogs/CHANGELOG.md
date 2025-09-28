@@ -3,6 +3,9 @@
 ### Refactor
 - Refactoring part of the code using Kotlin
 
+### Optimize
+- Improved KToml parser
+
 ### Change
 - Java 17 is now required
 - Use Kotlin coroutines instead of JVM virtual threads

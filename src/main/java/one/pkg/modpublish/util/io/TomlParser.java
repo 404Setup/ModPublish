@@ -18,6 +18,7 @@
 package one.pkg.modpublish.util.io;
 
 import com.intellij.openapi.diagnostic.Logger;
+import one.pkg.modpublish.util.io.toml.KTomlParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,11 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @deprecated Use {@link KTomlParser} instead
+ */
 @SuppressWarnings({"unused", "unchecked"})
+@Deprecated
 public class TomlParser implements Closeable {
     private static final Logger LOG = Logger.getInstance(TomlParser.class);
     private static final Pattern arrayTablePattern = Pattern.compile("^\\s*\\[\\[([^]]+)]]\\s*$");
