@@ -763,7 +763,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
             val v = value.trim()
             val length = v.length
 
-            // Check for quoted strings first (most common case)
             if (length >= 2) {
                 val firstChar = v[0]
                 val lastChar = v[length - 1]
@@ -774,13 +773,11 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 }
             }
 
-            // Check for boolean values
             when (v.lowercase()) {
                 "true" -> return true
                 "false" -> return false
             }
 
-            // Try parsing as number
             try {
                 return if (v.contains('.')) {
                     v.toBigDecimal()
@@ -791,7 +788,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 // Continue to date parsing
             }
 
-            // Try parsing as date/time
             try {
                 return when {
                     v.contains('T') -> LocalDateTime.parse(v)
@@ -800,7 +796,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                     else -> v
                 }
             } catch (_: DateTimeParseException) {
-                // Return as string
             }
 
             return v
@@ -922,7 +917,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 }
             }
 
-            // Add the last part
             if (currentPart.isNotEmpty()) {
                 parts.add(currentPart.toString())
             }
