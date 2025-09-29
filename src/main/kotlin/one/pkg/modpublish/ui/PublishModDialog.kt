@@ -499,9 +499,8 @@ class PublishModDialog(
                 setOKButtonText(get("button.publish"))
 
                 if (isOk) {
-                    super.doOKAction()
                     showSuccessDialog("message.success", "title.success")
-                    close(0, true)
+                    super.doOKAction()
                 } else {
                     showFailedDialogRaw(get("message.failed", failureMessage), get("title.failed"))
                 }

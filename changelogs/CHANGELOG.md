@@ -10,11 +10,15 @@
 - Java 17 is now required
 - Use Kotlin coroutines instead of JVM virtual threads
 
+### Remove
+- remove lombok
+
 ### Chore
 - Bump minecraft version list
 
 ### Fix
 - Fix file selector and ReleaseChannel to the left side of the page to resolve the issue where they sometimes moved to the center.
+- Under certain conditions, the PublishUI success dialog cannot pop up
 
 ---
 
