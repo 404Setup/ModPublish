@@ -3,7 +3,6 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 plugins {
     id("java")
     kotlin("jvm") version "2.2.20"
-    kotlin("plugin.lombok") version "2.2.20"
 
     id("org.jetbrains.intellij.platform") version "2.8.0"
 }
@@ -53,9 +52,6 @@ dependencies {
     implementation("one.tranic:t-proxy:1.0.1")
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-
-    compileOnly("org.projectlombok:lombok:1.18.40")
-    annotationProcessor("org.projectlombok:lombok:1.18.40")
 
     compileOnly("com.vladsch.flexmark:flexmark:0.64.8")
     compileOnly("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")

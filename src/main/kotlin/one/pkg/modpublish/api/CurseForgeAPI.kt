@@ -33,6 +33,7 @@ import one.pkg.modpublish.data.result.Result
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.getJsonObject
+import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
 import java.io.IOException
 
@@ -88,24 +89,24 @@ class CurseForgeAPI : API() {
         createJsonBody(data, null)
 
     fun createJsonBody(data: PublishData, bResult: BackResult?): String {
-        return CurseForgeData.builder().apply {
-            releaseType(data.releaseChannel)
-            markdownChangelog(data.changelog)
-            displayName(data.versionName)
-            bResult?.let { parentFileID(it.asCurseForgePublishResult().id) } ?: run {
+        return CurseForgeData().apply {
+            this.releaseType(data.releaseChannel)
+            this.markdownChangelog(data.changelog)
+            this.displayName = data.versionName
+            bResult?.let { this.parentFileID = it.asCurseForgePublishResult().id } ?: run {
                 data.minecraftVersions.forEach { gameVersion(it) }
-                if (data.supportedInfo.client.enabled) gameVersion(data.supportedInfo.client.cfid)
-                if (data.supportedInfo.server.enabled) gameVersion(data.supportedInfo.server.cfid)
-                data.loaders.filter { it.curseForgeVersion > 0 }.forEach { gameVersion(it.curseForgeVersion) }
+                if (data.supportedInfo.client.enabled) this.gameVersion(data.supportedInfo.client.cfid)
+                if (data.supportedInfo.server.enabled) this.gameVersion(data.supportedInfo.server.cfid)
+                data.loaders.filter { it.curseForgeVersion > 0 }.forEach { this.gameVersion(it.curseForgeVersion) }
             }
             data.dependencies.forEach { dep ->
                 dep.curseforgeModInfo?.let { info ->
                     if (!info.modid.isNullOrBlank() && !info.slug.isNullOrBlank()) {
-                        dependency(ProjectRelation.create(info.slug, info.modid.toInt(), dep.type))
+                        this.dependency(ProjectRelation.create(info.slug, info.modid.toInt(), dep.type))
                     }
                 }
             }
-        }.build().toJson()
+        }.toJson()
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo {

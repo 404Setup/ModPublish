@@ -30,6 +30,7 @@ import one.pkg.modpublish.data.network.modrinth.ProjectRelation
 import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.JsonParser.getJsonObject
+import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.IOException
 
 class ModrinthAPI : API() {
@@ -63,24 +64,24 @@ class ModrinthAPI : API() {
     }
 
     override fun createJsonBody(data: PublishData, project: Project): String {
-        return ModrinthData.builder().apply {
-            releaseChannel(data.releaseChannel)
-            projectId(PID.ModrinthModID.get(project))
-            versionBody(data.changelog)
-            status(RequestStatus.Listed)
-            featured(true)
-            name(data.versionName)
-            versionNumber(data.versionNumber)
-            data.files.forEach { filePart(it) }
-            data.loaders.forEach { loader(it) }
-            data.minecraftVersions.forEach { gameVersion(it) }
+        return ModrinthData().apply {
+            this.releaseChannel(data.releaseChannel)
+            this.projectId = PID.ModrinthModID.get(project)
+            this.versionBody = data.changelog
+            this.status(RequestStatus.Listed)
+            this.featured = true
+            this.name = data.versionName
+            this.versionNumber = data.versionNumber
+            data.files.forEach { this.filePart(it) }
+            data.loaders.forEach { this.loader(it) }
+            data.minecraftVersions.forEach { this.gameVersion(it) }
             data.dependencies.forEach { d ->
                 val info = d.modrinthModInfo
                 if (!info?.modid.isNullOrBlank() && !info.slug.isNullOrBlank()) {
-                    dependency(ProjectRelation.create(info.modid, d.type))
+                    this.dependency(ProjectRelation.create(info.modid, d.type))
                 }
             }
-        }.build().toJson()
+        }.toJson()
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo {

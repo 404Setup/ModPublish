@@ -32,6 +32,7 @@ import one.pkg.modpublish.data.result.Result
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.GitInfo.getBrach
 import one.pkg.modpublish.util.io.JsonParser.fromJson
+import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
 import java.io.IOException
 
@@ -55,16 +56,16 @@ class GithubAPI : API() {
         val branch = PID.GithubBranch.get(project).ifEmpty { getBrach(project) }
         val targetCommitish = getTargetCommitish(branch, project)
 
-        return GithubData.builder().apply {
-            tagName(if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}")
-            this.targetCommitish(targetCommitish)
-            name(data.versionName)
-            body(data.changelog)
-            releaseChannel(data.releaseChannel)
-            draft(false)
-            generateReleaseNotes(true)
-            makeLatest(true)
-        }.build().toJson()
+        return GithubData().apply {
+            this.tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
+            this.targetCommitish = targetCommitish
+            this.name = data.versionName
+            this.body = data.changelog
+            this.releaseChannel(data.releaseChannel)
+            this.draft = false
+            this.generateReleaseNotes = true
+            this.makeLatest(true)
+        }.toJson()
     }
 
     override fun createVersion(data: PublishData, project: Project): PublishResult = try {
