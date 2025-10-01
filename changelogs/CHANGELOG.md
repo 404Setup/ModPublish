@@ -1,3 +1,11 @@
+## v0.0.8
+
+### Optimize
+- Improved KToml parser
+
+### Fix
+- LocalModInfo not being updated correctly
+
 ## v0.0.7
 
 ### Refactor

@@ -112,7 +112,10 @@ class PublishModDialog(
     private fun updateParser(primaryFile: VirtualFile) {
         parser = modTypes[primaryFile]
             ?.firstOrNull { it != ModType.Rift }
-            ?.getMod(primaryFile)
+            ?.run {
+                modInfo = getMod(primaryFile)
+                modInfo
+            }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
             ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }

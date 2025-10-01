@@ -267,6 +267,96 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
     }
 
     /**
+     * Convert to TOML string format
+     */
+    fun toTomlString(): String {
+        return serializeToToml(parsedData)
+    }
+
+    /**
+     * Serialize the data to TOML format (similar to toString but specifically for TOML)
+     */
+    private fun serializeToToml(data: Map<String, Any?>, prefix: String = ""): String {
+        val result = StringBuilder()
+        val tables = mutableMapOf<String, Any?>()
+        val arrayTables = mutableMapOf<String, List<Map<String, Any?>>>()
+
+        for ((key, value) in data) {
+            when (value) {
+                is Map<*, *> -> {
+                    tables[key] = value as Map<String, Any?>
+                }
+
+                is List<*> -> {
+                    if (value.isNotEmpty() && value.all { it is Map<*, *> }) {
+                        arrayTables[key] = value as List<Map<String, Any?>>
+                    } else {
+                        result.append(serializeKeyValue(key, value))
+                    }
+                }
+
+                else -> {
+                    result.append(serializeKeyValue(key, value))
+                }
+            }
+        }
+
+        for ((key, tableData) in tables) {
+            if (result.isNotEmpty()) result.append("\n")
+            val tableName = if (prefix.isEmpty()) key else "$prefix.$key"
+            result.append("[$tableName]\n")
+            result.append(serializeToToml(tableData as Map<String, Any?>, tableName))
+        }
+
+        for ((key, arrayData) in arrayTables) {
+            for (tableData in arrayData) {
+                if (result.isNotEmpty()) result.append("\n")
+                val tableName = if (prefix.isEmpty()) key else "$prefix.$key"
+                result.append("[[$tableName]]\n")
+                result.append(serializeToToml(tableData, tableName))
+            }
+        }
+
+        return result.toString()
+    }
+
+    private fun serializeKeyValue(key: String, value: Any?): String {
+        val serializedValue = when (value) {
+            null -> "\"\""
+            is String -> "\"${escapeTomlString(value)}\""
+            is Boolean -> value.toString()
+            is Number -> value.toString()
+            is LocalDateTime -> "\"$value\""
+            is LocalDate -> "\"$value\""
+            is LocalTime -> "\"$value\""
+            is List<*> -> "[${value.joinToString(", ") { serializeValue(it) }}]"
+            else -> "\"${escapeTomlString(value.toString())}\""
+        }
+        return "$key = $serializedValue\n"
+    }
+
+    private fun serializeValue(value: Any?): String {
+        return when (value) {
+            null -> "\"\""
+            is String -> "\"${escapeTomlString(value)}\""
+            is Boolean -> value.toString()
+            is Number -> value.toString()
+            is LocalDateTime -> "\"$value\""
+            is LocalDate -> "\"$value\""
+            is LocalTime -> "\"$value\""
+            else -> "\"${escapeTomlString(value.toString())}\""
+        }
+    }
+
+    private fun escapeTomlString(str: String): String {
+        return str.replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+    }
+
+    /**
      * Get a value by key, returns null if not found
      */
     fun get(key: String): Any? {
@@ -333,11 +423,27 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
     fun getAsTomlParser(key: String): KTomlParser? {
         return withPathNavigation(key) { parser, localKey ->
             when (val value = parser.parsedData[localKey]) {
-                is MutableMap<*, *> -> KTomlParser(value as MutableMap<String, Any?>)
+                is Map<*, *> -> {
+                    val mutableValue = if (value is MutableMap<*, *>) {
+                        value as MutableMap<String, Any?>
+                    } else {
+                        HashMap(value as Map<String, Any?>)
+                    }
+                    KTomlParser(mutableValue)
+                }
+
                 is List<*> -> {
                     @Suppress("UNCHECKED_CAST")
-                    val list = value as List<MutableMap<String, Any?>>
-                    if (list.isNotEmpty()) KTomlParser(list[0]) else null
+                    val list = value as List<Map<String, Any?>>
+                    if (list.isNotEmpty()) {
+                        val firstMap = list[0]
+                        val mutableValue = if (firstMap is MutableMap<*, *>) {
+                            firstMap as MutableMap<String, Any?>
+                        } else {
+                            HashMap(firstMap)
+                        }
+                        KTomlParser(mutableValue)
+                    } else null
                 }
 
                 else -> null
@@ -441,29 +547,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
         } ?: false
     }
 
-    @Deprecated("Use getAsTomlParser instead")
-    fun getSection(sectionName: String): Map<String, Any?>? {
-        return when (val section = parsedData[sectionName]) {
-            is List<*> -> {
-                @Suppress("UNCHECKED_CAST")
-                val list = section as List<Map<String, Any?>>
-                if (list.isEmpty()) null else list[0]
-            }
-
-            is Map<*, *> -> section as Map<String, Any?>
-            else -> null
-        }
-    }
-
-    @Deprecated("Use getAsTomlArray instead")
-    fun getSectionArray(sectionName: String): List<Map<String, Any?>> {
-        return when (val section = parsedData[sectionName]) {
-            is List<*> -> section as List<Map<String, Any?>>
-            is Map<*, *> -> listOf(section as Map<String, Any?>)
-            else -> emptyList()
-        }
-    }
-
     /**
      * Get all keys
      */
@@ -486,17 +569,361 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
     }
 
     /**
-     * Get raw parsed data (for advanced usage)
+     * Get raw parsed data
      */
     fun asMap(): Map<String, Any?> {
         return Collections.unmodifiableMap(parsedData)
     }
 
     /**
-     * Get raw parsed data (for advanced usage)
+     * Get raw parsed data
      */
     fun asMutableMap(): MutableMap<String, Any?> {
         return HashMap(parsedData)
+    }
+
+    /**
+     * Set a value by key
+     */
+    fun put(key: String, value: Any?) {
+        val pathSegments = parsePath(key)
+        if (pathSegments.size == 1) {
+            parsedData[key] = value
+        } else {
+            val parentPath = pathSegments.copyOfRange(0, pathSegments.size - 1)
+            val parent = getOrCreateNestedMap(parentPath)
+            parent[pathSegments.last()] = value
+        }
+    }
+
+    /**
+     * Set a string value
+     */
+    fun putString(key: String, value: String) {
+        put(key, value)
+    }
+
+    /**
+     * Set an integer value
+     */
+    fun putInt(key: String, value: Int) {
+        put(key, value)
+    }
+
+    /**
+     * Set a long value
+     */
+    fun putLong(key: String, value: Long) {
+        put(key, value)
+    }
+
+    /**
+     * Set a double value
+     */
+    fun putDouble(key: String, value: Double) {
+        put(key, value)
+    }
+
+    /**
+     * Set a boolean value
+     */
+    fun putBoolean(key: String, value: Boolean) {
+        put(key, value)
+    }
+
+    /**
+     * Set a nested object/section
+     */
+    fun putObject(key: String, parser: KTomlParser) {
+        put(key, parser.parsedData)
+    }
+
+    /**
+     * Set an array/list value
+     */
+    fun putArray(key: String, array: List<Any?>) {
+        put(key, array)
+    }
+
+    /**
+     * Add a value to an array (creates array if doesn't exist)
+     */
+    fun addToArray(key: String, value: Any?) {
+        val pathSegments = parsePath(key)
+        val parent = if (pathSegments.size == 1) {
+            parsedData
+        } else {
+            val parentPath = pathSegments.copyOfRange(0, pathSegments.size - 1)
+            getOrCreateNestedMap(parentPath)
+        }
+
+        val arrayKey = pathSegments.last()
+        when (val existing = parent[arrayKey]) {
+            is MutableList<*> -> (existing as MutableList<Any?>).add(value)
+            null -> parent[arrayKey] = mutableListOf(value)
+            else -> parent[arrayKey] = mutableListOf(existing, value)
+        }
+    }
+
+    /**
+     * Add a string to an array
+     */
+    fun addStringToArray(key: String, value: String) {
+        addToArray(key, value)
+    }
+
+    /**
+     * Add an integer to an array
+     */
+    fun addIntToArray(key: String, value: Int) {
+        addToArray(key, value)
+    }
+
+    /**
+     * Add a long to an array
+     */
+    fun addLongToArray(key: String, value: Long) {
+        addToArray(key, value)
+    }
+
+    /**
+     * Add a double to an array
+     */
+    fun addDoubleToArray(key: String, value: Double) {
+        addToArray(key, value)
+    }
+
+    /**
+     * Add a boolean to an array
+     */
+    fun addBooleanToArray(key: String, value: Boolean) {
+        addToArray(key, value)
+    }
+
+    /**
+     * Add an object to an array
+     */
+    fun addObjectToArray(key: String, parser: KTomlParser) {
+        addToArray(key, parser.parsedData)
+    }
+
+    /**
+     * Get array size
+     */
+    fun getArraySize(key: String): Int {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val value = parser.parsedData[localKey]) {
+                is List<*> -> value.size
+                else -> 0
+            }
+        } ?: 0
+    }
+
+    /**
+     * Remove from array at index
+     */
+    fun removeFromArray(key: String, index: Int): Any? {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val value = parser.parsedData[localKey]) {
+                is MutableList<*> -> {
+                    if (index >= 0 && index < value.size) value.removeAt(index)
+                    else null
+                }
+
+                else -> null
+            }
+        }
+    }
+
+    /**
+     * Remove specific value from array
+     */
+    fun removeFromArray(key: String, value: Any?): Boolean {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val existing = parser.parsedData[localKey]) {
+                is MutableList<*> -> existing.remove(value)
+                else -> false
+            }
+        } ?: false
+    }
+
+    /**
+     * Clear array (remove all elements)
+     */
+    fun clearArray(key: String) {
+        withPathNavigation(key) { parser, localKey ->
+            when (val value = parser.parsedData[localKey]) {
+                is MutableList<*> -> value.clear()
+                else -> parser.parsedData[localKey] = mutableListOf<Any?>()
+            }
+        }
+    }
+
+    /**
+     * Set array element at index
+     */
+    fun setArrayElement(key: String, index: Int, value: Any?) {
+        withPathNavigation(key) { parser, localKey ->
+            when (val existing = parser.parsedData[localKey]) {
+                is MutableList<*> -> {
+                    val list = existing as MutableList<Any?>
+                    if (index >= 0 && index < list.size) {
+                        list[index] = value
+                    }
+                }
+
+                else -> {
+                    val newList = mutableListOf<Any?>()
+                    for (i in 0..index) {
+                        newList.add(if (i == index) value else null)
+                    }
+                    parser.parsedData[localKey] = newList
+                }
+            }
+        }
+    }
+
+    /**
+     * Get array element at index as KTomlParser
+     */
+    fun getArrayElement(key: String, index: Int): KTomlParser {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val value = parser.parsedData[localKey]) {
+                is List<*> -> {
+                    if (index >= 0 && index < value.size) {
+                        KTomlParser(mutableMapOf(), value[index])
+                    } else {
+                        empty()
+                    }
+                }
+
+                else -> empty()
+            }
+        } ?: empty()
+    }
+
+    /**
+     * Check if array contains value
+     */
+    fun arrayContains(key: String, value: Any?): Boolean {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val existing = parser.parsedData[localKey]) {
+                is List<*> -> existing.contains(value)
+                else -> false
+            }
+        } ?: false
+    }
+
+    /**
+     * Get index of value in array
+     */
+    fun arrayIndexOf(key: String, value: Any?): Int {
+        return withPathNavigation(key) { parser, localKey ->
+            when (val existing = parser.parsedData[localKey]) {
+                is List<*> -> existing.indexOf(value)
+                else -> -1
+            }
+        } ?: -1
+    }
+
+    /**
+     * Remove a key
+     */
+    fun remove(key: String): Any? {
+        val pathSegments = parsePath(key)
+        return if (pathSegments.size == 1) {
+            parsedData.remove(key)
+        } else {
+            val parentPath = pathSegments.copyOfRange(0, pathSegments.size - 1)
+            navigateToPath(parentPath, 0)?.parsedData?.remove(pathSegments.last())
+        }
+    }
+
+    /**
+     * Clear all data
+     */
+    fun clear() {
+        parsedData.clear()
+    }
+
+    /**
+     * Create or get nested map for path
+     */
+    private fun getOrCreateNestedMap(pathSegments: Array<String>): MutableMap<String, Any?> {
+        var currentMap = parsedData
+
+        for (segment in pathSegments) {
+            val existing = currentMap[segment]
+            currentMap = if (existing is MutableMap<*, *>) {
+                existing as MutableMap<String, Any?>
+            } else {
+                val newMap = mutableMapOf<String, Any?>()
+                currentMap[segment] = newMap
+                newMap
+            }
+        }
+
+        return currentMap
+    }
+
+    /**
+     * Write to file as TOML format
+     */
+    fun writeToFile(filePath: Path) {
+        try {
+            Files.writeString(filePath, toTomlString(), StandardCharsets.UTF_8)
+        } catch (e: Exception) {
+            LOG.error("Failed to write TOML to file: $filePath", e)
+            throw e
+        }
+    }
+
+    /**
+     * Write to file as TOML format
+     */
+    fun writeToFile(file: File) {
+        writeToFile(file.toPath())
+    }
+
+    /**
+     * Save to file (alias for writeToFile)
+     */
+    fun save(filePath: Path) {
+        writeToFile(filePath)
+    }
+
+    /**
+     * Save to file (alias for writeToFile)
+     */
+    fun save(file: File) {
+        writeToFile(file)
+    }
+
+    /**
+     * Write to Writer as TOML format
+     */
+    fun writeToWriter(writer: Writer) {
+        try {
+            writer.write(toTomlString())
+            writer.flush()
+        } catch (e: Exception) {
+            LOG.error("Failed to write TOML to Writer", e)
+            throw e
+        }
+    }
+
+    /**
+     * Write to OutputStream as TOML format
+     */
+    fun writeToStream(outputStream: OutputStream) {
+        try {
+            OutputStreamWriter(outputStream, StandardCharsets.UTF_8).use { writer ->
+                writeToWriter(writer)
+            }
+        } catch (e: Exception) {
+            LOG.error("Failed to write TOML to OutputStream", e)
+            throw e
+        }
     }
 
     override fun toString(): String {
