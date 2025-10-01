@@ -41,7 +41,7 @@ data class ModrinthData(
 
     @SerializedName("version_body")
     var versionBody: String? = null,
-    var dependencies: MutableList<ProjectRelation>? = null,
+    var dependencies: MutableList<ProjectRelation> = arrayListOf(),
 
     @SerializedName("game_versions")
     var gameVersions: MutableList<String?>? = null,
@@ -109,9 +109,8 @@ data class ModrinthData(
     }*/
 
     fun dependency(dependency: ProjectRelation) {
-        if (this.dependencies == null) this.dependencies = ArrayList()
-        for (rel in this.dependencies!!) if (rel.projectID == dependency.projectID) return
-        this.dependencies!!.add(dependency)
+        for (rel in this.dependencies) if (rel.projectID == dependency.projectID) return
+        this.dependencies.add(dependency)
     }
 
     fun requiredDependency(slug: String) {

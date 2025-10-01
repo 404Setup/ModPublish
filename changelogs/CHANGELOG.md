@@ -1,3 +1,8 @@
+## v0.0.9
+
+### Fix
+- Modrinth publish failed
+
 ## v0.0.8
 
 ### Optimize
