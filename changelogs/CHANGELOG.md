@@ -3,6 +3,9 @@
 ### Optimize
 - Improved KToml parser
 
+### Chore
+- Bump minecraft version list
+
 ### Fix
 - LocalModInfo not being updated correctly
 
