@@ -37,41 +37,37 @@ object FileAPI {
         }
     }
 
-    @JvmStatic
     fun VirtualFile.toFile(): File {
         return File(this.path)
     }
 
     fun VirtualFile.toJarFile(): JarFile? {
-        return toJarFile(this.path)
+        return this.path.toJarFile()
     }
 
-    @JvmStatic
     fun File.toJarFile(): JarFile? {
-        return toJarFile(this.path)
+        return this.path.toJarFile()
     }
 
-    fun toJarFile(path: String): JarFile? {
+    fun String.toJarFile(): JarFile? {
         try {
-            return JarFile(path)
+            return JarFile(this)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
     }
 
-    fun getUserData(name: String): Path {
-        return Paths.get(System.getProperty("user.home"), ".modpublish", name)
+    fun String.getUserData(): Path {
+        return Paths.get(System.getProperty("user.home"), ".modpublish", this)
     }
 
-    @JvmStatic
-    fun getUserDataFile(name: String): File {
-        return getUserData(name).toFile()
+    fun String.getUserDataFile(): File {
+        return this.getUserData().toFile()
     }
 
-    @JvmStatic
     @Throws(IOException::class)
-    fun open(zipFile: ZipFile, zipEntry: ZipEntry): InputStream? {
-        return zipFile.getInputStream(zipEntry)
+    fun ZipFile.open(zipEntry: ZipEntry): InputStream? {
+        return this.getInputStream(zipEntry)
     }
 }

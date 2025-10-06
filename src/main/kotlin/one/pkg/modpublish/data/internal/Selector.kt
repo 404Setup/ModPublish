@@ -18,7 +18,6 @@ package one.pkg.modpublish.data.internal
 
 import com.intellij.ui.components.JBCheckBox
 
-@JvmRecord
 data class Selector(val modrinth: Boolean, val curseForge: Boolean, val github: Boolean) {
     companion object {
         fun of(modrinth: Boolean, curseForge: Boolean, github: Boolean): Selector {

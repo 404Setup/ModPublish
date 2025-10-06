@@ -23,7 +23,6 @@ import java.io.InputStream
 import java.lang.AutoCloseable
 
 @Suppress("unused")
-@JvmRecord
 data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     fun get(): LocalModInfo? {
         return try {
@@ -62,9 +61,8 @@ data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     companion object {
         private val LOG = Logger.getInstance(ModTomlParser::class.java)
 
-        @JvmStatic
-        fun of(inputStream: InputStream): ModTomlParser {
-            return ModTomlParser(KTomlParser.fromStream(inputStream))
+        fun InputStream.toModTomlParser(): ModTomlParser {
+            return ModTomlParser(KTomlParser.fromStream(this))
         }
     }
 }

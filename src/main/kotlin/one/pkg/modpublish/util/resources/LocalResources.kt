@@ -20,18 +20,16 @@ import com.google.gson.reflect.TypeToken
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
-import one.pkg.modpublish.util.io.FileAPI
+import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.lang.reflect.Type
 
 object LocalResources {
-    @JvmStatic
     val dpType: Type = object : TypeToken<List<DependencyInfo>>() {}.type
     private val mvType = object : TypeToken<List<MinecraftVersion>>() {}.type
 
-    @JvmStatic
     fun getSupportedInfo(): SupportedInfo = runCatching {
         LocalResources::class.java.getResourceAsStream("/META-INF/supported.info.json")?.use { stream ->
             InputStreamReader(stream).use { reader ->
@@ -40,9 +38,8 @@ object LocalResources {
         } ?: throw Exception("supported.info.json not found")
     }.getOrElse { throw RuntimeException(it) }
 
-    @JvmStatic
     fun getMinecraftVersions(): List<MinecraftVersion> = runCatching {
-        val localFile = FileAPI.getUserDataFile("minecraft.version.json")
+        val localFile = "minecraft.version.json".getUserDataFile()
         val stream = if (localFile.exists()) FileInputStream(localFile)
         else LocalResources::class.java.getResourceAsStream("/META-INF/minecraft.version.json")
         stream?.use {

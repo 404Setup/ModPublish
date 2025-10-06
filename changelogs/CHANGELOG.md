@@ -1,3 +1,8 @@
+## v0.0.10
+
+### Chore
+- Bump minecraft version list
+
 ## v0.0.9
 
 ### Fix

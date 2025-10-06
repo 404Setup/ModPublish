@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken
 import com.intellij.openapi.diagnostic.Logger
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.api.NetworkUtil
+import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
@@ -200,13 +201,12 @@ object VersionProcessor {
         LOG.info("   Match Rate: " + String.format("%.1f", matchRate) + "%")
     }
 
-    @JvmStatic
     fun updateVersions(): Boolean {
         val mojang = fetchMinecraftVersions() ?: return false
         val curseforge = fetchCurseforgeVersions() ?: return false
         val mapping = createVersionMapping(curseforge)
         val merged = mergeCurseforgeIds(mojang, mapping)
-        return saveVersions(merged, FileAPI.getUserDataFile("minecraft.version.json"))
+        return saveVersions(merged, "minecraft.version.json".getUserDataFile())
         //showPreview(merged, 5);
     }
 }

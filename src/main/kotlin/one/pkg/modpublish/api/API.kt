@@ -68,7 +68,6 @@ abstract class API {
     abstract fun getModInfo(modid: String, project: Project): ModInfo
 
     companion object {
-        @JvmStatic
         val baseRequestBuilder: Request.Builder
             get() = Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)")
     }

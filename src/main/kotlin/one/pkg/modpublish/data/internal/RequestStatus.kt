@@ -16,7 +16,6 @@
  */
 package one.pkg.modpublish.data.internal
 
-
 enum class RequestStatus(val status: String) {
     Listed("listed"), Archived("archived"), Draft("draft"), Unlisted("unlisted"), Scheduled("scheduled");
 }

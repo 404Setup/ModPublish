@@ -19,7 +19,6 @@ package one.pkg.modpublish.util.metadata
 import com.intellij.openapi.vfs.VirtualFile
 
 object ModVersion {
-    @JvmStatic
     fun VirtualFile.extractVersionNumber(): String {
         val name = nameWithoutExtension
         val extracted = extractVersionFromPattern(name)

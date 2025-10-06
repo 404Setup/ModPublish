@@ -33,14 +33,14 @@ class CompositeConstraint(
 
     override val lowVersion: String
         get() {
-            val lows = constraints.mapNotNull { it.lowVersion.takeIf { it.isNotEmpty() } }
+            val lows = constraints.mapNotNull { it.lowVersion.takeIf { s -> s.isNotEmpty() } }
                 .map { Version(it) }
             return lows.maxOrNull()?.toString() ?: ""
         }
 
     override val maxVersion: String
         get() {
-            val highs = constraints.mapNotNull { it.maxVersion.takeIf { it.isNotEmpty() } }
+            val highs = constraints.mapNotNull { it.maxVersion.takeIf { s -> s.isNotEmpty() } }
                 .map { Version(it) }
             return highs.minOrNull()?.toString() ?: ""
         }

@@ -31,7 +31,6 @@ object VersionConstraintParser {
     private val MAVEN_RANGE_PATTERN = Regex("^[\\[(]([\\w.,-]+)[])]$")
     private val COMPOSITE_PATTERN = Regex("^(.+?)\\s+(.+)$")
 
-    @JvmStatic
     fun parse(constraintStr: String): VersionConstraint {
         val trimmed = constraintStr.trim()
         require(trimmed.isNotEmpty()) { "Version constraint cannot be empty" }

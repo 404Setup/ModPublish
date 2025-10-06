@@ -16,5 +16,4 @@
  */
 package one.pkg.modpublish.data.internal
 
-@JvmRecord
 data class LocalModInfo(val name: String, val version: String, val versionRange: String?)

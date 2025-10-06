@@ -21,7 +21,6 @@ import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
 import java.io.File
 
-@JvmRecord
 data class PublishData(
     val versionName: String, val versionNumber: String, val enabled: Selector,
     val releaseChannel: ReleaseChannel, val loaders: List<ModType>,

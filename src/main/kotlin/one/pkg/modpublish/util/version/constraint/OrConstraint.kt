@@ -33,13 +33,13 @@ class OrConstraint(
 
     override val lowVersion: String
         get() = constraints.mapNotNull {
-            val v = it.lowVersion.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            val v = it.lowVersion.takeIf { s -> s.isNotEmpty() } ?: return@mapNotNull null
             Version(v)
         }.minOrNull()?.toString() ?: ""
 
     override val maxVersion: String
         get() = constraints.mapNotNull {
-            val v = it.maxVersion.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
+            val v = it.maxVersion.takeIf { s -> s.isNotEmpty() } ?: return@mapNotNull null
             Version(v)
         }.maxOrNull()?.toString() ?: ""
 }

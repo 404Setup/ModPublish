@@ -32,6 +32,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
+import one.pkg.modpublish.data.internal.ModType.Companion.toModType
+import one.pkg.modpublish.data.internal.ModType.Companion.toModTypes
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
@@ -45,7 +47,7 @@ import one.pkg.modpublish.ui.panel.DependencyManagerPanel
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer
 import one.pkg.modpublish.util.io.Async
 import one.pkg.modpublish.util.io.Async.async
-import one.pkg.modpublish.util.io.FileAPI
+import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.FileAPI.toFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
@@ -70,7 +72,7 @@ class PublishModDialog(
 ) : BaseDialogWrapper(project, true) {
 
     private val modTypes: Map<VirtualFile, List<ModType>> =
-        jarFiles.associateWith { ModType.getAll(it) }
+        jarFiles.associateWith { it.toModTypes() }
 
     private var modInfo: LocalModInfo? = null
     private var parser: VersionConstraint? = null
@@ -134,7 +136,7 @@ class PublishModDialog(
         updateJarFiles(current)
 
         val types = modTypes[current].orEmpty()
-        loaderCheckBoxes.forEach { it.isSelected = types.contains(ModType.of(it.text.lowercase())) }
+        loaderCheckBoxes.forEach { it.isSelected = types.contains(it.text.lowercase().toModType()) }
 
         updateParser(current)
         loadModInfo(current)
@@ -268,7 +270,7 @@ class PublishModDialog(
                     toolTipText = get("component.tooltip.reset-version-list")
                     addActionListener { _ ->
                         async {
-                            FileAPI.getUserDataFile("minecraft.version.json").takeIf { it.exists() }?.delete()
+                            "minecraft.version.json".getUserDataFile().takeIf { it.exists() }?.delete()
                             showSuccessDialog("message.update.success", "title.success")
                             updateVersionList = true
                             updateMinecraftVersions()

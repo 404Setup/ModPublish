@@ -24,17 +24,14 @@ import one.pkg.modpublish.util.protect.HardwareFingerprint
 import one.pkg.modpublish.util.protect.Protect
 
 object Properties {
-    @JvmStatic
     fun getPropertiesComponent(project: Project): PropertiesComponent {
         return PropertiesComponent.getInstance(project)
     }
 
-    @JvmStatic
     fun getProtectValue(project: Project, dataKey: PID): Info {
         return getProtectValue(getPropertiesComponent(project), dataKey)
     }
 
-    @JvmStatic
     fun getProtectValue(properties: PropertiesComponent, dataKey: PID): Info {
         val v = dataKey.get(properties)
         if (v.isBlank()) {
@@ -55,12 +52,10 @@ object Properties {
         }
     }
 
-    @JvmStatic
     fun setProtectValue(project: Project, dataKey: String, data: String) {
         setProtectValue(getPropertiesComponent(project), dataKey, data)
     }
 
-    @JvmStatic
     fun setProtectValue(properties: PropertiesComponent, dataKey: String, data: String) {
         if (dataKey.isBlank()) return
         properties.setValue(
@@ -69,12 +64,10 @@ object Properties {
         )
     }
 
-    @JvmStatic
     fun getProperties(properties: PropertiesComponent): Property {
         return Property.getInstance(properties)
     }
 
-    @JvmStatic
     fun getProperties(project: Project): Property {
         return Property.getInstance(getPropertiesComponent(project))
     }

@@ -17,14 +17,14 @@
 package one.pkg.modpublish.data.internal
 
 import com.intellij.openapi.vfs.VirtualFile
-import one.pkg.modpublish.util.io.FileAPI
+import one.pkg.modpublish.util.io.FileAPI.open
 import one.pkg.modpublish.util.io.FileAPI.toFile
 import one.pkg.modpublish.util.io.FileAPI.toJarFile
 import one.pkg.modpublish.util.metadata.ModJsonParser
-import one.pkg.modpublish.util.metadata.ModTomlParser
+import one.pkg.modpublish.util.metadata.ModTomlParser.Companion.toModTomlParser
 import java.io.File
 import java.io.InputStream
-import java.util.Locale
+import java.util.*
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 
@@ -51,7 +51,7 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     fun getEntry(jar: JarFile): ZipEntry? = jar.getEntry(fileName)
 
-    fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { FileAPI.open(jar, it) }
+    fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { jar.open(it) }
 
     fun getID(): String = displayName.lowercase(Locale.ENGLISH)
 
@@ -65,7 +65,7 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     protected fun getForgeMod(file: File): LocalModInfo? = try {
         file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModTomlParser.of(it) }?.get() }
+            jar?.let { getStream(it) }.use { stream -> stream?.toModTomlParser()?.get() }
         }
     } catch (_: Exception) {
         null
@@ -76,27 +76,22 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     companion object {
         val valuesList = entries
 
-        @JvmStatic
-        fun of(file: File): ModType? = try {
-            JarFile(file).use { jar -> of(jar) }
+        fun File.toModType(): ModType? = try {
+            JarFile(this).toModType()
         } catch (_: Exception) {
             null
         }
 
-        @JvmStatic
-        fun of(jar: JarFile): ModType? = valuesList.firstOrNull { it.getEntry(jar) != null }
+        fun JarFile.toModType(): ModType? = valuesList.firstOrNull { it.getEntry(this) != null }
 
-        @JvmStatic
-        fun of(name: String): ModType? = valuesList.firstOrNull { it.displayName.equals(name, ignoreCase = true) }
+        fun String.toModType(): ModType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
 
-        @JvmStatic
-        fun getAll(file: File): List<ModType> = try {
-            JarFile(file).use { jar -> valuesList.filter { it.getEntry(jar) != null } }
+        fun File.toModTypes(): List<ModType> = try {
+            JarFile(this).use { jar -> valuesList.filter { it.getEntry(jar) != null } }
         } catch (_: Exception) {
             emptyList()
         }
 
-        @JvmStatic
-        fun getAll(file: VirtualFile): List<ModType> = getAll(file.toFile())
+        fun VirtualFile.toModTypes(): List<ModType> = this.toFile().toModTypes()
     }
 }

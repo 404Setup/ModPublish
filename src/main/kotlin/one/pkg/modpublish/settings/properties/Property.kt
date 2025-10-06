@@ -19,14 +19,12 @@ package one.pkg.modpublish.settings.properties
 import com.intellij.ide.util.PropertiesComponent
 import one.pkg.modpublish.data.internal.Info
 
-@JvmRecord
 data class Property(
     val modrinth: ModrinthProperty,
     val curseforge: CurseForgeProperty,
     val github: GithubProperty,
     val common: CommonProperty
 ) {
-    @JvmRecord
     data class CommonProperty(val versionFormat: String) : PropertyBase {
         override fun isEnabled(): Boolean {
             return true
@@ -39,7 +37,6 @@ data class Property(
         }
     }
 
-    @JvmRecord
     data class CurseForgeProperty(
         val token: Info, val studioToken: Info,
         val modid: String
@@ -60,7 +57,6 @@ data class Property(
         }
     }
 
-    @JvmRecord
     data class GithubProperty(
         val token: Info, val repo: String,
         val branch: String
@@ -80,7 +76,6 @@ data class Property(
         }
     }
 
-    @JvmRecord
     data class ModrinthProperty(val token: Info, val modid: String) : PropertyBase {
         override fun isEnabled(): Boolean {
             return !token.data.trim { it <= ' ' }.isEmpty() && !modid.trim { it <= ' ' }.isEmpty()

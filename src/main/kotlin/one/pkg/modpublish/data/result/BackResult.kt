@@ -18,7 +18,6 @@ package one.pkg.modpublish.data.result
 
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult
 
-@JvmRecord
 data class BackResult(val result: Any) : Result {
     override val isSuccess: Boolean
         get() = true

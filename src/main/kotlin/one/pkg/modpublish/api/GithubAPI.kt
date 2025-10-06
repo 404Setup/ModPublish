@@ -53,7 +53,7 @@ class GithubAPI : API() {
         }
 
     override fun createJsonBody(data: PublishData, project: Project): String {
-        val branch = PID.GithubBranch.get(project).ifEmpty { getBrach(project) }
+        val branch = PID.GithubBranch.get(project).ifEmpty { project.getBrach() }
         val targetCommitish = getTargetCommitish(branch, project)
 
         return GithubData().apply {

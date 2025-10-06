@@ -89,7 +89,7 @@ data class Version(
         compareValuesBy(this, other, Version::major, Version::minor, Version::patch).let {
             if (it != 0) return it
         }
-        compareValuesBy(this, other, { it.typePriority() }).let {
+        compareValuesBy(this, other) { it.typePriority() }.let {
             if (it != 0) return it
         }
         return compareValues(preRelease ?: "", other.preRelease ?: "")

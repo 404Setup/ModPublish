@@ -23,12 +23,10 @@ import org.jetbrains.annotations.PropertyKey
 object Lang : DynamicBundle(FILE) {
     const val FILE = "messages.ModPublish"
 
-    @JvmStatic
     fun get(@PropertyKey(resourceBundle = FILE) key: String): String {
         return getMessage(key)
     }
 
-    @JvmStatic
     fun get(@PropertyKey(resourceBundle = FILE) key: String, vararg params: Any): String {
         return getMessage(key, *params)
     }

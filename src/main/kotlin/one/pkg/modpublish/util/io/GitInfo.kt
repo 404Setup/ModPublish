@@ -20,9 +20,8 @@ import com.intellij.openapi.project.Project
 import git4idea.repo.GitRepositoryManager
 
 object GitInfo {
-    @JvmStatic
-    fun getBrach(project: Project): String {
-        val manager = GitRepositoryManager.getInstance(project)
+    fun Project.getBrach(): String {
+        val manager = GitRepositoryManager.getInstance(this)
         for (repository in manager.repositories)
             for (remote in repository.remotes)
                 if (remote.name == "origin")

@@ -16,7 +16,6 @@
  */
 package one.pkg.modpublish.data.internal
 
-@JvmRecord
 data class Info(val data: String, val failed: Boolean, val globalData: Boolean) {
     companion object {
         val INSTANCE: Info = Info("", failed = false, globalData = false)

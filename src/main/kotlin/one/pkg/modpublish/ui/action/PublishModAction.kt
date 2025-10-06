@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.vfs.VirtualFile
-import one.pkg.modpublish.data.internal.ModType
+import one.pkg.modpublish.data.internal.ModType.Companion.toModType
 import one.pkg.modpublish.ui.PublishModDialog
 import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.util.io.FileAPI.toFile
@@ -39,7 +39,7 @@ class PublishModAction : AnAction() {
             val list: MutableList<VirtualFile> = ArrayList()
             for (virtualFile in file) {
                 if (!virtualFile.isDirectory && virtualFile.name
-                        .endsWith(".jar") && ModType.of(virtualFile.toFile()) != null
+                        .endsWith(".jar") && virtualFile.toFile().toModType() != null
                 ) {
                     list.add(virtualFile)
                 }
@@ -73,7 +73,7 @@ class PublishModAction : AnAction() {
             val isJarFile = file.name.endsWith(".jar")
             if (isJarFile) {
                 try {
-                    val modType = ModType.of(file.toFile())
+                    val modType = file.toFile().toModType()
                     shouldShow = true
                     shouldEnable = modType != null
                 } catch (_: Exception) {

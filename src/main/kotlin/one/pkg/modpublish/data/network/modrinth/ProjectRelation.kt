@@ -38,22 +38,18 @@ data class ProjectRelation(
     constructor(projectID: String, type: DependencyType) : this(projectID, type.modrinthName)
 
     companion object {
-        @JvmStatic
         fun createRequired(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.REQUIRED)
         }
 
-        @JvmStatic
         fun createOptional(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.OPTIONAL)
         }
 
-        @JvmStatic
         fun createEmbedded(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.EMBEDDED)
         }
 
-        @JvmStatic
         fun createIncompatible(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.INCOMPATIBLE)
         }

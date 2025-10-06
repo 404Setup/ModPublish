@@ -325,7 +325,7 @@ public class TomlParser implements Closeable {
     }
 
     public String toJson() {
-        return JsonParser.toJson(parsedData);
+        return JsonParser.INSTANCE.toJson(parsedData);
     }
 
     @Override
@@ -858,7 +858,7 @@ public class TomlParser implements Closeable {
         }
 
         public String toJson() {
-            return JsonParser.toJson(elements);
+            return JsonParser.INSTANCE.toJson(elements);
         }
 
         /**

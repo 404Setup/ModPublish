@@ -20,7 +20,6 @@ import one.pkg.modpublish.api.API
 import one.pkg.modpublish.util.resources.Lang
 import org.jetbrains.annotations.PropertyKey
 
-@JvmRecord
 data class PublishResult(val result: String?, val id: String) : Result {
     override val isSuccess: Boolean
         get() = result == null || result.trim { it <= ' ' }.isEmpty()
