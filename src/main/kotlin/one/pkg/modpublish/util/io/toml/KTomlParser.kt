@@ -433,7 +433,6 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 }
 
                 is List<*> -> {
-                    @Suppress("UNCHECKED_CAST")
                     val list = value as List<Map<String, Any?>>
                     if (list.isNotEmpty()) {
                         val firstMap = list[0]
