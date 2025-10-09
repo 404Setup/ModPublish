@@ -39,9 +39,7 @@ import java.io.IOException
 class GithubAPI : API() {
     override val id: String get() = "Github"
 
-    private var aBServer = false
-
-    override fun getAB(): Boolean = aBServer
+    override fun getAB(): Boolean = true
     override fun updateAB() {}
 
     fun getRequestBuilder(url: String, project: Project): Request.Builder =
@@ -68,24 +66,27 @@ class GithubAPI : API() {
         }.toJson()
     }
 
-    override fun createVersion(data: PublishData, project: Project): PublishResult = try {
-        val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
-        var existingRelease = checkExistingRelease(tagName, project)?.asJsonObject
-        if (existingRelease == null) {
-            val result = createRelease(data, project)
-            existingRelease = (result as? BackResult)?.asString()?.fromJson()?.asJsonObject
-        }
+    override fun createVersion(data: PublishData, project: Project): PublishResult {
+        return try {
+            val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
+            var existingRelease = checkExistingRelease(tagName, project)?.asJsonObject
+            if (existingRelease == null) {
+                val result = createRelease(data, project)
+                if (result is PublishResult) return result
+                existingRelease = (result as BackResult).asString().fromJson().asJsonObject
+            }
 
-        val uploadUrl =
-            existingRelease?.get("upload_url")?.asString?.split("{")?.first() ?: return PublishResult.create(
-                this,
-                "Failed to get upload URL"
-            )
-        data.files.fold(PublishResult.EMPTY) { acc, file ->
-            if (!acc.isSuccess) acc else uploadAsset(file, project, uploadUrl)
+            val uploadUrl =
+                existingRelease?.get("upload_url")?.asString?.split("{")?.first() ?: return PublishResult.create(
+                    this,
+                    "Failed to get upload URL"
+                )
+            data.files.fold(PublishResult.EMPTY) { acc, file ->
+                if (!acc.isSuccess) acc else uploadAsset(file, project, uploadUrl)
+            }
+        } catch (e: Exception) {
+            PublishResult.create(this, "Failed to create GitHub release: ${e.message}")
         }
-    } catch (e: Exception) {
-        PublishResult.create(this, "Failed to create GitHub release: ${e.message}")
     }
 
     private fun createRelease(data: PublishData, project: Project): Result = try {

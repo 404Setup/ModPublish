@@ -64,6 +64,8 @@ public final class ModPublishSettings
         @NonNls
         public String githubToken = "";
         @NonNls
+        public String gitlabToken = "";
+        @NonNls
         public boolean autoProxy = false;
         @NonNls
         public int proxyType = 0; // 0: sockets; 1: http
@@ -133,6 +135,14 @@ public final class ModPublishSettings
 
         public void updateGithubToken(String token) {
             this.githubToken = encryptToken(token);
+        }
+
+        public Info getGitlabToken() {
+            return getDecryptedToken(gitlabToken);
+        }
+
+        public void updateGitlabToken(String token) {
+            this.gitlabToken = encryptToken(token);
         }
     }
 

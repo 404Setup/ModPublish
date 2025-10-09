@@ -43,6 +43,7 @@ class ModPublishSettingsConfigurable : Configurable {
                 c.curseforgeTokenTextValue != state.getCurseforgeToken().data ||
                 c.curseforgeStudioTokenTextValue != state.getCurseforgeStudioToken().data ||
                 c.githubTokenTextValue != state.getGithubToken().data ||
+                c.gitlabTokenTextValue != state.getGitlabToken().data ||
                 c.isAutoProxyEnabled != state.autoProxy ||
                 c.proxyType != state.proxyType ||
                 c.proxyAddress != state.proxyAddress ||
@@ -63,6 +64,7 @@ class ModPublishSettingsConfigurable : Configurable {
         state.updateCurseforgeToken(c.curseforgeTokenTextValue)
         state.updateCurseforgeStudioToken(c.curseforgeStudioTokenTextValue)
         state.updateGithubToken(c.githubTokenTextValue)
+        state.updateGitlabToken(c.gitlabTokenTextValue)
         state.autoProxy = c.isAutoProxyEnabled
         state.proxyType = c.proxyType
         state.proxyAddress = c.proxyAddress
@@ -83,6 +85,7 @@ class ModPublishSettingsConfigurable : Configurable {
         c.curseforgeTokenTextValue = state.getCurseforgeToken().data
         c.curseforgeStudioTokenTextValue = state.getCurseforgeStudioToken().data
         c.githubTokenTextValue = state.getGithubToken().data
+        c.gitlabTokenTextValue = state.getGitlabToken().data
         c.isAutoProxyEnabled = state.autoProxy
         c.proxyType = state.proxyType
         c.proxyAddress = state.proxyAddress

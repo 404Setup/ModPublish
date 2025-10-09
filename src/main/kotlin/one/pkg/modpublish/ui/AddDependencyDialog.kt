@@ -75,7 +75,7 @@ class AddDependencyDialog(
     override fun doOKAction() {
         if (!selector.modrinth && !selector.curseForge) {
             showFailedDialog(
-                if (selector.github) "message.dont-support-add-depends" else "failed.8",
+                if (selector.github || selector.gitlab) "message.dont-support-add-depends" else "failed.8",
                 "title.failed"
             )
             return

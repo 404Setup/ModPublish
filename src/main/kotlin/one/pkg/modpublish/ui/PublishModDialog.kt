@@ -84,6 +84,7 @@ class PublishModDialog(
     private lateinit var versionNameField: JBTextField
     private lateinit var versionNumberField: JBTextField
     private lateinit var githubCheckBox: JBCheckBox
+    private lateinit var gitlabCheckBox: JBCheckBox
     private lateinit var modrinthCheckBox: JBCheckBox
     private lateinit var curseforgeCheckBox: JBCheckBox
     private lateinit var clientCheckBox: JBCheckBox
@@ -157,6 +158,7 @@ class PublishModDialog(
 
         // Publish targets
         githubCheckBox = JBCheckBox("GitHub")
+        gitlabCheckBox = JBCheckBox("GitLab")
         modrinthCheckBox = JBCheckBox("Modrinth")
         curseforgeCheckBox = JBCheckBox("CurseForge")
 
@@ -164,6 +166,7 @@ class PublishModDialog(
             get("component.name.targets"),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(githubCheckBox)
+                add(gitlabCheckBox)
                 add(modrinthCheckBox)
                 add(curseforgeCheckBox)
             }
@@ -415,6 +418,13 @@ class PublishModDialog(
             githubCheckBox.setFailedSelect()
         }
 
+        if (!p2.gitlab.isEnabled()) {
+            gitlabCheckBox.isEnabled = false
+            gitlabCheckBox.toolTipText = get("tooltip.git.disable", "Gitlab")
+        } else if (p2.gitlab.token.failed) {
+            gitlabCheckBox.setFailedSelect()
+        }
+
         changelogField.text = properties.getValue("modpublish.changelog", "")
 
         val savedDependenciesJson = properties.getValue("modpublish.dependencies", "[]")
@@ -445,7 +455,7 @@ class PublishModDialog(
     }
 
     private fun validatePublishTargetSelection(): PublishResult? {
-        if (!curseforgeCheckBox.isSelected && !modrinthCheckBox.isSelected && !githubCheckBox.isSelected) {
+        if (!curseforgeCheckBox.isSelected && !modrinthCheckBox.isSelected && !githubCheckBox.isSelected && !gitlabCheckBox.isSelected) {
             return PublishResult.of("failed.1")
         }
         return null
@@ -556,9 +566,11 @@ class PublishModDialog(
                 createPublishTask(TargetType.Modrinth.api, modrinthCheckBox, data)
             val githubTask =
                 createPublishTask(TargetType.Github.api, githubCheckBox, data)
+            val gitlabTask =
+                createPublishTask(TargetType.Gitlab.api, gitlabCheckBox, data)
 
             runBlocking {
-                joinResult(results, curseForgeTask, modrinthTask, githubTask)
+                joinResult(results, curseForgeTask, modrinthTask, githubTask, gitlabTask)
             }
         } catch (e: CompletionException) {
             results.add(
@@ -588,6 +600,6 @@ class PublishModDialog(
     }
 
     fun getPublishTargets(): Selector {
-        return Selector.of(modrinthCheckBox, curseforgeCheckBox, githubCheckBox)
+        return Selector.of(modrinthCheckBox, curseforgeCheckBox, githubCheckBox, gitlabCheckBox)
     }
 }

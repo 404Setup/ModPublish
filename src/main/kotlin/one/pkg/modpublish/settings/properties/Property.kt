@@ -23,6 +23,7 @@ data class Property(
     val modrinth: ModrinthProperty,
     val curseforge: CurseForgeProperty,
     val github: GithubProperty,
+    val gitlab: GitlabProperty,
     val common: CommonProperty
 ) {
     data class CommonProperty(val versionFormat: String) : PropertyBase {
@@ -76,6 +77,25 @@ data class Property(
         }
     }
 
+    data class GitlabProperty(
+        val token: Info, val repo: String,
+        val branch: String
+    ): PropertyBase {
+        override fun isEnabled(): Boolean {
+            return !token.data.trim { it <= ' ' }.isEmpty() && !repo.trim { it <= ' ' }.isEmpty()
+        }
+
+        companion object {
+            fun getInstance(properties: PropertiesComponent): GitlabProperty {
+                return GitlabProperty(
+                    PID.GitlabToken.getProtect(properties),
+                    PID.GitlabRepo.get(properties),
+                    PID.GitlabBranch.get(properties)
+                )
+            }
+        }
+    }
+
     data class ModrinthProperty(val token: Info, val modid: String) : PropertyBase {
         override fun isEnabled(): Boolean {
             return !token.data.trim { it <= ' ' }.isEmpty() && !modid.trim { it <= ' ' }.isEmpty()
@@ -97,6 +117,7 @@ data class Property(
                 ModrinthProperty.getInstance(properties),
                 CurseForgeProperty.getInstance(properties),
                 GithubProperty.getInstance(properties),
+                GitlabProperty.getInstance(properties),
                 CommonProperty.getInstance(properties)
             )
         }

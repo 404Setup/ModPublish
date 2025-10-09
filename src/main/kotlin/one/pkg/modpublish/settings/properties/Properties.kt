@@ -41,6 +41,7 @@ object Properties {
                 PID.CurseForgeToken -> state.getCurseforgeToken()
                 PID.CurseForgeStudioToken -> state.getCurseforgeStudioToken()
                 PID.GithubToken -> state.getGithubToken()
+                PID.GitlabToken -> state.getGitlabToken()
                 else -> Info.INSTANCE
             }
         }

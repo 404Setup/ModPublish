@@ -1,5 +1,8 @@
 ## v0.0.10
 
+### Feature
+- Reimplement Gitlab
+
 ### Change
 - Changelog input box is now scrollable
 
@@ -48,7 +51,7 @@
 
 ## v0.0.6
 
-### Feat
+### Feature
 - More configurable network options
 - Support proxy simple auth
 - Add pluginIcon
@@ -86,7 +89,7 @@
 
 ## v0.0.5
 
-### Feat
+### Feature
 - More uses for version parser: Automatically select version ranges
 - Upload multiple files simultaneously
 - Improved Toml parser
@@ -123,7 +126,7 @@
 
 ## v0.0.4
 
-### Feat
+### Feature
 - Improved Toml Parser
 - Added variables for name template: low-version, max-version
 - When publishing to Github, it will now automatically reuse existing release tags
@@ -153,7 +156,7 @@
 
 ## v0.0.3
 
-### Feat
+### Feature
 - Detect token decryption status on release page
 - Improved hardware ID algorithm to prevent frequent token invalidation
 - Added support for Github
@@ -173,7 +176,7 @@
 
 ## v0.0.2
 
-### Feat
+### Feature
 - Auto generate title based on mod name/version/loader or user-customized format
 - Support for selecting release channels
 

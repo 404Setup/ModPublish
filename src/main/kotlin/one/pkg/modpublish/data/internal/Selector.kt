@@ -18,14 +18,14 @@ package one.pkg.modpublish.data.internal
 
 import com.intellij.ui.components.JBCheckBox
 
-data class Selector(val modrinth: Boolean, val curseForge: Boolean, val github: Boolean) {
+data class Selector(val modrinth: Boolean, val curseForge: Boolean, val github: Boolean, val gitlab: Boolean) {
     companion object {
-        fun of(modrinth: Boolean, curseForge: Boolean, github: Boolean): Selector {
-            return Selector(modrinth, curseForge, github)
+        fun of(modrinth: Boolean, curseForge: Boolean, github: Boolean, gitlab: Boolean): Selector {
+            return Selector(modrinth, curseForge, github, gitlab)
         }
 
-        fun of(modrinth: JBCheckBox, curseForge: JBCheckBox, github: JBCheckBox): Selector {
-            return of(modrinth.isSelected, curseForge.isSelected, github.isSelected)
+        fun of(modrinth: JBCheckBox, curseForge: JBCheckBox, github: JBCheckBox, gitlab: JBCheckBox): Selector {
+            return of(modrinth.isSelected, curseForge.isSelected, github.isSelected, gitlab.isSelected)
         }
     }
 }

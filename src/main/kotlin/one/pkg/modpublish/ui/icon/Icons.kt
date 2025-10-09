@@ -27,6 +27,7 @@ object Icons {
 
     object Target {
         val Github: Icon = getIcon("/icons/github.svg")
+        val Gitlab: Icon = getIcon("/icons/gitlab.svg")
         val CurseForge: Icon = getIcon("/icons/curseforge.svg")
         val Modrinth: Icon = getIcon("/icons/modrinth.svg")
     }

@@ -39,9 +39,12 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
     private lateinit var curseforgeModIDField: JBTextField
 
     private lateinit var githubTokenField: JBTextField
-    private lateinit var gitlabTokenField: JBTextField
     private lateinit var githubRepoField: JBTextField
     private lateinit var githubBranchField: JBTextField
+
+    private lateinit var gitlabTokenField: JBTextField
+    private lateinit var gitlabRepoField: JBTextField
+    private lateinit var gitlabBranchField: JBTextField
 
     init {
         setTitle("title.config-project", project.name)
@@ -117,10 +120,18 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         )
 
         formBuilder.addPlatformSection(
-            "GitLab", Icons.Target.Github,
+            "GitLab", Icons.Target.Gitlab,
             of(token) {
                 gitlabTokenField = createTextField()
                 gitlabTokenField
+            },
+            of (repoLabel) {
+                gitlabRepoField = createTextField()
+                gitlabRepoField
+            },
+            of(branchLabel) {
+                gitlabBranchField = createTextField()
+                gitlabBranchField
             }
         )
 
@@ -162,6 +173,8 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
 
         gitlabTokenField.text = if (p1.gitlab.token.globalData) "" else p1.gitlab.token.data
         if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+        gitlabRepoField.text = p1.gitlab.repo
+        gitlabBranchField.text = p1.gitlab.branch
     }
 
     private fun savePersistedData() {
@@ -177,8 +190,11 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         PID.CurseForgeModID.set(properties, curseforgeModIDField)
 
         PID.GithubToken.set(properties, githubTokenField)
-        PID.GitlabToken.set(properties, gitlabTokenField)
         PID.GithubRepo.set(properties, githubRepoField)
         PID.GithubBranch.set(properties, githubBranchField)
+
+        PID.GitlabToken.set(properties, gitlabTokenField)
+        PID.GitlabRepo.set(properties, gitlabRepoField)
+        PID.GitlabBranch.set(properties, gitlabBranchField)
     }
 }

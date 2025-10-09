@@ -25,7 +25,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 > or I suddenly want to implement them
 
 - Publishing to custom Git servers
-- Publishing to Hangar/SpigotMC/GitLab
+- Publishing to Hangar/SpigotMC
 - Publishing plugins/resource packs/data packs
 
 ### TODO
@@ -83,6 +83,10 @@ configure permissions as shown in the image.
 ![Github PAT](image/github_token.png)
 
 Token should start with `github_pat_`.
+
+#### Gitlab
+
+TODO
 
 ### Fill in API Tokens and ModID
 
@@ -180,6 +184,7 @@ All resource files have been adjusted to display at 24px.
 - [Modrinth Logo](https://github.com/modrinth/code/blob/main/packages/assets/branding/logo.svg) - License [GPL-3.0](https://github.com/modrinth/code/blob/main/packages/assets/LICENSE), with proper coloring of the logo
 - [CurseForge Logo](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824) - License [CC BY 4.0](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824?permalink_comment_id=3683512#gistcomment-3683512)
 - [Github Icon](https://github.com/logos)
+- [Gitlab Logo (vscode-icons)](https://github.com/vscode-icons/vscode-icons) - [License](https://github.com/vscode-icons/vscode-icons#license)
 - [FluentUI System Icons](https://github.com/microsoft/fluentui-system-icons) - License [MIT](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE)
 
 ## Support ModPublish

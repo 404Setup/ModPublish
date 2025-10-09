@@ -103,7 +103,7 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
         )
 
         formBuilder.addPlatformSection(
-            "GitLab", Icons.Target.Github,
+            "GitLab", Icons.Target.Gitlab,
             FieldConfig.of("Token") { JBTextField().also { gitlabTokenText = it } },
             FieldConfig.of {
                 createActionLink(
