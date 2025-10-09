@@ -39,6 +39,7 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
     private lateinit var curseforgeModIDField: JBTextField
 
     private lateinit var githubTokenField: JBTextField
+    private lateinit var gitlabTokenField: JBTextField
     private lateinit var githubRepoField: JBTextField
     private lateinit var githubBranchField: JBTextField
 
@@ -115,6 +116,14 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
             }
         )
 
+        formBuilder.addPlatformSection(
+            "GitLab", Icons.Target.Github,
+            of(token) {
+                gitlabTokenField = createTextField()
+                gitlabTokenField
+            }
+        )
+
         autoFillFields()
 
         return formBuilder.toScrollPanel(600, 360)
@@ -150,6 +159,9 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         if (p1.github.token.globalData) githubTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
         githubRepoField.text = p1.github.repo
         githubBranchField.text = p1.github.branch
+
+        gitlabTokenField.text = if (p1.gitlab.token.globalData) "" else p1.gitlab.token.data
+        if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
     }
 
     private fun savePersistedData() {
@@ -165,6 +177,7 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         PID.CurseForgeModID.set(properties, curseforgeModIDField)
 
         PID.GithubToken.set(properties, githubTokenField)
+        PID.GitlabToken.set(properties, gitlabTokenField)
         PID.GithubRepo.set(properties, githubRepoField)
         PID.GithubBranch.set(properties, githubBranchField)
     }
