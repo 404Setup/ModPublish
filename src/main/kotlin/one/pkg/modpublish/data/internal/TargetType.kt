@@ -19,9 +19,10 @@ package one.pkg.modpublish.data.internal
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.api.CurseForgeAPI
 import one.pkg.modpublish.api.GithubAPI
+import one.pkg.modpublish.api.GitlabAPI
 import one.pkg.modpublish.api.ModrinthAPI
 
 enum class TargetType(val api: API) {
     Modrinth(ModrinthAPI()), CurseForge(CurseForgeAPI()),
-    Github(GithubAPI());
+    Github(GithubAPI()), Gitlab(GitlabAPI());
 }

@@ -29,6 +29,7 @@ enum class PID(val id: String, val protect: Boolean) {
     CurseForgeToken("modpublish.curseforge.token", true),
     CurseForgeStudioToken("modpublish.curseforge.studioToken", true),
     GithubToken("modpublish.github.token", true),
+    GitlabToken("modpublish.gitlab.token", true),
     GithubRepo("modpublish.github.repo", false),
     GithubBranch("modpublish.github.branch", false),
     CommonVersionFormat("modpublish.common.versionFormat", false);

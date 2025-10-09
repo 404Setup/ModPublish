@@ -44,6 +44,9 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
     private lateinit var githubTokenText: JBTextField
     private lateinit var githubTokenLink: ActionLink
 
+    private lateinit var gitlabTokenText: JBTextField
+    private lateinit var gitlabTokenLink: ActionLink
+
     private lateinit var autoProxyCheckBox: JBCheckBox
     private lateinit var proxyTypeComboBox: JComboBox<Proxy.Type>
     private lateinit var proxyAddressText: JBTextField
@@ -96,6 +99,17 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
                     "Create GitHub Token",
                     "https://github.com/settings/personal-access-tokens"
                 ).also { githubTokenLink = it }
+            }
+        )
+
+        formBuilder.addPlatformSection(
+            "GitLab", Icons.Target.Github,
+            FieldConfig.of("Token") { JBTextField().also { gitlabTokenText = it } },
+            FieldConfig.of {
+                createActionLink(
+                    "Create GitLab Token",
+                    "https://gitlab.com/-/user_settings/personal_access_tokens"
+                ).also { gitlabTokenLink = it }
             }
         )
 
@@ -178,6 +192,12 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
         get() = Protect.decryptString(githubTokenText.text)
         set(newText) {
             githubTokenText.text = newText
+        }
+
+    var gitlabTokenTextValue: String
+        get() = Protect.decryptString(gitlabTokenText.text)
+        set(newText) {
+            gitlabTokenText.text = newText
         }
 
     var isAutoProxyEnabled: Boolean
