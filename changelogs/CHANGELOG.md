@@ -1,5 +1,8 @@
 ## v0.0.10
 
+### Change
+- Changelog input box is now scrollable
+
 ### Chore
 - Bump minecraft version list
 

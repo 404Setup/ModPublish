@@ -17,11 +17,13 @@
 package one.pkg.modpublish.ui
 
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.fileTypes.PlainTextFileType
+import com.intellij.lang.Language
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorTextField
+import com.intellij.ui.EditorTextFieldProvider
+import com.intellij.ui.HorizontalScrollBarEditorCustomization
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
@@ -287,11 +289,10 @@ class PublishModDialog(
 
         // Changelog
         formBuilder.addPlatformSection(get("component.name.changelog"), Icons.Static.Clipboard, FieldConfig.of {
-            changelogField = runCatching {
-                EditorTextField("", project, MarkdownFileType.INSTANCE)
-            }.getOrElse {
-                EditorTextField("", project, PlainTextFileType.INSTANCE)
-            }.apply {
+            changelogField = EditorTextFieldProvider.getInstance().getEditorField(
+                Language.ANY, requireNotNull(project), arrayListOf(HorizontalScrollBarEditorCustomization.ENABLED)
+            ).apply {
+                fileType = MarkdownFileType.INSTANCE
                 preferredSize = Dimension(500, 150)
                 minimumSize = Dimension(500, 100)
                 setOneLineMode(false)
