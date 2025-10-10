@@ -27,6 +27,7 @@ data class Version(
 
     companion object {
         private val RELEASE_PATTERN = Regex("^(\\d+)\\.(\\d+)\\.(\\d+)$")
+        private val SHORT_RELEASE_PATTERN = Regex("^(\\d+)\\.(\\d+)$")
         private val PRE_RELEASE_PATTERN = Regex("^(\\d+)\\.(\\d+)\\.(\\d+)-(pre|rc)(\\d+)$")
         private val BETA_PATTERN = Regex("^b(\\d+)\\.(\\d+)\\.(\\d+)$")
         private val SNAPSHOT_PATTERN = Regex("^(\\d{2})w(\\d{2})([a-z])(?:_or_([a-z]))?$")
@@ -44,6 +45,12 @@ data class Version(
             RELEASE_PATTERN.matches(trimmed) -> {
                 val (a, b, c) = RELEASE_PATTERN.find(trimmed)!!.destructured
                 maj = a.toInt(); min = b.toInt(); pat = c.toInt()
+                verType = VersionType.RELEASE
+            }
+
+            SHORT_RELEASE_PATTERN.matches(trimmed) -> {
+                val (a, b) = SHORT_RELEASE_PATTERN.find(trimmed)!!.destructured
+                maj = a.toInt(); min = b.toInt(); pat = 0
                 verType = VersionType.RELEASE
             }
 
@@ -68,11 +75,17 @@ data class Version(
                 verType = VersionType.SNAPSHOT
             }
 
-            else -> { // fallback
+            else -> { // fallback for other formats
                 val parts = trimmed.split(".")
                 maj = parts.getOrNull(0)?.takeWhile { it.isDigit() }?.toIntOrNull() ?: 0
                 min = parts.getOrNull(1)?.takeWhile { it.isDigit() }?.toIntOrNull() ?: 0
                 pat = parts.getOrNull(2)?.takeWhile { it.isDigit() }?.toIntOrNull() ?: 0
+                // Determine type based on structure
+                verType = if (parts.size >= 2 && parts.all { it.matches(Regex("\\d+")) }) {
+                    VersionType.RELEASE
+                } else {
+                    VersionType.UNKNOWN
+                }
             }
         }
 

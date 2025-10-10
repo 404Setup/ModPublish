@@ -22,6 +22,7 @@ object VersionConstraintParser {
     private const val VERSION_PATTERN =
         "\\d+\\.\\d+\\.\\d+(?:-(?:pre|rc)\\d+)?|b\\d+\\.\\d+\\.\\d+|\\d{2}w\\d{2}[a-z](?:_or_[a-z])?|[\\w.-]+"
 
+    private val SIMPLE_VERSION_PATTERN = Regex("^(\\d+(?:\\.\\d+){1,2})$")
     private val EXACT_PATTERN = Regex("^($VERSION_PATTERN)$")
     private val RANGE_PATTERN = Regex("^($VERSION_PATTERN)-($VERSION_PATTERN)$")
     private val EQUAL_PATTERN = Regex("^=($VERSION_PATTERN)$")
@@ -31,11 +32,16 @@ object VersionConstraintParser {
     private val MAVEN_RANGE_PATTERN = Regex("^[\\[(]([\\w.,-]+)[])]$")
     private val COMPOSITE_PATTERN = Regex("^(.+?)\\s+(.+)$")
 
+    @Throws(IllegalArgumentException::class)
     fun parse(constraintStr: String): VersionConstraint {
         val trimmed = constraintStr.trim()
         require(trimmed.isNotEmpty()) { "Version constraint cannot be empty" }
 
-        EXACT_PATTERN.matchEntire(trimmed)?.let { return ExactVersionConstraint(it.groupValues[1]) }
+        // Check for simple version pattern first (e.g., 1.12.2)
+        SIMPLE_VERSION_PATTERN.matchEntire(trimmed)?.let {
+            return ExactVersionConstraint(it.groupValues[1])
+        }
+
         EQUAL_PATTERN.matchEntire(trimmed)?.let { return ExactVersionConstraint(it.groupValues[1]) }
         RANGE_PATTERN.matchEntire(trimmed)?.let {
             val min = Version(it.groupValues[1])
@@ -60,9 +66,13 @@ object VersionConstraintParser {
             }
         }
 
+        // Fallback to generic EXACT_PATTERN for other cases
+        EXACT_PATTERN.matchEntire(trimmed)?.let { return ExactVersionConstraint(it.groupValues[1]) }
+
         throw IllegalArgumentException("Unable to parse version constraint: $constraintStr")
     }
 
+    @Throws(IllegalArgumentException::class)
     private fun parseComparison(operator: String, versionStr: String, original: String): VersionConstraint {
         val version = Version(versionStr)
         return when (operator) {

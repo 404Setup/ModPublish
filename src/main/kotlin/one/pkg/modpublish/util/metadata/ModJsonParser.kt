@@ -31,25 +31,22 @@ class ModJsonParser(inputStream: InputStream) {
         json = JsonParser.getJsonObject(reader)
     }
 
-    fun getFabric(): LocalModInfo? = try {
+    @Throws(AssertionError::class, IllegalStateException::class)
+    fun getFabric(): LocalModInfo =
         LocalModInfo(
             json.get("name").asString, json.get("version").asString,
             json.get("depends").asJsonObject.get("minecraft").asString
         )
-    } catch (_: Exception) {
-        null
-    }
 
-    fun getLiteMod(): LocalModInfo? = try {
+    @Throws(AssertionError::class, IllegalStateException::class)
+    fun getLiteMod(): LocalModInfo =
         LocalModInfo(
             json.get("name").asString, json.get("version").asString,
             json.get("mcversion").asString
         )
-    } catch (_: Exception) {
-        null
-    }
 
-    fun getRiftMod(): LocalModInfo? = try {
+    @Throws(AssertionError::class, IllegalStateException::class)
+    fun getRiftMod(): LocalModInfo =
         LocalModInfo(
             json.get("name").asString, json.get("version").let {
                 try {
@@ -60,17 +57,13 @@ class ModJsonParser(inputStream: InputStream) {
             },
             "1.13"
         )
-    } catch (_: Exception) {
-        null
-    }
 
-    fun getMcMod(): LocalModInfo? = try {
+    @Throws(AssertionError::class, IllegalStateException::class)
+    fun getMcMod(): LocalModInfo {
         val obj = json.asJsonArray.get(0).asJsonObject
-        LocalModInfo(
+        return LocalModInfo(
             obj.get("name").asString, obj.get("version").asString,
             obj.get("mcversion").asString
         )
-    } catch (_: Exception) {
-        null
     }
 }

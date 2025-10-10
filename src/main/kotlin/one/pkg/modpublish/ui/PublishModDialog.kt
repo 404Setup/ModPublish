@@ -18,6 +18,7 @@ package one.pkg.modpublish.ui
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.lang.Language
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
@@ -73,6 +74,10 @@ class PublishModDialog(
     private var jarFiles: Array<VirtualFile>
 ) : BaseDialogWrapper(project, true) {
 
+    companion object {
+        private val LOG = Logger.getInstance(Companion::class.java)
+    }
+
     private val modTypes: Map<VirtualFile, List<ModType>> =
         jarFiles.associateWith { it.toModTypes() }
 
@@ -120,7 +125,14 @@ class PublishModDialog(
             ?.run { getMod(primaryFile).also { modInfo = it } }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
-            ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }
+            ?.let {
+                try {
+                    VersionConstraintParser.parse(it)
+                } catch (throwable: Exception) {
+                    LOG.error(throwable)
+                    null
+                }
+            }
     }
 
     private fun loadConfigData() {

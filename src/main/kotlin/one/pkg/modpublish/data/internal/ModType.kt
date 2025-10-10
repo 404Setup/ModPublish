@@ -16,6 +16,7 @@
  */
 package one.pkg.modpublish.data.internal
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import one.pkg.modpublish.util.io.FileAPI.isJavaAgent
 import one.pkg.modpublish.util.io.FileAPI.open
@@ -33,46 +34,66 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     Fabric("fabric.mod.json", "Fabric", 7499) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
     Quilt("quilt.mod.json", "Quilt", 9153) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
     Forge("META-INF/mods.toml", "Forge", 7498) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar -> jar?.let { getForgeMod(it) } }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
     NeoForge("META-INF/neoforge.mods.toml", "NeoForge", 10150) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar -> jar?.let { getForgeMod(it) } }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
     Rift("riftmod.json", "Rift", 7500) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar ->
-                jar?.let { getMCMod(it) ?: getRiftMod(it) }
+                jar?.let {
+                    try {
+                        getMCMod(it)
+                    } catch (e: Exception) {
+                        LOG.error(e)
+                        getRiftMod(it)
+                    }
+                }
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
     LiteLoader("litemod.json", "LiteLoader", -1) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar ->
-                jar?.let { getMCMod(it) ?: getLiteMod(it) }
+                jar?.let {
+                    try {
+                        getMCMod(it)
+                    } catch (e: Exception) {
+                        LOG.error(e)
+                        getLiteMod(it)
+                    }
+                }
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
     },
@@ -102,7 +123,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         file.use { jar ->
             getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getFabric() }
         }
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        LOG.error(e)
         null
     }
 
@@ -110,7 +132,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         file.use { jar ->
             getStream(jar).use { stream -> stream?.toModTomlParser()?.get() }
         }
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        LOG.error(e)
         null
     }
 
@@ -118,7 +141,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         file.use { jar ->
             getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
         }
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        LOG.error(e)
         null
     }
 
@@ -126,7 +150,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         file.use { jar ->
             getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getRiftMod() }
         }
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        LOG.error(e)
         null
     }
 
@@ -143,10 +168,12 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     companion object {
         val valuesList = entries
+        private val LOG = Logger.getInstance(ModType.Companion::class.java)
 
         fun File.toModType(): ModType? = try {
             this.toJarFile()?.toModType()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             null
         }
 
@@ -160,7 +187,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
         fun File.toModTypes(): List<ModType> = try {
             this.toJarFile().use { jar -> valuesList.filter { it.getEntry(jar!!) != null } }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            LOG.error(e)
             emptyList()
         }
 

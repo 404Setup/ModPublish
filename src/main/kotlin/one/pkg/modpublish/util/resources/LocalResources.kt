@@ -20,9 +20,11 @@ import com.google.gson.reflect.TypeToken
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
+import one.pkg.modpublish.exception.ResourcesNotFoundException
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.lang.reflect.Type
 
@@ -30,22 +32,33 @@ object LocalResources {
     val dpType: Type = object : TypeToken<List<DependencyInfo>>() {}.type
     private val mvType = object : TypeToken<List<MinecraftVersion>>() {}.type
 
-    fun getSupportedInfo(): SupportedInfo = runCatching {
-        LocalResources::class.java.getResourceAsStream("/META-INF/supported.info.json")?.use { stream ->
+    @Throws(
+        ResourcesNotFoundException::class,
+        FileNotFoundException::class,
+        SecurityException::class,
+        NullPointerException::class
+    )
+    fun getSupportedInfo(): SupportedInfo =
+        LocalResources.javaClass.getResourceAsStream("/META-INF/supported.info.json")?.use { stream ->
             InputStreamReader(stream).use { reader ->
                 reader.fromJson(SupportedInfo::class.java)
             }
-        } ?: throw Exception("supported.info.json not found")
-    }.getOrElse { throw RuntimeException(it) }
+        } ?: throw ResourcesNotFoundException("supported.info.json not found")
 
-    fun getMinecraftVersions(): List<MinecraftVersion> = runCatching {
+    @Throws(
+        ResourcesNotFoundException::class,
+        FileNotFoundException::class,
+        SecurityException::class,
+        NullPointerException::class
+    )
+    fun getMinecraftVersions(): List<MinecraftVersion> {
         val localFile = "minecraft.version.json".getUserDataFile()
         val stream = if (localFile.exists()) FileInputStream(localFile)
-        else LocalResources::class.java.getResourceAsStream("/META-INF/minecraft.version.json")
-        stream?.use {
+        else LocalResources.javaClass.getResourceAsStream("/META-INF/minecraft.version.json")
+        return stream?.use {
             InputStreamReader(it).use { reader ->
                 reader.fromJson<List<MinecraftVersion>>(mvType)
             }
-        } ?: throw Exception("minecraft.version.json not found")
-    }.getOrElse { throw RuntimeException(it) }
+        } ?: throw ResourcesNotFoundException("minecraft.version.json not found")
+    }
 }
