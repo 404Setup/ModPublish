@@ -58,6 +58,21 @@ object FileAPI {
         }
     }
 
+    fun File.isJavaAgent(): Boolean =
+        toJarFile()?.isJavaAgent() ?: false
+
+    fun JarFile.isJavaAgent(): Boolean = try {
+        this.use { jar ->
+            jar.manifest?.mainAttributes?.let { attrs ->
+                attrs.getValue("Premain-Class") != null ||
+                        attrs.getValue("Agent-Class") != null ||
+                        attrs.getValue("Launcher-Agent-Class") != null
+            } ?: false
+        }
+    } catch (_: Exception) {
+        false
+    }
+
     fun String.getUserData(): Path {
         return Paths.get(System.getProperty("user.home"), ".modpublish", this)
     }

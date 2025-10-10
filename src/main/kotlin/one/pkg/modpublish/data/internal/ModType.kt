@@ -17,6 +17,7 @@
 package one.pkg.modpublish.data.internal
 
 import com.intellij.openapi.vfs.VirtualFile
+import one.pkg.modpublish.util.io.FileAPI.isJavaAgent
 import one.pkg.modpublish.util.io.FileAPI.open
 import one.pkg.modpublish.util.io.FileAPI.toFile
 import one.pkg.modpublish.util.io.FileAPI.toJarFile
@@ -30,26 +31,37 @@ import java.util.zip.ZipEntry
 
 enum class ModType(val fileName: String, val displayName: String, val curseForgeVersion: Int) {
     Fabric("fabric.mod.json", "Fabric", 7499) {
-        override fun getMod(file: File): LocalModInfo? = getFabricMod(file)
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
+        } catch (_: Exception) {
+            null
+        }
     },
     Quilt("quilt.mod.json", "Quilt", 9153) {
-        override fun getMod(file: File): LocalModInfo? = getFabricMod(file)
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
+        } catch (_: Exception) {
+            null
+        }
     },
     Forge("META-INF/mods.toml", "Forge", 7498) {
-        override fun getMod(file: File): LocalModInfo? = getForgeMod(file)
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar -> jar?.let { getForgeMod(it) } }
+        } catch (_: Exception) {
+            null
+        }
     },
     NeoForge("META-INF/neoforge.mods.toml", "NeoForge", 10150) {
-        override fun getMod(file: File): LocalModInfo? = getForgeMod(file)
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar -> jar?.let { getForgeMod(it) } }
+        } catch (_: Exception) {
+            null
+        }
     },
     Rift("riftmod.json", "Rift", 7500) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar ->
-                jar?.getEntry("mcmod.info")?.let {
-                    jar.open(it).use { stream ->
-                        stream?.let { it1 -> ModJsonParser(it1) }?.getMcMod()
-                    }
-                } ?: jar?.let { getStream(it) }
-                    .use { stream -> stream?.let { ModJsonParser(it) }?.getRiftMod() }
+                jar?.let { getMCMod(it) ?: getRiftMod(it) }
             }
         } catch (_: Exception) {
             null
@@ -58,19 +70,20 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     LiteLoader("litemod.json", "LiteLoader", -1) {
         override fun getMod(file: File): LocalModInfo? = try {
             file.toJarFile().use { jar ->
-                jar?.getEntry("mcmod.info")?.let {
-                    jar.open(it).use { stream ->
-                        stream?.let { it1 -> ModJsonParser(it1) }?.getMcMod()
-                    }
-                } ?: jar?.let { getStream(it) }
-                    .use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
+                jar?.let { getMCMod(it) ?: getLiteMod(it) }
             }
         } catch (_: Exception) {
             null
         }
     },
     JavaAgent("", "JavaAgent", -1) {
-        override fun getMod(file: File): LocalModInfo? = null
+        override fun getMod(file: File): LocalModInfo? = if (file.isJavaAgent()) {
+            LocalModInfo(
+                name = file.nameWithoutExtension,
+                version = "unknown",
+                versionRange = "1.0.0"
+            )
+        } else null
 
         override fun getID(): String = "java-agent"
     };
@@ -85,33 +98,41 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     open fun getID(): String = displayName.lowercase(Locale.ENGLISH)
 
-    protected fun getFabricMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.getFabric() }
+    protected fun getFabricMod(file: JarFile): LocalModInfo? = try {
+        file.use { jar ->
+            getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getFabric() }
         }
     } catch (_: Exception) {
         null
     }
 
-    protected fun getForgeMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.toModTomlParser()?.get() }
+    protected fun getForgeMod(file: JarFile): LocalModInfo? = try {
+        file.use { jar ->
+            getStream(jar).use { stream -> stream?.toModTomlParser()?.get() }
         }
     } catch (_: Exception) {
         null
     }
 
-    protected fun getLiteMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
+    protected fun getLiteMod(file: JarFile): LocalModInfo? = try {
+        file.use { jar ->
+            getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
         }
     } catch (_: Exception) {
         null
     }
 
-    protected fun getMCMod(file: File): LocalModInfo? = try {
-        file.toJarFile().use { jar ->
-            jar?.getEntry("mcmod.info")?.let { jar.open(it) }
+    protected fun getRiftMod(file: JarFile): LocalModInfo? = try {
+        file.use { jar ->
+            getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getRiftMod() }
+        }
+    } catch (_: Exception) {
+        null
+    }
+
+    protected fun getMCMod(file: JarFile): LocalModInfo? = try {
+        file.use { jar ->
+            jar.getEntry("mcmod.info")?.let { jar.open(it) }
                 .use { stream -> stream?.let { ModJsonParser(it) }?.getMcMod() }
         }
     } catch (_: Exception) {
@@ -124,18 +145,21 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         val valuesList = entries
 
         fun File.toModType(): ModType? = try {
-            JarFile(this).toModType()
+            this.toJarFile()?.toModType()
         } catch (_: Exception) {
             null
         }
 
         fun JarFile.toModType(): ModType? =
-            valuesList.firstOrNull { it.fileName.isNotEmpty() && it.getEntry(this) != null }
+            valuesList.firstOrNull {
+                if (it == JavaAgent && this.isJavaAgent()) return@firstOrNull true
+                it.getEntry(this) != null
+            }
 
         fun String.toModType(): ModType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
 
         fun File.toModTypes(): List<ModType> = try {
-            JarFile(this).use { jar -> valuesList.filter { it.getEntry(jar) != null } }
+            this.toJarFile().use { jar -> valuesList.filter { it.getEntry(jar!!) != null } }
         } catch (_: Exception) {
             emptyList()
         }

@@ -71,7 +71,7 @@ class PublishModAction : AnAction() {
         var shouldEnable = false
 
         if (file != null && !file.isDirectory) {
-            val isJarFile = file.name.endsWith(".jar")
+            val isJarFile = file.name.endsWith(".jar") || file.name.endsWith(".litemod")
             if (isJarFile) {
                 try {
                     val modType = file.toFile().toModType()
