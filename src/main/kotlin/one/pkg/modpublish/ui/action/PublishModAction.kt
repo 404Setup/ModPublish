@@ -38,8 +38,9 @@ class PublishModAction : AnAction() {
         if (file.isNotEmpty()) {
             val list: MutableList<VirtualFile> = ArrayList()
             for (virtualFile in file) {
-                if (!virtualFile.isDirectory && virtualFile.name
-                        .endsWith(".jar") && virtualFile.toFile().toModType() != null
+                if (!virtualFile.isDirectory &&
+                    (virtualFile.name.endsWith(".jar") || virtualFile.name.endsWith(".litemod")) &&
+                    virtualFile.toFile().toModType() != null
                 ) {
                     list.add(virtualFile)
                 }

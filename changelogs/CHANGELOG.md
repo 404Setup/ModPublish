@@ -3,6 +3,7 @@
 ### Feature
 - Reimplement Gitlab
 - Support sync README to Modrinth
+- Support LiteLoader and JavaAgent
 
 ### Change
 - Changelog input box is now scrollable

@@ -116,7 +116,7 @@ class PublishModDialog(
 
     private fun updateParser(primaryFile: VirtualFile) {
         parser = modTypes[primaryFile]
-            ?.firstOrNull { it != ModType.Rift }
+            ?.firstOrNull { it != ModType.JavaAgent }
             ?.run {
                 modInfo = getMod(primaryFile)
                 modInfo
@@ -561,13 +561,13 @@ class PublishModDialog(
 
         try {
             val curseForgeTask =
-                createPublishTask(TargetType.CurseForge.api, curseforgeCheckBox, data)
+                createPublishTask(PublishTarget.CurseForge.api, curseforgeCheckBox, data)
             val modrinthTask =
-                createPublishTask(TargetType.Modrinth.api, modrinthCheckBox, data)
+                createPublishTask(PublishTarget.Modrinth.api, modrinthCheckBox, data)
             val githubTask =
-                createPublishTask(TargetType.Github.api, githubCheckBox, data)
+                createPublishTask(PublishTarget.Github.api, githubCheckBox, data)
             val gitlabTask =
-                createPublishTask(TargetType.Gitlab.api, gitlabCheckBox, data)
+                createPublishTask(PublishTarget.Gitlab.api, gitlabCheckBox, data)
 
             runBlocking {
                 joinResult(results, curseForgeTask, modrinthTask, githubTask, gitlabTask)

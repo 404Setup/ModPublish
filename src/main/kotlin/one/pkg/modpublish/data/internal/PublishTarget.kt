@@ -23,7 +23,7 @@ import one.pkg.modpublish.api.GithubAPI
 import one.pkg.modpublish.api.GitlabAPI
 import one.pkg.modpublish.api.ModrinthAPI
 
-enum class TargetType(val api: API) {
+enum class PublishTarget(val api: API) {
     Modrinth(ModrinthAPI()), CurseForge(CurseForgeAPI()),
     Github(GithubAPI()), Gitlab(GitlabAPI()),
     Empty(EmptyAPI());

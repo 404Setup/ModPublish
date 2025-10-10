@@ -42,7 +42,37 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         override fun getMod(file: File): LocalModInfo? = getForgeMod(file)
     },
     Rift("riftmod.json", "Rift", 7500) {
-        override fun getMod(file: File): LocalModInfo? = null // RiftMod version reading not supported
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar ->
+                jar?.getEntry("mcmod.info")?.let {
+                    jar.open(it).use { stream ->
+                        stream?.let { it1 -> ModJsonParser(it1) }?.getMcMod()
+                    }
+                } ?: jar?.let { getStream(it) }
+                    .use { stream -> stream?.let { ModJsonParser(it) }?.getRiftMod() }
+            }
+        } catch (_: Exception) {
+            null
+        }
+    },
+    LiteLoader("litemod.json", "LiteLoader", -1) {
+        override fun getMod(file: File): LocalModInfo? = try {
+            file.toJarFile().use { jar ->
+                jar?.getEntry("mcmod.info")?.let {
+                    jar.open(it).use { stream ->
+                        stream?.let { it1 -> ModJsonParser(it1) }?.getMcMod()
+                    }
+                } ?: jar?.let { getStream(it) }
+                    .use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
+            }
+        } catch (_: Exception) {
+            null
+        }
+    },
+    JavaAgent("", "JavaAgent", -1) {
+        override fun getMod(file: File): LocalModInfo? = null
+
+        override fun getID(): String = "java-agent"
     };
 
     abstract fun getMod(file: File): LocalModInfo?
@@ -53,11 +83,11 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { jar.open(it) }
 
-    fun getID(): String = displayName.lowercase(Locale.ENGLISH)
+    open fun getID(): String = displayName.lowercase(Locale.ENGLISH)
 
     protected fun getFabricMod(file: File): LocalModInfo? = try {
         file.toJarFile().use { jar ->
-            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.get() }
+            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.getFabric() }
         }
     } catch (_: Exception) {
         null
@@ -66,6 +96,23 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     protected fun getForgeMod(file: File): LocalModInfo? = try {
         file.toJarFile().use { jar ->
             jar?.let { getStream(it) }.use { stream -> stream?.toModTomlParser()?.get() }
+        }
+    } catch (_: Exception) {
+        null
+    }
+
+    protected fun getLiteMod(file: File): LocalModInfo? = try {
+        file.toJarFile().use { jar ->
+            jar?.let { getStream(it) }.use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
+        }
+    } catch (_: Exception) {
+        null
+    }
+
+    protected fun getMCMod(file: File): LocalModInfo? = try {
+        file.toJarFile().use { jar ->
+            jar?.getEntry("mcmod.info")?.let { jar.open(it) }
+                .use { stream -> stream?.let { ModJsonParser(it) }?.getMcMod() }
         }
     } catch (_: Exception) {
         null
@@ -82,7 +129,8 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
             null
         }
 
-        fun JarFile.toModType(): ModType? = valuesList.firstOrNull { it.getEntry(this) != null }
+        fun JarFile.toModType(): ModType? =
+            valuesList.firstOrNull { it.fileName.isNotEmpty() && it.getEntry(this) != null }
 
         fun String.toModType(): ModType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
 

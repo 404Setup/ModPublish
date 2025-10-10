@@ -31,14 +31,46 @@ class ModJsonParser(inputStream: InputStream) {
         json = JsonParser.getJsonObject(reader)
     }
 
-    fun get(): LocalModInfo? {
-        return try {
-            LocalModInfo(
-                json.get("name").asString, json.get("version").asString,
-                json.get("depends").asJsonObject.get("minecraft").asString
-            )
-        } catch (_: Exception) {
-            null
-        }
+    fun getFabric(): LocalModInfo? = try {
+        LocalModInfo(
+            json.get("name").asString, json.get("version").asString,
+            json.get("depends").asJsonObject.get("minecraft").asString
+        )
+    } catch (_: Exception) {
+        null
+    }
+
+    fun getLiteMod(): LocalModInfo? = try {
+        LocalModInfo(
+            json.get("name").asString, json.get("version").asString,
+            json.get("mcversion").asString
+        )
+    } catch (_: Exception) {
+        null
+    }
+
+    fun getRiftMod(): LocalModInfo? = try {
+        LocalModInfo(
+            json.get("name").asString, json.get("version").let {
+                try {
+                    it.asString
+                } catch (_: Exception) {
+                    "1.0.0"
+                }
+            },
+            "1.13"
+        )
+    } catch (_: Exception) {
+        null
+    }
+
+    fun getMcMod(): LocalModInfo? = try {
+        val obj = json.asJsonArray.get(0).asJsonObject
+        LocalModInfo(
+            obj.get("name").asString, obj.get("version").asString,
+            obj.get("mcversion").asString
+        )
+    } catch (_: Exception) {
+        null
     }
 }

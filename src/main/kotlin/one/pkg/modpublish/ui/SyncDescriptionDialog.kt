@@ -22,7 +22,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.JBUI
 import one.pkg.modpublish.data.internal.Info
-import one.pkg.modpublish.data.internal.TargetType
+import one.pkg.modpublish.data.internal.PublishTarget
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
 import one.pkg.modpublish.util.io.FileAPI.toFile
@@ -41,7 +41,7 @@ class SyncDescriptionDialog(
 
     private lateinit var modrinthID: String
     private lateinit var modrinthToken: Info
-    private lateinit var targetTypeCombo: ComboBox<TargetType>
+    private lateinit var publishTargetCombo: ComboBox<PublishTarget>
 
     init {
         title = "action.modpublish.action.patch-description.text"
@@ -57,21 +57,21 @@ class SyncDescriptionDialog(
         panel.add(getJBLabel("component.name.targets"), gbc)
 
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-        targetTypeCombo = ComboBox(arrayOf(TargetType.Modrinth)).apply {
+        publishTargetCombo = ComboBox(arrayOf(PublishTarget.Modrinth)).apply {
             renderer = object : DefaultListCellRenderer() {
                 override fun getListCellRendererComponent(
                     list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean
                 ): Component {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
-                    if (value is TargetType) text = value.api.id
+                    if (value is PublishTarget) text = value.api.id
                     return this
                 }
             }
 
             modrinthID = PID.ModrinthModID.get(project)
             modrinthToken = PID.ModrinthToken.getProtect(project)
-            if (modrinthID.isEmpty() || modrinthToken.failed) removeItem(TargetType.Modrinth)
-            if (itemCount < 1) addItem(TargetType.Empty)
+            if (modrinthID.isEmpty() || modrinthToken.failed) removeItem(PublishTarget.Modrinth)
+            if (itemCount < 1) addItem(PublishTarget.Empty)
         }.also {
             panel.add(it, gbc)
         }
@@ -80,8 +80,8 @@ class SyncDescriptionDialog(
     }
 
     override fun doOKAction() {
-        val selectedType = targetTypeCombo.selectedItem as TargetType
-        if (selectedType == TargetType.Empty) {
+        val selectedType = publishTargetCombo.selectedItem as PublishTarget
+        if (selectedType == PublishTarget.Empty) {
             showFailedDialogRaw(
                 selectedType.api.id,
                 get("title.failed")
