@@ -117,10 +117,7 @@ class PublishModDialog(
     private fun updateParser(primaryFile: VirtualFile) {
         parser = modTypes[primaryFile]
             ?.firstOrNull { it != ModType.JavaAgent }
-            ?.run {
-                modInfo = getMod(primaryFile)
-                modInfo
-            }
+            ?.run { getMod(primaryFile).also { modInfo = it } }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
             ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }
@@ -292,15 +289,14 @@ class PublishModDialog(
 
         // Changelog
         formBuilder.addPlatformSection(get("component.name.changelog"), Icons.Static.Clipboard, FieldConfig.of {
-            changelogField = EditorTextFieldProvider.getInstance().getEditorField(
+            EditorTextFieldProvider.getInstance().getEditorField(
                 Language.ANY, requireNotNull(project), arrayListOf(HorizontalScrollBarEditorCustomization.ENABLED)
             ).apply {
                 fileType = MarkdownFileType.INSTANCE
                 preferredSize = Dimension(500, 150)
                 minimumSize = Dimension(500, 100)
                 setOneLineMode(false)
-            }
-            changelogField
+            }.also { changelogField = it }
         })
 
         // Dependency manager

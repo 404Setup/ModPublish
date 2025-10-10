@@ -53,7 +53,6 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         init()
         setOKButtonText(get("button.save"))
         setCancelButtonText(get("button.cancel"))
-        //getContentPanel().setPreferredSize(new Dimension(500, 400));
     }
 
     override fun createCenterPanel(): JComponent {
@@ -67,72 +66,44 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
 
         formBuilder.addPlatformSection(
             "Common", Icons.Static.Book,
-            of(get("component.name.common.version-format")) {
-                commonVersionFormatField = createTextField()
-                commonVersionFormatField
-            }
+            of(get("component.name.common.version-format")) { createTextField().also { commonVersionFormatField = it } }
         )
 
         formBuilder.addPlatformSection(
             "Modrinth", Icons.Target.Modrinth,
-            of(token) {
-                modrinthTokenField = createTextField()
-                modrinthTokenField
-            },
-            of(modIdLabel) {
-                modrinthModIDField = createTextField()
-                modrinthModIDField
-            }
+            of(token) { createTextField().also { modrinthTokenField = it } },
+            of(modIdLabel) { createTextField().also { modrinthModIDField = it } }
         )
 
         formBuilder.addPlatformSection(
             "CurseForge", Icons.Target.CurseForge,
-            of(token) {
-                curseforgeTokenField = createTextField()
-                curseforgeTokenField
-            },
-            of(studioToken) {
-                curseforgeStudioTokenField = createTextField()
-                curseforgeStudioTokenField
-            },
-            of(modIdLabel) {
-                curseforgeModIDField = createTextField()
-                curseforgeModIDField
-            }
+            of(token) { createTextField().also { curseforgeTokenField = it } },
+            of(studioToken) { createTextField().also { curseforgeStudioTokenField = it } },
+            of(modIdLabel) { createTextField().also { curseforgeModIDField = it } }
         )
 
         formBuilder.addPlatformSection(
             "GitHub", Icons.Target.Github,
-            of(token) {
-                githubTokenField = createTextField()
-                githubTokenField
-            },
+            of(token) { createTextField().also { githubTokenField = it } },
             of(repoLabel) {
-                githubRepoField = createTextField()
-                githubRepoField.setToolTipText(get("dialog.modpublish.config-project.repo.tooltips"))
-                githubRepoField
+                createTextField().also {
+                    it.setToolTipText(get("dialog.modpublish.config-project.repo.tooltips"))
+                    githubRepoField = it
+                }
             },
             of(branchLabel) {
-                githubBranchField = createTextField()
-                githubBranchField.setToolTipText(get("dialog.modpublish.config-project.branch.tooltips"))
-                githubBranchField
+                createTextField().also {
+                    it.setToolTipText(get("dialog.modpublish.config-project.branch.tooltips"))
+                    githubBranchField = it
+                }
             }
         )
 
         formBuilder.addPlatformSection(
             "GitLab", Icons.Target.Gitlab,
-            of(token) {
-                gitlabTokenField = createTextField()
-                gitlabTokenField
-            },
-            of (repoLabel) {
-                gitlabRepoField = createTextField()
-                gitlabRepoField
-            },
-            of(branchLabel) {
-                gitlabBranchField = createTextField()
-                gitlabBranchField
-            }
+            of(token) { createTextField().also { gitlabTokenField = it } },
+            of(repoLabel) { createTextField().also { gitlabRepoField = it } },
+            of(branchLabel) { createTextField().also { gitlabBranchField = it } }
         )
 
         autoFillFields()
