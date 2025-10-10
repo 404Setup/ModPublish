@@ -2,6 +2,7 @@
 
 ### Feature
 - Reimplement Gitlab
+- Support sync README to Modrinth
 
 ### Change
 - Changelog input box is now scrollable

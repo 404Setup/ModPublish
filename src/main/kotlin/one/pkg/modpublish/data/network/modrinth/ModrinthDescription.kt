@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package one.pkg.modpublish.data.internal
 
-import one.pkg.modpublish.api.API
-import one.pkg.modpublish.api.CurseForgeAPI
-import one.pkg.modpublish.api.EmptyAPI
-import one.pkg.modpublish.api.GithubAPI
-import one.pkg.modpublish.api.GitlabAPI
-import one.pkg.modpublish.api.ModrinthAPI
+package one.pkg.modpublish.data.network.modrinth
 
-enum class TargetType(val api: API) {
-    Modrinth(ModrinthAPI()), CurseForge(CurseForgeAPI()),
-    Github(GithubAPI()), Gitlab(GitlabAPI()),
-    Empty(EmptyAPI());
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import one.pkg.modpublish.util.io.JsonParser.toJson
+
+data class ModrinthDescription(val body: String) {
+    companion object {
+        fun createRequest(body: String): RequestBody =
+            ModrinthDescription(body).toJson().toRequestBody("application/json; charset=utf-8".toMediaType())
+    }
 }

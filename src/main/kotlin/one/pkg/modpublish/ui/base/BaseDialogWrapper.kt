@@ -37,7 +37,7 @@ import javax.swing.text.AbstractDocument
 
 @Suppress("unused")
 abstract class BaseDialogWrapper(
-    val project: Project? = null,
+    open val project: Project? = null,
     canBeParent: Boolean = false
 ) : DialogWrapper(project, canBeParent) {
 

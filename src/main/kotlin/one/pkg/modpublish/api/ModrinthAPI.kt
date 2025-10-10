@@ -26,6 +26,7 @@ import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
 import one.pkg.modpublish.data.internal.RequestStatus
 import one.pkg.modpublish.data.network.modrinth.ModrinthData
+import one.pkg.modpublish.data.network.modrinth.ModrinthDescription
 import one.pkg.modpublish.data.network.modrinth.ProjectRelation
 import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.settings.properties.PID
@@ -94,6 +95,25 @@ class ModrinthAPI : API() {
             }
         } catch (e: IOException) {
             ModInfo.of(e.message)
+        }
+    }
+
+    override fun patchDescription(
+        modid: String,
+        body: String,
+        project: Project
+    ): PublishResult {
+        return try {
+            val request = getJsonRequest(getRequestBuilder("project/$modid", project))
+                .patch(ModrinthDescription.createRequest(body))
+                .build()
+
+            client.newCall(request).execute().use { resp ->
+                getStatus(resp)?.let { return PublishResult.create(this, it) }
+                PublishResult.EMPTY
+            }
+        } catch (e: IOException) {
+            PublishResult.create(this, e.message)
         }
     }
 

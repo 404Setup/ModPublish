@@ -55,6 +55,7 @@ abstract class API {
         } catch (_: Exception) {
             return "HTTP " + response.code
         }
+        if (response.code == 204) return null
         val ct = getContentType(response)
         if (ct.isEmpty || !ct.get().contains("application/json")) return Lang.get(
             "api.common.err.format",
@@ -66,6 +67,9 @@ abstract class API {
     abstract fun createVersion(data: PublishData, project: Project): PublishResult
 
     abstract fun getModInfo(modid: String, project: Project): ModInfo
+
+    open fun patchDescription(modid: String, body: String, project: Project): PublishResult =
+        PublishResult.create(this, "Unsupported operation: patchDescription")
 
     companion object {
         val baseRequestBuilder: Request.Builder
