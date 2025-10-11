@@ -45,8 +45,12 @@ object FileAPI {
         return this.path.toJarFile()
     }
 
-    fun File.toJarFile(): JarFile? {
-        return this.path.toJarFile()
+    fun File.toJarFile(): JarFile? = try {
+        if (this.exists() && this.extension in arrayOf("jar", "litemod")) {
+            JarFile(this)
+        } else null
+    } catch (_: Exception) {
+        null
     }
 
     fun String.toJarFile(): JarFile? {

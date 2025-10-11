@@ -165,7 +165,9 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         private val LOG = Logger.getInstance(ModType.Companion::class.java)
 
         fun File.toModType(): ModType? = try {
-            this.toJarFile()?.toModType()
+            this.toJarFile()?.use { jar ->
+                jar.toModType()
+            }
         } catch (e: Exception) {
             LOG.error(e)
             null
@@ -180,7 +182,11 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         fun String.toModType(): ModType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
 
         fun File.toModTypes(): List<ModType> = try {
-            this.toJarFile().use { jar -> valuesList.filter { it.getEntry(jar!!) != null } }
+            if (this.exists() && this.extension in arrayOf("jar", "litemod")) {
+                ZipFile(this).use { zip ->
+                    valuesList.filter { it.getEntry(zip) != null }
+                }
+            } else emptyList()
         } catch (e: Exception) {
             LOG.error(e)
             emptyList()
