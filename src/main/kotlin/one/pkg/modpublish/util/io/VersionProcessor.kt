@@ -31,6 +31,7 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import kotlin.math.min
 
+@Suppress("UNUSED")
 object VersionProcessor {
     private val LOG = Logger.getInstance(VersionProcessor::class.java)
     private const val MOJANG_URL = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"

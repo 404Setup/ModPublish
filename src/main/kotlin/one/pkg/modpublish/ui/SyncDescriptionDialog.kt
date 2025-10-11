@@ -53,7 +53,7 @@ class SyncDescriptionDialog(
         val gbc = GridBagConstraints().apply { insets = JBUI.insets(5); anchor = GridBagConstraints.WEST }
 
         // Dependency type
-        gbc.gridx = 0;
+        gbc.gridx = 0
         panel.add(getJBLabel("component.name.targets"), gbc)
 
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0

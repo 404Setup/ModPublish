@@ -125,14 +125,7 @@ class PublishModDialog(
             ?.run { getMod(primaryFile).also { modInfo = it } }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
-            ?.let {
-                try {
-                    VersionConstraintParser.parse(it)
-                } catch (throwable: Exception) {
-                    LOG.error(throwable)
-                    null
-                }
-            }
+            ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }
     }
 
     private fun loadConfigData() {
@@ -344,8 +337,11 @@ class PublishModDialog(
     }
 
     private fun loadModInfo(current: VirtualFile) {
+        LOG.info("Start load mod info: ${current.name}")
         val modType = modTypes[current]?.firstOrNull()
+        if (modType != null) LOG.info("Loading mod info: ${modType.name}")
         val versionNameFormat = PID.CommonVersionFormat.get(requireNotNull(project))
+        if (versionNameFormat.isNotEmpty()) LOG.info("Loading versionNameFormat: $versionNameFormat")
 
         val (version, versionName) = modInfo?.let { info ->
             val lowVersion = parser?.lowVersion.orEmpty()
@@ -362,6 +358,7 @@ class PublishModDialog(
 
             v to name
         } ?: run {
+            LOG.info("Using default rules")
             val v = current.extractVersionNumber()
             v to current.nameWithoutExtension
         }

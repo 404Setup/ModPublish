@@ -28,10 +28,6 @@ object Properties {
         return PropertiesComponent.getInstance(project)
     }
 
-    fun getProtectValue(project: Project, dataKey: PID): Info {
-        return getProtectValue(getPropertiesComponent(project), dataKey)
-    }
-
     fun getProtectValue(properties: PropertiesComponent, dataKey: PID): Info {
         val v = dataKey.get(properties)
         if (v.isBlank()) {
@@ -47,14 +43,10 @@ object Properties {
         }
         val r = Protect.decryptString(v, HardwareFingerprint.secureProjectKey)
         return if (r.isBlank() || r == v) {
-            Info.of(r, true, false)
+            Info.of(data = r, failed = true, globalData = false)
         } else {
             Info.of(r)
         }
-    }
-
-    fun setProtectValue(project: Project, dataKey: String, data: String) {
-        setProtectValue(getPropertiesComponent(project), dataKey, data)
     }
 
     fun setProtectValue(properties: PropertiesComponent, dataKey: String, data: String) {
@@ -63,10 +55,6 @@ object Properties {
             dataKey,
             if (data.isBlank()) null else Protect.encryptString(data, HardwareFingerprint.secureProjectKey)
         )
-    }
-
-    fun getProperties(properties: PropertiesComponent): Property {
-        return Property.getInstance(properties)
     }
 
     fun getProperties(project: Project): Property {

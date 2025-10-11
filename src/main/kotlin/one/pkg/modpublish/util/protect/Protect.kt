@@ -28,6 +28,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
+@Suppress("UNUSED")
 object Protect {
     private const val GCM_IV_LENGTH = 12
     private const val GCM_TAG_LENGTH = 16

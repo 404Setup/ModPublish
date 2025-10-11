@@ -25,8 +25,8 @@ open class StateBase {
     fun getDecryptedToken(encryptedToken: String): Info {
         if (encryptedToken.isEmpty()) return Info.INSTANCE
         val v = decryptString(encryptedToken, HardwareFingerprint.secureProjectKey)
-        if (encryptedToken == v) return Info.of(v, true, true)
-        return Info.of(v, false, true)
+        if (encryptedToken == v) return Info.of(data = v, failed = true, globalData = true)
+        return Info.of(data = v, failed = false, globalData = true)
     }
 
     fun encryptToken(token: String?): String {
