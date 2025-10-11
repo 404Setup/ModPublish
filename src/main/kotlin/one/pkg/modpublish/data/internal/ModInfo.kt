@@ -20,10 +20,6 @@ data class ModInfo(val modid: String?, val slug: String?, val name: String?, val
     companion object {
         var EMPTY: ModInfo = ModInfo(null, null, null, null)
 
-        fun ofs(failed: String?): Array<ModInfo> {
-            return arrayOf(of(failed))
-        }
-
         fun of(failed: String?): ModInfo {
             return ModInfo(null, null, null, failed)
         }

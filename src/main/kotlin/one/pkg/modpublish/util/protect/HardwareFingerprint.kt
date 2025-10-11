@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import kotlin.math.abs
 
+@Suppress("UNUSED")
 class HardwareFingerprint private constructor() {
     init {
         val about =

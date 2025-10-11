@@ -17,6 +17,7 @@
 package one.pkg.modpublish.data.result
 
 import one.pkg.modpublish.data.network.curseforge.CurseForgePublishResult
+import kotlin.jvm.Throws
 
 data class BackResult(val result: Any) : Result {
     override val isSuccess: Boolean
@@ -25,16 +26,12 @@ data class BackResult(val result: Any) : Result {
     override val isFailure: Boolean
         get() = !isSuccess
 
-    val isString: Boolean
-        get() = result is String
-
+    @Throws(ClassCastException::class)
     fun asString(): String {
         return result as String
     }
 
-    val isCurseForgePublishResult: Boolean
-        get() = result is CurseForgePublishResult
-
+    @Throws(ClassCastException::class)
     fun asCurseForgePublishResult(): CurseForgePublishResult {
         return result as CurseForgePublishResult
     }

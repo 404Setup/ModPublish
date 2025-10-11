@@ -125,14 +125,7 @@ class PublishModDialog(
             ?.run { getMod(primaryFile).also { modInfo = it } }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
-            ?.let {
-                try {
-                    VersionConstraintParser.parse(it)
-                } catch (throwable: Exception) {
-                    LOG.error(throwable)
-                    null
-                }
-            }
+            ?.let { runCatching { VersionConstraintParser.parse(it) }.getOrNull() }
     }
 
     private fun loadConfigData() {
