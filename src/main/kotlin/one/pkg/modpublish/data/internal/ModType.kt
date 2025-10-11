@@ -29,11 +29,17 @@ import java.io.InputStream
 import java.util.*
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 
 enum class ModType(val fileName: String, val displayName: String, val curseForgeVersion: Int) {
     Fabric("fabric.mod.json", "Fabric", 7499) {
         override fun getMod(file: File): LocalModInfo? = try {
-            file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
+            file.toJarFile().use { jar ->
+                jar?.let { getFabricMod(it) } ?: run {
+                    LOG.error("JarFile is null")
+                    null
+                }
+            }
         } catch (e: Exception) {
             LOG.error(e)
             null
@@ -41,7 +47,12 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     },
     Quilt("quilt.mod.json", "Quilt", 9153) {
         override fun getMod(file: File): LocalModInfo? = try {
-            file.toJarFile().use { jar -> jar?.let { getFabricMod(it) } }
+            file.toJarFile().use { jar ->
+                jar?.let { getFabricMod(it) } ?: run {
+                    LOG.error("JarFile is null")
+                    null
+                }
+            }
         } catch (e: Exception) {
             LOG.error(e)
             null
@@ -49,7 +60,12 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     },
     Forge("META-INF/mods.toml", "Forge", 7498) {
         override fun getMod(file: File): LocalModInfo? = try {
-            file.toJarFile().use { jar -> jar?.let { getForgeMod(it) } }
+            file.toJarFile().use { jar ->
+                jar?.let { getForgeMod(it) } ?: run {
+                    LOG.error("JarFile is null")
+                    null
+                }
+            }
         } catch (e: Exception) {
             LOG.error(e)
             null
@@ -65,13 +81,10 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     },
     Rift("riftmod.json", "Rift", 7500) {
         override fun getMod(file: File): LocalModInfo? = try {
-            file.toJarFile().use { jar ->
-                jar?.let {
-                    try {
-                        getMCMod(it)
-                    } catch (e: Exception) {
-                        LOG.error(e)
-                        getRiftMod(it)
+            ZipFile(file).use { zip->
+                getMCMod(zip) ?: run{
+                    getStream(zip).use { stream ->
+                        stream?.let { ModJsonParser(it) }?.getRiftMod()
                     }
                 }
             }
@@ -82,13 +95,10 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     },
     LiteLoader("litemod.json", "LiteLoader", -1) {
         override fun getMod(file: File): LocalModInfo? = try {
-            file.toJarFile().use { jar ->
-                jar?.let {
-                    try {
-                        getMCMod(it)
-                    } catch (e: Exception) {
-                        LOG.error(e)
-                        getLiteMod(it)
+            ZipFile(file).use { zip ->
+                getMCMod(zip) ?: run {
+                    getStream(zip).use { stream ->
+                        stream?.let { ModJsonParser(it) }?.getLiteMod()
                     }
                 }
             }
@@ -115,7 +125,11 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
 
     fun getEntry(jar: JarFile): ZipEntry? = jar.getEntry(fileName)
 
+    fun getEntry(file: ZipFile): ZipEntry? = file.getEntry(fileName)
+
     fun getStream(jar: JarFile): InputStream? = getEntry(jar)?.let { jar.open(it) }
+
+    fun getStream(file: ZipFile): InputStream? = getEntry(file)?.let { file.getInputStream(it) }
 
     open fun getID(): String = displayName.lowercase(Locale.ENGLISH)
 
@@ -137,29 +151,9 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
         null
     }
 
-    protected fun getLiteMod(file: JarFile): LocalModInfo? = try {
-        file.use { jar ->
-            getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getLiteMod() }
-        }
-    } catch (e: Exception) {
-        LOG.error(e)
-        null
-    }
-
-    protected fun getRiftMod(file: JarFile): LocalModInfo? = try {
-        file.use { jar ->
-            getStream(jar).use { stream -> stream?.let { ModJsonParser(it) }?.getRiftMod() }
-        }
-    } catch (e: Exception) {
-        LOG.error(e)
-        null
-    }
-
-    protected fun getMCMod(file: JarFile): LocalModInfo? = try {
-        file.use { jar ->
-            jar.getEntry("mcmod.info")?.let { jar.open(it) }
-                .use { stream -> stream?.let { ModJsonParser(it) }?.getMcMod() }
-        }
+    protected fun getMCMod(file: ZipFile): LocalModInfo? = try {
+        file.getEntry("mcmod.info")?.let { file.getInputStream(it) }
+            .use { stream -> stream?.let { ModJsonParser(it) }?.getMcMod() }
     } catch (_: Exception) {
         null
     }
