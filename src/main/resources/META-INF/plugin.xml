@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>one.pkg.modpublish</id>
-    <name>Minecraft Mod Publish Utils</name>
+    <name>Minecraft ModPublish</name>
     <version>${version}</version>
     <vendor url="https://github.com/404Setup">404Setup</vendor>
     <depends>com.intellij.modules.platform</depends>

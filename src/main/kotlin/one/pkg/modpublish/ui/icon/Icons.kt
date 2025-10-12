@@ -30,6 +30,8 @@ object Icons {
         val Gitlab: Icon = getIcon("/icons/gitlab.svg")
         val CurseForge: Icon = getIcon("/icons/curseforge.svg")
         val Modrinth: Icon = getIcon("/icons/modrinth.svg")
+        val ReposiliteDark: Icon = getIcon("/icons/repoilite-dark.svg")
+        val ReposiliteLight: Icon = getIcon("/icons/repoilite-light.svg")
     }
 
     object Static {

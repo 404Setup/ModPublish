@@ -32,11 +32,10 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
-1. Improve dependency manager
-2. Code optimization
-3. UI optimization
-4. Allow syncing README to ~~Modrinth and~~ CurseForge
-5. Allow customizing mod upload targets
+1. Update Forge/NeoForge update.json during publishing
+2. Improve dependency manager
+3. Allow syncing README to ~~Modrinth and~~ CurseForge (no API available)
+4. Allow customizing mod upload targets
 
 ## Installation
 

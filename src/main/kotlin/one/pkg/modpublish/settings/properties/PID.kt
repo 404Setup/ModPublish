@@ -34,7 +34,9 @@ enum class PID(val id: String, val protect: Boolean) {
     GitlabToken("modpublish.gitlab.token", true),
     GitlabRepo("modpublish.gitlab.repo", false),
     GitlabBranch("modpublish.gitlab.branch", false),
-    CommonVersionFormat("modpublish.common.versionFormat", false);
+    GenerateForgeUpdateEnabled("modpublish.generate-forge-update.enabled", false),
+    GenerateForgeUpdateSplit("modpublish.generate-forge-update.split", false),
+    CommonVersionFormat("modpublish.common.versionFormat", false),;
 
     fun get(project: Project): String {
         return get(Properties.getPropertiesComponent(project))
