@@ -1,4 +1,4 @@
-## v0.0.10
+## v1.10.0
 
 ### Feature
 - Reimplement Gitlab

@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "one.pkg"
-version = "0.0.10-dev"
+version = "1.10.0-SNAPSHOT"
 val targetJavaVersion = 17
 
 repositories {
