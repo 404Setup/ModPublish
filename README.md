@@ -17,25 +17,25 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 - Fully GUI-based operation
 - Automatically detect Mod information, no need to repeatedly manually select/input
 - Quick saving of last operation records (dependencies, changelog)
-- One-click publishing of mods to Modrinth, CurseForge and GitHub
+- One-click publishing of mods to Modrinth, CurseForge, GitHub, and GitLab
 
 ### Unsupported Features
 
-> These features will never be supported unless someone submits a pull request, 
+> These features will never be supported unless someone submits a pull request,
 > or I suddenly want to implement them
 
 - Publishing to custom Git servers
-- Publishing to Hangar/SpigotMC
-- Publishing plugins/resource packs/data packs
+- Publishing to Hangar/SpigotMC (Coming soon)
 
 ### TODO
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
 1. Update Forge/NeoForge update.json during publishing
-2. Improve dependency manager
-3. Allow syncing README to ~~Modrinth and~~ CurseForge (no API available)
-4. Allow customizing mod upload targets
+2. Publishing plugins/resource packs/data packs
+3. Improve dependency manager
+4. Allow syncing README to ~~Modrinth and~~ CurseForge (no API available)
+5. Port to Visual Studio Code (not familiar with it, a bit difficult)
 
 ## Installation
 
@@ -105,7 +105,7 @@ I cannot completely guarantee its security. What you need to do is not share the
 
 Additionally, the API Token will generate an encryption key based on your environment and use this encryption key to
 process the API Token, encrypting and decrypting it when needed.
-If hardware information, system information and JVM change, the old API Token will immediately become invalid and
+If hardware information, system information, and JVM change, the old API Token will immediately become invalid and
 unreadable. Therefore, please open settings to back up or generate new API Tokens before making any changes to prevent
 operation interruption.
 
@@ -116,7 +116,8 @@ If they support fine-grained permission configuration, please do so and do not a
 
 ### Version Name Formatting
 
-You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric 1.21.8` instead of something like
+You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric 1.21.8` instead of
+something like
 `my-mod-1.0.0+fabric.jar`.
 
 Modrinth usually generates titles automatically, but CurseForge does not, and you don't want to manually copy it every
@@ -133,6 +134,40 @@ Currently supported variables:
 - `{max-version}` - Highest Minecraft version that is compatible with the Mod; Not replaced if detection fails
 
 If not configured, ModPublish will still use the default name generation rules
+
+### Automatic Detection
+
+ModPublish can detect the type of mod you want to publish and identify mod metadata based on file characteristics, and
+automatically check some options based on them.
+
+Some ModLoaders may not strictly validate Mod metadata (such as Rift), so please fill in the Mod metadata as completely
+as possible.
+
+| UI                | Status      |
+|-------------------|-------------|
+| Version           | Supported   |
+| Version name      | Supported   |
+| ModLoader         | Supported   |
+| Minecraft version | Supported   |
+| Supported target  | Unsupported |
+| Dependencies      | Unsupported |
+
+### ModLoader
+Data packs, resource packs, and plugin publishing are currently not supported; 
+I will add these compatibilities in the future.
+
+For some missing ModLoaders, I cannot confirm if they are still being actively used. 
+If you need support for one, please open an Issue.
+
+| ModLoader  | Modrinth | CurseForge | Github | GitLab |
+|------------|----------|------------|--------|--------|
+| Forge      | Yes      | Yes        | No     | No     |
+| NeoForge   | Yes      | Yes        | No     | No     |
+| Fabric     | Yes      | Yes        | No     | No     |
+| Quilt      | Yes      | Yes        | No     | No     |
+| Rift       | Yes      | Yes        | No     | No     |
+| LiteLoader | Yes      | No         | No     | No     |
+| Java Agent | Yes      | No         | No     | No     |
 
 ## Build
 
@@ -173,28 +208,37 @@ Build steps:
 #### Dependencies
 
 - [Gson](https://github.com/google/gson) - License [Apache 2.0](https://github.com/google/gson/blob/main/LICENSE)
-- [OKHttp](https://github.com/square/okhttp) - License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
-- [TProxy](https://github.com/404Setup/t-proxy) - License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
-- [Flexmark](https://github.com/vsch/flexmark-java) - License [BSD 2-Clause "Simplified" License](https://github.com/vsch/flexmark-java/blob/master/LICENSE.txt)
+- [OKHttp](https://github.com/square/okhttp) -
+  License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+- [TProxy](https://github.com/404Setup/t-proxy) -
+  License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
+- [Flexmark](https://github.com/vsch/flexmark-java) -
+  License [BSD 2-Clause "Simplified" License](https://github.com/vsch/flexmark-java/blob/master/LICENSE.txt)
 
 #### Resource Files
+
 All resource files have been adjusted to display at 24px.
 
-- [Modrinth Logo](https://github.com/modrinth/code/blob/main/packages/assets/branding/logo.svg) - License [GPL-3.0](https://github.com/modrinth/code/blob/main/packages/assets/LICENSE), with proper coloring of the logo
-- [CurseForge Logo](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824) - License [CC BY 4.0](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824?permalink_comment_id=3683512#gistcomment-3683512)
+- [Modrinth Logo](https://github.com/modrinth/code/blob/main/packages/assets/branding/logo.svg) -
+  License [GPL-3.0](https://github.com/modrinth/code/blob/main/packages/assets/LICENSE), with proper coloring of the
+  logo
+- [CurseForge Logo](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824) -
+  License [CC BY 4.0](https://gist.github.com/thecodewarrior/110057b210551c4ecf2c9be6d58ff824?permalink_comment_id=3683512#gistcomment-3683512)
 - [Github Icon](https://github.com/logos)
 - [Gitlab Logo (vscode-icons)](https://github.com/vscode-icons/vscode-icons) - [License](https://github.com/vscode-icons/vscode-icons#license)
-- [FluentUI System Icons](https://github.com/microsoft/fluentui-system-icons) - License [MIT](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE)
+- [FluentUI System Icons](https://github.com/microsoft/fluentui-system-icons) -
+  License [MIT](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE)
 
 ## Support ModPublish
 
 If you like my work, or if it has brought you great convenience, please consider supporting my work
 through [Patreon](https://www.patreon.com/tranic).
 
-If you don't want to do that, you can also support me by clicking the Star on the Repo. 
+If you don't want to do that, you can also support me by clicking the Star on the Repo.
 The more Stars, the happier I am, and the more motivated I am to continue working.
 
 Thanks to everyone who uses and supports ModPublish.
 
 ## License
+
 The source code is licensed under the LGPL-3.0 license.
