@@ -33,11 +33,13 @@ import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.GitInfo.getBrach
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
+import org.jetbrains.annotations.ApiStatus
 import java.io.File
 import java.io.IOException
 
+@ApiStatus.Experimental
 class GitlabAPI : API() {
-    override val id: String get() = "Gitlab"
+    override val id: String get() = "GitLab"
 
     override fun getAB(): Boolean = true
     override fun updateAB() {}

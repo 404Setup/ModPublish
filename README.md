@@ -114,6 +114,25 @@ If you believe your API Tokens have been leaked, please revoke them immediately 
 
 If they support fine-grained permission configuration, please do so and do not add extra permissions.
 
+### Update Mod Description Page
+
+| Platform   | Status      |
+|------------|-------------|
+| Modrinth   | Supported   |
+| CurseForge | Unsupported |
+
+ModPublish currently supports updating mod description pages for Modrinth. This component is relatively new and does not
+yet support translation of some platform-specific Markdown syntax.
+
+Due to lack of documentation from CurseForge, support is not provided at this time.
+
+#### How to use?
+
+Move your mouse over the project's `readme.md` file, click `Sync Description`, and select the target you want to update.
+
+If you haven't configured ModPublish for your project yet, please complete the configuration first, otherwise update
+targets will be disabled.
+
 ### Version Name Formatting
 
 You may want a more formatted version name (not version number), such as `MyMod 1.0.0 Fabric 1.21.8` instead of
@@ -137,12 +156,6 @@ If not configured, ModPublish will still use the default name generation rules
 
 ### Automatic Detection
 
-ModPublish can detect the type of mod you want to publish and identify mod metadata based on file characteristics, and
-automatically check some options based on them.
-
-Some ModLoaders may not strictly validate Mod metadata (such as Rift), so please fill in the Mod metadata as completely
-as possible.
-
 | UI                | Status      |
 |-------------------|-------------|
 | Version           | Supported   |
@@ -152,12 +165,13 @@ as possible.
 | Supported target  | Unsupported |
 | Dependencies      | Unsupported |
 
-### ModLoader
-Data packs, resource packs, and plugin publishing are currently not supported; 
-I will add these compatibilities in the future.
+ModPublish can detect the type of mod you want to publish and identify mod metadata based on file characteristics, and
+automatically check some options based on them.
 
-For some missing ModLoaders, I cannot confirm if they are still being actively used. 
-If you need support for one, please open an Issue.
+Some ModLoaders may not strictly validate Mod metadata (such as Rift), so please fill in the Mod metadata as completely
+as possible.
+
+### ModLoader
 
 | ModLoader  | Modrinth | CurseForge | Github | GitLab |
 |------------|----------|------------|--------|--------|
@@ -168,6 +182,12 @@ If you need support for one, please open an Issue.
 | Rift       | Yes      | Yes        | No     | No     |
 | LiteLoader | Yes      | No         | No     | No     |
 | Java Agent | Yes      | No         | No     | No     |
+
+Data packs, resource packs, and plugin publishing are currently not supported;
+I will add these compatibilities in the future.
+
+For some missing ModLoaders, I cannot confirm if they are still being actively used.
+If you need support for one, please open an Issue.
 
 ## Build
 
