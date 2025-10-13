@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.vfs.VirtualFile
-import one.pkg.modpublish.data.internal.ModType.Companion.toModType
+import one.pkg.modpublish.data.internal.PublishType.Companion.toModType
 import one.pkg.modpublish.ui.PublishModDialog
 import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.util.io.FileAPI.toFile

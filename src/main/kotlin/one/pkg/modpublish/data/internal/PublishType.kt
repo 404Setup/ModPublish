@@ -30,7 +30,7 @@ import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-enum class ModType(val fileName: String, val displayName: String, val curseForgeVersion: Int) {
+enum class PublishType(val fileName: String, val displayName: String, val curseForgeVersion: Int) {
     Fabric("fabric.mod.json", "Fabric", 7499) {
         override fun getMod(file: File): LocalModInfo? {
             return runCatching {
@@ -145,7 +145,7 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
     companion object {
         val valuesList = entries
 
-        fun File.toModType(): ModType? {
+        fun File.toModType(): PublishType? {
             return runCatching {
                 this.toJarFile()?.use { jar ->
                     jar.toModType()
@@ -153,15 +153,15 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
             }.getOrNull()
         }
 
-        fun JarFile.toModType(): ModType? =
+        fun JarFile.toModType(): PublishType? =
             valuesList.firstOrNull {
                 if (it == JavaAgent && this.isJavaAgent()) return@firstOrNull true
                 it.getEntry(this) != null
             }
 
-        fun String.toModType(): ModType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
+        fun String.toModType(): PublishType? = valuesList.firstOrNull { it.displayName.equals(this, ignoreCase = true) }
 
-        fun File.toModTypes(): List<ModType> {
+        fun File.toModTypes(): List<PublishType> {
             return runCatching {
                 if (this.exists() && this.extension in arrayOf("jar", "litemod")) {
                     ZipFile(this).use { zip ->
@@ -171,6 +171,6 @@ enum class ModType(val fileName: String, val displayName: String, val curseForge
             }.getOrDefault(emptyList())
         }
 
-        fun VirtualFile.toModTypes(): List<ModType> = this.toFile().toModTypes()
+        fun VirtualFile.toModTypes(): List<PublishType> = this.toFile().toModTypes()
     }
 }

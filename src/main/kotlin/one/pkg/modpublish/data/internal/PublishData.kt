@@ -23,7 +23,7 @@ import java.io.File
 
 data class PublishData(
     val versionName: String, val versionNumber: String, val enabled: Selector,
-    val releaseChannel: ReleaseChannel, val loaders: List<ModType>,
+    val releaseChannel: ReleaseChannel, val loaders: List<PublishType>,
     val supportedInfo: SupportedInfo, val minecraftVersions: List<MinecraftVersion>,
     val changelog: String, val dependencies: List<DependencyInfo>,
     val files: Array<File>

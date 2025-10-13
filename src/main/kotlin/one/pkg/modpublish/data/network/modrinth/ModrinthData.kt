@@ -17,7 +17,7 @@
 package one.pkg.modpublish.data.network.modrinth
 
 import com.google.gson.annotations.SerializedName
-import one.pkg.modpublish.data.internal.ModType
+import one.pkg.modpublish.data.internal.PublishType
 import one.pkg.modpublish.data.internal.ReleaseChannel
 import one.pkg.modpublish.data.internal.RequestStatus
 import one.pkg.modpublish.data.local.MinecraftVersion
@@ -163,7 +163,7 @@ data class ModrinthData(
         this.loaders!!.add(loader)
     }
 
-    fun loader(info: ModType) {
+    fun loader(info: PublishType) {
         return loader(info.getID())
     }
 

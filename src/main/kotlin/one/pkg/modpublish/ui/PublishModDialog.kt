@@ -35,8 +35,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
-import one.pkg.modpublish.data.internal.ModType.Companion.toModType
-import one.pkg.modpublish.data.internal.ModType.Companion.toModTypes
+import one.pkg.modpublish.data.internal.PublishType.Companion.toModType
+import one.pkg.modpublish.data.internal.PublishType.Companion.toModTypes
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
@@ -78,7 +78,7 @@ class PublishModDialog(
         private val LOG = Logger.getInstance(Companion::class.java)
     }
 
-    private val modTypes: Map<VirtualFile, List<ModType>> =
+    private val publishTypes: Map<VirtualFile, List<PublishType>> =
         jarFiles.associateWith { it.toModTypes() }
 
     private var modInfo: LocalModInfo? = null
@@ -120,8 +120,8 @@ class PublishModDialog(
     }
 
     private fun updateParser(primaryFile: VirtualFile) {
-        parser = modTypes[primaryFile]
-            ?.firstOrNull { it != ModType.JavaAgent }
+        parser = publishTypes[primaryFile]
+            ?.firstOrNull { it != PublishType.JavaAgent }
             ?.run { getMod(primaryFile).also { modInfo = it } }
             ?.versionRange
             ?.takeIf { it.isNotEmpty() }
@@ -140,7 +140,7 @@ class PublishModDialog(
         val current = primaryFile.selectedItem as VirtualFile
         updateJarFiles(current)
 
-        val types = modTypes[current].orEmpty()
+        val types = publishTypes[current].orEmpty()
         loaderCheckBoxes.forEach { it.isSelected = types.contains(it.text.lowercase().toModType()) }
 
         updateParser(current)
@@ -187,9 +187,9 @@ class PublishModDialog(
         )
 
         // Loaders
-        loaderCheckBoxes = ModType.valuesList.map { launcher ->
+        loaderCheckBoxes = PublishType.valuesList.map { launcher ->
             JBCheckBox(launcher.displayName).apply {
-                isSelected = modTypes.values.first().contains(launcher)
+                isSelected = publishTypes.values.first().contains(launcher)
             }
         }
 
@@ -338,7 +338,7 @@ class PublishModDialog(
 
     private fun loadModInfo(current: VirtualFile) {
         LOG.info("Start load mod info: ${current.name}")
-        val modType = modTypes[current]?.firstOrNull()
+        val modType = publishTypes[current]?.firstOrNull()
         if (modType != null) LOG.info("Loading mod info: ${modType.name}")
         val versionNameFormat = PID.CommonVersionFormat.get(requireNotNull(project))
         if (versionNameFormat.isNotEmpty()) LOG.info("Loading versionNameFormat: $versionNameFormat")
@@ -531,7 +531,7 @@ class PublishModDialog(
 
     private fun collectPublishData(): PublishData {
         val selectedLoaders = loaderCheckBoxes
-            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) ModType.valuesList[index] else null }
+            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) PublishType.valuesList[index] else null }
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
             .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }

@@ -25,17 +25,17 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 > or I suddenly want to implement them
 
 - Publishing to custom Git servers
-- Publishing to Hangar/SpigotMC (Coming soon)
+- Publishing resource packs/data packs
 
 ### TODO
 
 > Priority order from top to bottom, smaller numbers indicate higher priority
 
 1. Update Forge/NeoForge update.json during publishing
-2. Publishing plugins/resource packs/data packs
+2. Publishing plugins
 3. Improve dependency manager
 4. Allow syncing README to ~~Modrinth and~~ CurseForge (no API available)
-5. Port to Visual Studio Code (not familiar with it, a bit difficult)
+5. Publishing to Hangar/SpigotMC
 
 ## Installation
 
