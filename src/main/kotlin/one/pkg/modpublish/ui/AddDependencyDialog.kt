@@ -21,8 +21,8 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.ModInfos
-import one.pkg.modpublish.data.internal.Selector
 import one.pkg.modpublish.data.internal.PublishTarget
+import one.pkg.modpublish.data.internal.Selector
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.DependencyType
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
@@ -110,13 +110,13 @@ class AddDependencyDialog(
             if (parts.size != 2) return ModInfos(ModInfo.of("Invalid project ID format"), null)
 
             val modrinthInfo = if (selector.modrinth && parts[0].isNotBlank()) {
-                PublishTarget.Modrinth.api.getModInfo(parts[0], project!!).also {
+                PublishTarget.Modrinth.api.getModInfo(parts[0], requireNotNull(project)).also {
                     if (it.failed != null) return ModInfos(it, null)
                 }
             } else null
 
             val curseforgeInfo = if (selector.curseForge && parts[1].isNotBlank()) {
-                PublishTarget.CurseForge.api.getModInfo(parts[1], project!!).also {
+                PublishTarget.CurseForge.api.getModInfo(parts[1], requireNotNull(project)).also {
                     if (it.failed != null) return ModInfos(null, it)
                 }
             } else null
@@ -124,14 +124,12 @@ class AddDependencyDialog(
             return ModInfos(modrinthInfo, curseforgeInfo)
         } else {
             val modrinthInfo = if (selector.modrinth) {
-                PublishTarget.Modrinth.api.apply { if (getAB()) updateAB() }
-                    .getModInfo(projectId, project!!).also {
-                        if (it.failed != null) return ModInfos(it, null)
-                    }
+                PublishTarget.Modrinth.api.getModInfo(projectId, requireNotNull(project))
+                    .also { if (it.failed != null) return ModInfos(it, null) }
             } else null
 
             val curseforgeInfo = if (selector.curseForge) {
-                PublishTarget.CurseForge.api.getModInfo(projectId, project!!).also {
+                PublishTarget.CurseForge.api.getModInfo(projectId, requireNotNull(project)).also {
                     if (it.failed != null) return ModInfos(null, it)
                 }
             } else null

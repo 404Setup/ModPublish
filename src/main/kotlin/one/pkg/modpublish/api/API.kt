@@ -28,24 +28,21 @@ import java.util.*
 abstract class API {
     abstract val id: String
 
-    abstract fun getAB(): Boolean
-    abstract fun updateAB()
-
-    fun getJsonRequest(builder: Request.Builder): Request.Builder {
+    internal fun getJsonRequest(builder: Request.Builder): Request.Builder {
         return builder.header("Accept", "application/json")
     }
 
-    fun getFormRequest(builder: Request.Builder): Request.Builder {
+    internal fun getFormRequest(builder: Request.Builder): Request.Builder {
         return builder.header("Content-Type", "multipart/form-data")
     }
 
-    fun getContentType(response: Response): Optional<String> {
+    internal fun getContentType(response: Response): Optional<String> {
         return Optional.ofNullable<String>(response.header("Content-Type"))
     }
 
-    abstract fun createJsonBody(data: PublishData, project: Project): String
+    internal abstract fun createJsonBody(data: PublishData, project: Project): String
 
-    fun getStatus(response: Response): String? {
+    internal fun getStatus(response: Response): String? {
         if (response.code == 403) return Lang.get("api.common.err.403")
         if (response.code == 404) return Lang.get("api.common.err.404")
         if (response.code == 500) return Lang.get("api.common.err.500")
@@ -72,7 +69,7 @@ abstract class API {
         PublishResult.create(this, "Unsupported operation: patchDescription")
 
     companion object {
-        val baseRequestBuilder: Request.Builder
+        internal val baseRequestBuilder: Request.Builder
             get() = Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)")
     }
 }

@@ -24,32 +24,11 @@ import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.util.resources.Lang
 
 class EmptyAPI : API() {
-    override val id: String
-        get() = Lang.get("failed.10")
+    override val id: String = Lang.get("failed.10")
 
-    override fun getAB(): Boolean = true
+    override fun createJsonBody(data: PublishData, project: Project): String = "{}"
 
-    override fun updateAB() {
-    }
+    override fun createVersion(data: PublishData, project: Project): PublishResult = PublishResult.create(this, id)
 
-    override fun createJsonBody(
-        data: PublishData,
-        project: Project
-    ): String {
-        return "{}"
-    }
-
-    override fun createVersion(
-        data: PublishData,
-        project: Project
-    ): PublishResult {
-        return PublishResult.create(this, Lang.get("failed.10"))
-    }
-
-    override fun getModInfo(
-        modid: String,
-        project: Project
-    ): ModInfo {
-        return ModInfo.EMPTY
-    }
+    override fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.EMPTY
 }

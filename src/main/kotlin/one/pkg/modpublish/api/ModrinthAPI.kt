@@ -35,12 +35,7 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.IOException
 
 class ModrinthAPI : API() {
-    override val id: String get() = "Modrinth"
-
-    private var aBServer = false
-
-    override fun getAB(): Boolean = aBServer
-    override fun updateAB() {}
+    override val id: String = "Modrinth"
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
         val requestBuilder = getFormRequest(getRequestBuilder("version", project))
@@ -117,7 +112,7 @@ class ModrinthAPI : API() {
         }
     }
 
-    fun getRequestBuilder(url: String, project: Project): Request.Builder =
+    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
         baseRequestBuilder.header("Authorization", PID.ModrinthToken.getProtect(project).data)
             .url(URL + url)
 

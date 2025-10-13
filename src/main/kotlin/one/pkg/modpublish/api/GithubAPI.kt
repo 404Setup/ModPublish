@@ -37,34 +37,7 @@ import java.io.File
 import java.io.IOException
 
 class GithubAPI : API() {
-    override val id: String get() = "Github"
-
-    override fun getAB(): Boolean = true
-    override fun updateAB() {}
-
-    fun getRequestBuilder(url: String, project: Project): Request.Builder =
-        baseRequestBuilder.apply {
-            header("Accept", "application/vnd.github+json")
-            header("X-GitHub-Api-Version", "2022-11-28")
-            header("Authorization", "Bearer ${PID.GithubToken.getProtect(project).data}")
-            url(url.replace("{path}", PID.GithubRepo.get(project)))
-        }
-
-    override fun createJsonBody(data: PublishData, project: Project): String {
-        val branch = PID.GithubBranch.get(project).ifEmpty { project.getBrach() }
-        val targetCommitish = getTargetCommitish(branch, project)
-
-        return GithubData().apply {
-            this.tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
-            this.targetCommitish = targetCommitish
-            this.name = data.versionName
-            this.body = data.changelog
-            this.releaseChannel(data.releaseChannel)
-            this.draft = false
-            this.generateReleaseNotes = true
-            this.makeLatest(true)
-        }.toJson()
-    }
+    override val id: String = "Github"
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
         return try {
@@ -156,6 +129,30 @@ class GithubAPI : API() {
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.empty()
+
+    override fun createJsonBody(data: PublishData, project: Project): String {
+        val branch = PID.GithubBranch.get(project).ifEmpty { project.getBrach() }
+        val targetCommitish = getTargetCommitish(branch, project)
+
+        return GithubData().apply {
+            this.tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
+            this.targetCommitish = targetCommitish
+            this.name = data.versionName
+            this.body = data.changelog
+            this.releaseChannel(data.releaseChannel)
+            this.draft = false
+            this.generateReleaseNotes = true
+            this.makeLatest(true)
+        }.toJson()
+    }
+
+    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
+        baseRequestBuilder.apply {
+            header("Accept", "application/vnd.github+json")
+            header("X-GitHub-Api-Version", "2022-11-28")
+            header("Authorization", "Bearer ${PID.GithubToken.getProtect(project).data}")
+            url(url.replace("{path}", PID.GithubRepo.get(project)))
+        }
 
     companion object {
         private const val RELEASES_URL = "https://api.github.com/repos/{path}/releases"

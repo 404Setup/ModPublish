@@ -38,20 +38,11 @@ import java.io.File
 import java.io.IOException
 
 class CurseForgeAPI : API() {
-    private var aBServer = false
-
-    override val id: String
-        get() = "CurseForge"
-
-    override fun getAB(): Boolean = aBServer
-
-    override fun updateAB() {
-        aBServer = !aBServer
-    }
+    override val id: String = "CurseForge"
 
     private fun create(data: PublishData, project: Project, file: File, bResult: BackResult?): Result {
         val modid = PID.CurseForgeModID.get(project)
-        val requestBuilder = getFormRequest(getRequestBuilder("projects/$modid/upload-file", project))
+        val requestBuilder = getFormRequest(A_URL.getRequestBuilder("projects/$modid/upload-file", project))
         val fileBody = file.asRequestBody("application/java-archive".toMediaType())
 
         val body = MultipartBody.Builder().apply {
@@ -74,7 +65,6 @@ class CurseForgeAPI : API() {
     }
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
-        if (aBServer) aBServer = false
         var bResult: BackResult? = null
         data.files.forEachIndexed { index, file ->
             when (val result = create(data, project, file, bResult)) {
@@ -85,10 +75,23 @@ class CurseForgeAPI : API() {
         return PublishResult.EMPTY
     }
 
+    override fun getModInfo(modid: String, project: Project): ModInfo {
+        val request = getJsonRequest(B_URL.getRequestBuilder("mods/$modid", project)).get().build()
+        return try {
+            client.newCall(request).execute().use { resp ->
+                getStatus(resp)?.let { return ModInfo.of(it) }
+                val data = resp.body.byteStream().getJsonObject().getAsJsonObject("data")
+                ModInfo.of(modid, data.get("name").asString, data.get("slug").asString)
+            }
+        } catch (e: IOException) {
+            ModInfo.of(e.message)
+        }
+    }
+
     override fun createJsonBody(data: PublishData, project: Project): String =
         createJsonBody(data, null)
 
-    fun createJsonBody(data: PublishData, bResult: BackResult?): String {
+    private fun createJsonBody(data: PublishData, bResult: BackResult?): String {
         return CurseForgeData().apply {
             this.releaseType(data.releaseChannel)
             this.markdownChangelog(data.changelog)
@@ -109,30 +112,15 @@ class CurseForgeAPI : API() {
         }.toJson()
     }
 
-    override fun getModInfo(modid: String, project: Project): ModInfo {
-        if (!aBServer) aBServer = true
-        val request = getJsonRequest(getRequestBuilder("mods/$modid", project)).get().build()
-        return try {
-            client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return ModInfo.of(it) }
-                val data = resp.body.byteStream().getJsonObject().getAsJsonObject("data")
-                ModInfo.of(modid, data.get("name").asString, data.get("slug").asString)
-            }
-        } catch (e: IOException) {
-            ModInfo.of(e.message)
+    private fun String.getRequestBuilder(url: String, project: Project): Request.Builder {
+        val server = this
+        return baseRequestBuilder.apply {
+            if (server == B_URL) header("x-api-key", PID.CurseForgeStudioToken.getProtect(project).data)
+            else header("X-Api-Token", PID.CurseForgeToken.getProtect(project).data)
+
+            url(server + url)
         }
     }
-
-    fun getRequestBuilder(url: String, project: Project): Request.Builder =
-        baseRequestBuilder.apply {
-            if (aBServer) {
-                header("x-api-key", PID.CurseForgeStudioToken.getProtect(project).data)
-                url(B_URL + url)
-            } else {
-                header("X-Api-Token", PID.CurseForgeToken.getProtect(project).data)
-                url(A_URL + url)
-            }
-        }
 
     companion object {
         private const val A_URL = "https://minecraft.curseforge.com/api/"

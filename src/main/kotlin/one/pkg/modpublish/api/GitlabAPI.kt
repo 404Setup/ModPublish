@@ -39,31 +39,7 @@ import java.io.IOException
 
 @ApiStatus.Experimental
 class GitlabAPI : API() {
-    override val id: String get() = "GitLab"
-
-    override fun getAB(): Boolean = true
-    override fun updateAB() {}
-
-    fun getRequestBuilder(url: String, project: Project): Request.Builder =
-        baseRequestBuilder.apply {
-            header("Accept", "application/json")
-            header("PRIVATE-TOKEN", PID.GitlabToken.getProtect(project).data)
-            url(url.replace("{path}", PID.GitlabRepo.get(project)))
-        }
-
-    override fun createJsonBody(data: PublishData, project: Project): String {
-        val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
-        val branch = PID.GitlabBranch.get(project).ifEmpty { project.getBrach() }
-        val ref = getTargetCommitish(branch, project)
-
-        return GitlabData().apply {
-            this.tagName = tagName
-            this.ref = ref
-            this.name = data.versionName
-            this.description = data.changelog
-            this.setReleaseChannel(data.releaseChannel)
-        }.toJson()
-    }
+    override val id: String = "GitLab"
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
         return try {
@@ -232,6 +208,27 @@ class GitlabAPI : API() {
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.empty()
+
+    override fun createJsonBody(data: PublishData, project: Project): String {
+        val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
+        val branch = PID.GitlabBranch.get(project).ifEmpty { project.getBrach() }
+        val ref = getTargetCommitish(branch, project)
+
+        return GitlabData().apply {
+            this.tagName = tagName
+            this.ref = ref
+            this.name = data.versionName
+            this.description = data.changelog
+            this.setReleaseChannel(data.releaseChannel)
+        }.toJson()
+    }
+
+    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
+        baseRequestBuilder.apply {
+            header("Accept", "application/json")
+            header("PRIVATE-TOKEN", PID.GitlabToken.getProtect(project).data)
+            url(url.replace("{path}", PID.GitlabRepo.get(project)))
+        }
 
     companion object {
         private const val RELEASES_URL = "https://gitlab.com/api/v4/projects/{path}/releases"

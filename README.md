@@ -1,4 +1,4 @@
-<img src="./pluginIcon.png" alt="Logo" align="right" width="150">
+<img src="./src/main/resources/META-INF/pluginIcon.svg" alt="Logo" align="right" width="150">
 
 ModPublish
 ====
