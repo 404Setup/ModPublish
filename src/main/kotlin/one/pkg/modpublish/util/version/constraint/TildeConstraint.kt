@@ -18,7 +18,7 @@ package one.pkg.modpublish.util.version.constraint
 
 import one.pkg.modpublish.util.version.Version
 
-@Suppress("unused")
+@Suppress("UNUSED")
 class TildeConstraint(versionStr: String) : VersionConstraint {
     private val baseVersion = Version(versionStr.substring(1))
     override val original: String = versionStr

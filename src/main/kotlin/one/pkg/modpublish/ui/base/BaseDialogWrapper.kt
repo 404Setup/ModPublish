@@ -35,7 +35,7 @@ import java.awt.Font
 import javax.swing.*
 import javax.swing.text.AbstractDocument
 
-@Suppress("unused")
+@Suppress("UNUSED")
 abstract class BaseDialogWrapper(
     open val project: Project? = null,
     canBeParent: Boolean = false

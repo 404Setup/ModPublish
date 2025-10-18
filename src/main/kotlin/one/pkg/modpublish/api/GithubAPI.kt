@@ -63,12 +63,12 @@ class GithubAPI : API() {
     }
 
     private fun createRelease(data: PublishData, project: Project): Result = try {
-        val request = getJsonRequest(getRequestBuilder(RELEASES_URL, project))
+        val request = request(RELEASES_URL, project).json()
             .post(createJsonBody(data, project).toRequestBody("application/json".toMediaType()))
             .build()
 
         client.newCall(request).execute().use { resp ->
-            getStatus(resp)?.let { return PublishResult.create(this, "Failed to create release: $it") }
+            resp.status()?.let { return PublishResult.create(this, "Failed to create release: $it") }
             BackResult.result(resp.body.string())
         }
     } catch (e: IOException) {
@@ -78,13 +78,13 @@ class GithubAPI : API() {
     private fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = try {
         val assetUrl = "$uploadUrl?name=${file.name}"
         val fileBody = file.asRequestBody("application/java-archive".toMediaType())
-        val request = getRequestBuilder(assetUrl, project)
+        val request = request(assetUrl, project)
             .header("Content-Type", "application/java-archive")
             .post(fileBody)
             .build()
 
         client.newCall(request).execute().use { resp ->
-            getStatus(resp)?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
+            resp.status()?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
             PublishResult.EMPTY
         }
     } catch (e: IOException) {
@@ -93,7 +93,7 @@ class GithubAPI : API() {
 
     private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = try {
         val url = "$RELEASES_URL/tags/$tagName"
-        val request = getRequestBuilder(url, project).get().build()
+        val request = request(url, project).get().build()
         client.newCall(request).execute()
             .use { resp -> if (resp.isSuccessful) resp.body.string().fromJson() else null }
     } catch (_: IOException) {
@@ -108,7 +108,7 @@ class GithubAPI : API() {
 
     @Throws(IOException::class)
     private fun getDefaultBranch(project: Project): String {
-        val request = getRequestBuilder(REPO_INFO_URL, project).get().build()
+        val request = request(REPO_INFO_URL, project).get().build()
         client.newCall(request).execute().use { resp ->
             if (resp.isSuccessful) return resp.body.string().fromJson().get("default_branch").asString
         }
@@ -118,7 +118,7 @@ class GithubAPI : API() {
     @Throws(IOException::class)
     private fun getLatestCommitHash(branch: String, project: Project): String {
         val url = BRANCH_COMMIT_URL.replace("{branch}", branch)
-        val request = getRequestBuilder(url, project).get().build()
+        val request = request(url, project).get().build()
         client.newCall(request).execute().use { resp ->
             if (resp.isSuccessful) {
                 val commit = resp.body.string().fromJson().getAsJsonObject("commit")
@@ -146,7 +146,7 @@ class GithubAPI : API() {
         }.toJson()
     }
 
-    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
+    private fun request(url: String, project: Project): Request.Builder =
         baseRequestBuilder.apply {
             header("Accept", "application/vnd.github+json")
             header("X-GitHub-Api-Version", "2022-11-28")

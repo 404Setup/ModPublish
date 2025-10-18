@@ -42,7 +42,7 @@ class CurseForgeAPI : API() {
 
     private fun create(data: PublishData, project: Project, file: File, bResult: BackResult?): Result {
         val modid = PID.CurseForgeModID.get(project)
-        val requestBuilder = getFormRequest(A_URL.getRequestBuilder("projects/$modid/upload-file", project))
+        val requestBuilder = request(A_URL, "projects/$modid/upload-file", project).form()
         val fileBody = file.asRequestBody("application/java-archive".toMediaType())
 
         val body = MultipartBody.Builder().apply {
@@ -55,7 +55,7 @@ class CurseForgeAPI : API() {
 
         return try {
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return PublishResult.create(this, it) }
+                resp.status()?.let { return PublishResult.create(this, it) }
                 val result = resp.body.string().fromJson(CurseForgePublishResult::class.java)
                 if (result.isSuccess) BackResult.result(result) else PublishResult.create(resp.body.string())
             }
@@ -76,10 +76,10 @@ class CurseForgeAPI : API() {
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo {
-        val request = getJsonRequest(B_URL.getRequestBuilder("mods/$modid", project)).get().build()
+        val request = request(B_URL, "mods/$modid", project).json().get().build()
         return try {
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return ModInfo.of(it) }
+                resp.status()?.let { return ModInfo.of(it) }
                 val data = resp.body.byteStream().getJsonObject().getAsJsonObject("data")
                 ModInfo.of(modid, data.get("name").asString, data.get("slug").asString)
             }
@@ -112,8 +112,7 @@ class CurseForgeAPI : API() {
         }.toJson()
     }
 
-    private fun String.getRequestBuilder(url: String, project: Project): Request.Builder {
-        val server = this
+    private fun request(server: String, url: String, project: Project): Request.Builder {
         return baseRequestBuilder.apply {
             if (server == B_URL) header("x-api-key", PID.CurseForgeStudioToken.getProtect(project).data)
             else header("X-Api-Token", PID.CurseForgeToken.getProtect(project).data)

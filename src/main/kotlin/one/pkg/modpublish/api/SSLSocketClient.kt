@@ -30,7 +30,7 @@ import javax.net.ssl.*
  * It helped me fix several constructor-related bugs.
  *
  */
-@Suppress("unused")
+@Suppress("UNUSED")
 internal object SSLSocketClient {
     val sslSocketFactory: SSLSocketFactory
         get() {

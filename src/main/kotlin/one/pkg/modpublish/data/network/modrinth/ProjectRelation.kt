@@ -19,7 +19,7 @@ package one.pkg.modpublish.data.network.modrinth
 import com.google.gson.annotations.SerializedName
 import one.pkg.modpublish.data.local.DependencyType
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class ProjectRelation(
     @SerializedName("version_id")
     val versionID: String? = null,

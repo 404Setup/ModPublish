@@ -24,7 +24,7 @@ import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.crea
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createOptional
 import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createRequired
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class CurseForgeData(
     /**
      * Changelog - A string describing changes, can be HTML or Markdown format

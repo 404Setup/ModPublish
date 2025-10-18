@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project
 import one.pkg.modpublish.data.internal.Info
 import javax.swing.JTextField
 
-@Suppress("unused")
+@Suppress("UNUSED")
 enum class PID(val id: String, val protect: Boolean) {
     ModrinthModID("modpublish.modrinth.modid", false),
     ModrinthToken("modpublish.modrinth.token", true),

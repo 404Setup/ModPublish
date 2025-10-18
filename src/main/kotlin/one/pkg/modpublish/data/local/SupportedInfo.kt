@@ -16,12 +16,10 @@
  */
 package one.pkg.modpublish.data.local
 
-@Suppress("unused")
 data class SupportedInfo(
     val client: SupportTarget = SupportTarget(),
     val server: SupportTarget = SupportTarget()
 ) {
-    @Suppress("unused")
     data class SupportTarget(
         val cfid: Int = 0,
         var enabled: Boolean = false

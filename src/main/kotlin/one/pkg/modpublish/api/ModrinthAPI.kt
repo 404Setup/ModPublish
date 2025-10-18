@@ -38,7 +38,7 @@ class ModrinthAPI : API() {
     override val id: String = "Modrinth"
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
-        val requestBuilder = getFormRequest(getRequestBuilder("version", project))
+        val requestBuilder = request("version", project).form()
         val body = MultipartBody.Builder().setType(MultipartBody.FORM).apply {
             addFormDataPart("data", createJsonBody(data, project))
             data.files.forEachIndexed { i, file ->
@@ -51,7 +51,7 @@ class ModrinthAPI : API() {
 
         return try {
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return PublishResult.create(this, it) }
+                resp.status()?.let { return PublishResult.create(this, it) }
                 PublishResult.EMPTY
             }
         } catch (e: IOException) {
@@ -81,10 +81,10 @@ class ModrinthAPI : API() {
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo {
-        val request = getJsonRequest(getRequestBuilder("project/$modid", project)).get().build()
+        val request = request("project/$modid", project).json().get().build()
         return try {
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return ModInfo.of(it) }
+                resp.status()?.let { return ModInfo.of(it) }
                 val obj = resp.body.byteStream().getJsonObject()
                 ModInfo.of(modid, obj.get("title").asString, obj.get("slug").asString)
             }
@@ -99,12 +99,12 @@ class ModrinthAPI : API() {
         project: Project
     ): PublishResult {
         return try {
-            val request = getJsonRequest(getRequestBuilder("project/$modid", project))
+            val request = request("project/$modid", project).json()
                 .patch(ModrinthDescription.createRequest(body))
                 .build()
 
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let { return PublishResult.create(this, it) }
+                resp.status()?.let { return PublishResult.create(this, it) }
                 PublishResult.EMPTY
             }
         } catch (e: IOException) {
@@ -112,7 +112,7 @@ class ModrinthAPI : API() {
         }
     }
 
-    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
+    private fun request(url: String, project: Project): Request.Builder =
         baseRequestBuilder.header("Authorization", PID.ModrinthToken.getProtect(project).data)
             .url(URL + url)
 

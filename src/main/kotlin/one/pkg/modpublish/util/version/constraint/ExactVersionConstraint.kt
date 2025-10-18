@@ -18,7 +18,7 @@ package one.pkg.modpublish.util.version.constraint
 
 import one.pkg.modpublish.util.version.Version
 
-@Suppress("unused")
+@Suppress("UNUSED")
 class ExactVersionConstraint(versionStr: String) : VersionConstraint {
     private val targetVersion = Version(versionStr)
     override val original: String = versionStr

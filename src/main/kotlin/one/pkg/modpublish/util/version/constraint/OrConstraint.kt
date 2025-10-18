@@ -18,7 +18,7 @@ package one.pkg.modpublish.util.version.constraint
 
 import one.pkg.modpublish.util.version.Version
 
-@Suppress("unused")
+@Suppress("UNUSED")
 class OrConstraint(
     constraints: List<VersionConstraint>,
     override val original: String

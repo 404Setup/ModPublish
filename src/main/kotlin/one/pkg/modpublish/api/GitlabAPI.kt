@@ -79,12 +79,12 @@ class GitlabAPI : API() {
     }
 
     private fun createRelease(data: PublishData, project: Project): Result = try {
-        val request = getJsonRequest(getRequestBuilder(RELEASES_URL, project))
+        val request = request(RELEASES_URL, project).json()
             .post(createJsonBody(data, project).toRequestBody("application/json".toMediaType()))
             .build()
 
         client.newCall(request).execute().use { resp ->
-            getStatus(resp)?.let { return PublishResult.create(this, "Failed to create release: $it") }
+            resp.status()?.let { return PublishResult.create(this, "Failed to create release: $it") }
             BackResult.result(resp.body.string())
         }
     } catch (e: IOException) {
@@ -120,12 +120,12 @@ class GitlabAPI : API() {
                 addProperty("link_type", "package")
             }.toString()
 
-            val request = getRequestBuilder("$RELEASES_URL/$tagName/assets/links", project)
+            val request = request("$RELEASES_URL/$tagName/assets/links", project)
                 .post(linkBody.toRequestBody("application/json".toMediaType()))
                 .build()
 
             client.newCall(request).execute().use { resp ->
-                getStatus(resp)?.let {
+                resp.status()?.let {
                     return PublishResult.create(this, "Failed to link asset: $it")
                 }
             }
@@ -137,7 +137,7 @@ class GitlabAPI : API() {
 
     private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = try {
         val url = "$RELEASES_URL/$tagName"
-        val request = getRequestBuilder(url, project).get().build()
+        val request = request(url, project).get().build()
         client.newCall(request).execute()
             .use { resp -> if (resp.isSuccessful) resp.body.string().fromJson() else null }
     } catch (_: IOException) {
@@ -165,12 +165,12 @@ class GitlabAPI : API() {
             addProperty("description", data.changelog)
         }.toString()
 
-        val request = getRequestBuilder("$RELEASES_URL/$tagName", project)
+        val request = request("$RELEASES_URL/$tagName", project)
             .put(updateBody.toRequestBody("application/json".toMediaType()))
             .build()
 
         client.newCall(request).execute().use { resp ->
-            getStatus(resp)?.let {
+            resp.status()?.let {
                 return PublishResult.create(this, "Failed to update release: $it")
             }
             PublishResult.EMPTY
@@ -187,7 +187,7 @@ class GitlabAPI : API() {
 
     @Throws(IOException::class)
     private fun getDefaultBranch(project: Project): String {
-        val request = getRequestBuilder(REPO_INFO_URL, project).get().build()
+        val request = request(REPO_INFO_URL, project).get().build()
         client.newCall(request).execute().use { resp ->
             if (resp.isSuccessful) return resp.body.string().fromJson().get("default_branch").asString
         }
@@ -197,7 +197,7 @@ class GitlabAPI : API() {
     @Throws(IOException::class)
     private fun getLatestCommitHash(branch: String, project: Project): String {
         val url = BRANCH_COMMIT_URL.replace("{branch}", branch)
-        val request = getRequestBuilder(url, project).get().build()
+        val request = request(url, project).get().build()
         client.newCall(request).execute().use { resp ->
             if (resp.isSuccessful) {
                 val commit = resp.body.string().fromJson().getAsJsonObject("commit")
@@ -223,7 +223,7 @@ class GitlabAPI : API() {
         }.toJson()
     }
 
-    private fun getRequestBuilder(url: String, project: Project): Request.Builder =
+    private fun request(url: String, project: Project): Request.Builder =
         baseRequestBuilder.apply {
             header("Accept", "application/json")
             header("PRIVATE-TOKEN", PID.GitlabToken.getProtect(project).data)

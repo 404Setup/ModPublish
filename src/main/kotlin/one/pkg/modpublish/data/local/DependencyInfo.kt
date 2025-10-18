@@ -18,7 +18,7 @@ package one.pkg.modpublish.data.local
 
 import one.pkg.modpublish.data.internal.ModInfo
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class DependencyInfo(
     var projectId: String? = null,
     var modrinthModInfo: ModInfo? = null,

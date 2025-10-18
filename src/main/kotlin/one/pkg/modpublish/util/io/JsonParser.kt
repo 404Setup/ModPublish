@@ -22,7 +22,7 @@ import com.google.gson.stream.JsonReader
 import java.io.*
 import java.lang.reflect.Type
 
-@Suppress("unused")
+@Suppress("UNUSED")
 object JsonParser {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 

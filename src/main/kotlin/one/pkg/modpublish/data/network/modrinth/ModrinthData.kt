@@ -31,7 +31,7 @@ import java.io.File
 /**
  * Comment: Why are many parameters here inconsistent with the API docs?
  */
-@Suppress("unused")
+@Suppress("UNUSED")
 data class ModrinthData(
     @SerializedName("version_title")
     var name: String? = null,

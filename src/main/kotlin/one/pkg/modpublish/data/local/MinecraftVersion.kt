@@ -18,7 +18,7 @@ package one.pkg.modpublish.data.local
 
 import com.google.gson.annotations.SerializedName
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class MinecraftVersion(
     @SerializedName("v") val version: String = "",
     @SerializedName("t") val type: String = "",

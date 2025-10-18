@@ -29,7 +29,7 @@ import javax.swing.JComboBox
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-@Suppress("unused")
+@Suppress("UNUSED")
 class ModPublishSettingsComponent : BaseDialogWrapper(null) {
     val panel: JPanel
 

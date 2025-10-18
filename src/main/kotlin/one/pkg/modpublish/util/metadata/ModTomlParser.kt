@@ -22,7 +22,7 @@ import one.pkg.modpublish.util.io.toml.KTomlParser
 import java.io.InputStream
 import java.lang.AutoCloseable
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     fun get(): LocalModInfo? {
         return try {

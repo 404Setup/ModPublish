@@ -18,7 +18,7 @@ package one.pkg.modpublish.data.network.curseforge
 
 import com.google.gson.annotations.SerializedName
 
-@Suppress("unused")
+@Suppress("UNUSED")
 data class CurseForgePublishResult(
     /**
      * The uploaded file ID

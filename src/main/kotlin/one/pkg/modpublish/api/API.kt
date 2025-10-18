@@ -28,37 +28,42 @@ import java.util.*
 abstract class API {
     abstract val id: String
 
-    internal fun getJsonRequest(builder: Request.Builder): Request.Builder {
-        return builder.header("Accept", "application/json")
+    internal fun Request.Builder.json(): Request.Builder {
+        return header("Accept", "application/json")
     }
 
-    internal fun getFormRequest(builder: Request.Builder): Request.Builder {
-        return builder.header("Content-Type", "multipart/form-data")
+    internal fun Request.Builder.form(): Request.Builder {
+        return header("Content-Type", "multipart/form-data")
     }
 
-    internal fun getContentType(response: Response): Optional<String> {
-        return Optional.ofNullable<String>(response.header("Content-Type"))
+    internal fun Response.contentType(): Optional<String> {
+        return Optional.ofNullable<String>(header("Content-Type"))
     }
 
     internal abstract fun createJsonBody(data: PublishData, project: Project): String
 
-    internal fun getStatus(response: Response): String? {
-        if (response.code == 403) return Lang.get("api.common.err.403")
-        if (response.code == 404) return Lang.get("api.common.err.404")
-        if (response.code == 500) return Lang.get("api.common.err.500")
-        if (response.code == 302) return "Duplicate resource"
-        try {
-            if (response.code == 400 || response.code == 401 || response.code == 422) return response.body.string()
-        } catch (_: Exception) {
-            return "HTTP " + response.code
+    internal fun Response.status(): String? {
+        return when (code) {
+            403, 404, 500 -> Lang.get("api.common.err.$code")
+            302 -> "Duplicate resource"
+            400, 401, 422 -> try {
+                body.string()
+            } catch (_: Exception) {
+                "HTTP $code"
+            }
+
+            204 -> null
+            else -> validateContentType()
         }
-        if (response.code == 204) return null
-        val ct = getContentType(response)
-        if (ct.isEmpty || !ct.get().contains("application/json")) return Lang.get(
-            "api.common.err.format",
-            ct.orElse("Unknown")
-        )
-        return null
+    }
+
+    private fun Response.validateContentType(): String? {
+        val type = contentType()
+        return if (type.isEmpty || !type.get().contains("application/json")) {
+            Lang.get("api.common.err.format", type.orElse("Unknown"))
+        } else {
+            null
+        }
     }
 
     abstract fun createVersion(data: PublishData, project: Project): PublishResult
