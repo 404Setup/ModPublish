@@ -20,5 +20,5 @@ data class LocalModInfo(
     val name: String,
     val version: String,
     val versionRange: String?,
-    val sideType: SideType,
+    val sideType: SideType = SideType.BOTH,
 )

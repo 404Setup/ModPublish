@@ -35,64 +35,67 @@ class ModJsonParser(inputStream: InputStream) {
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getFabric(): LocalModInfo {
         val range = json.get("depends").asJsonObject.get("minecraft")
-        var finalRange = ""
-        runCatching {
-            finalRange = range.asString
+        val finalRange = runCatching {
+            range.asString
         }.onFailure {
             val arr = range.asJsonArray
             val arrMain = ArrayList<String>(arr.size())
             arr.forEach { arrMain.add(it.asString) }
             arrMain.reverse()
-            finalRange = buildString {
+            buildString {
                 append("[")
                 append(arrMain.joinToString(","))
                 append("]")
             }
-        }
+        }.getOrDefault("")
 
-        val environment = json.get("environment").asString
-        val side = when (environment) {
+        val side = when (json.get("environment").asString) {
             "*" -> SideType.BOTH
             "client" -> SideType.CLIENT
             else -> SideType.SERVER
         }
 
         return LocalModInfo(
-            json.get("name").asString, json.get("version").asString,
-            finalRange, side
+            name = json.get("name").asString,
+            version = json.get("version").asString,
+            versionRange = finalRange,
+            sideType = side
         )
     }
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getLiteMod(): LocalModInfo =
         LocalModInfo(
-            json.get("name").asString, json.get("version").asString,
-            json.get("mcversion").asString, SideType.BOTH
+            name = json.get("name").asString,
+            version = json.get("version").asString,
+            versionRange = json.get("mcversion").asString
         )
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getRiftMod(): LocalModInfo =
         LocalModInfo(
-            json.get("name").asString, json.get("version").let {
+            name = json.get("name").asString,
+            version = json.get("version").let {
                 runCatching { it.asString }.getOrDefault("1.0.0")
             },
-            "1.13",
-            SideType.BOTH
+            versionRange = "1.13"
         )
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getMcMod(): LocalModInfo {
-        val obj = json.asJsonArray.get(0).asJsonObject
+        val obj = json.asJsonArray[0].asJsonObject
 
-        val serverSide = obj.get("serverSideOnly")?.asBoolean ?: false
-        val clientSide = obj.get("clientSideOnly")?.asBoolean ?: false
-
-        val side = if (!serverSide && !clientSide) SideType.BOTH
-        else if (serverSide) SideType.SERVER else SideType.CLIENT
+        val side = when {
+            obj.get("serverSideOnly")?.asBoolean == true -> SideType.SERVER
+            obj.get("clientSideOnly")?.asBoolean == true -> SideType.CLIENT
+            else -> SideType.BOTH
+        }
 
         return LocalModInfo(
-            obj.get("name").asString, obj.get("version").asString,
-            obj.get("mcversion").asString, side
+            name = obj.get("name").asString,
+            version = obj.get("version").asString,
+            versionRange = obj.get("mcversion").asString,
+            sideType = side
         )
     }
 }
