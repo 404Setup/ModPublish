@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package one.pkg.modpublish.data.internal
 
-data class LocalModInfo(
-    val name: String,
-    val version: String,
-    val versionRange: String?,
-    val sideType: SideType,
-)
+enum class SideType {
+    CLIENT, SERVER, BOTH
+}

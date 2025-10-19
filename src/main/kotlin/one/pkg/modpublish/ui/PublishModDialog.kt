@@ -135,6 +135,21 @@ class PublishModDialog(
         jarFiles = arrayOf(current) + jarFiles.filterNot { it == current }
     }
 
+    private fun updateSideType() {
+        clientCheckBox.isSelected = false
+        serverCheckBox.isSelected = false
+        modInfo?.let {
+            when (it.sideType) {
+                SideType.BOTH -> {
+                    clientCheckBox.isSelected = true; serverCheckBox.isSelected = true
+                }
+
+                SideType.CLIENT -> clientCheckBox.isSelected = true
+                SideType.SERVER -> serverCheckBox.isSelected = true
+            }
+        }
+    }
+
     private fun onPrimaryFileUpdate() {
         val current = primaryFile.selectedItem as VirtualFile
         updateJarFiles(current)
@@ -337,6 +352,7 @@ class PublishModDialog(
 
     private fun loadModInfo(current: VirtualFile) {
         LOG.info("Start load mod info: ${current.name}")
+        updateSideType()
         val modType = publishTypes[current]?.firstOrNull()
         if (modType != null) LOG.info("Loading mod info: ${modType.name}")
         val versionNameFormat = PID.CommonVersionFormat.get(requireNotNull(project))

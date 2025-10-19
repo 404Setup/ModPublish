@@ -18,11 +18,11 @@ package one.pkg.modpublish.util.metadata
 
 import com.google.gson.JsonObject
 import one.pkg.modpublish.data.internal.LocalModInfo
+import one.pkg.modpublish.data.internal.SideType
 import one.pkg.modpublish.util.io.JsonParser
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
-import java.util.ArrayList
 
 class ModJsonParser(inputStream: InputStream) {
     private val json: JsonObject
@@ -49,17 +49,25 @@ class ModJsonParser(inputStream: InputStream) {
                 append("]")
             }
         }
-            return LocalModInfo(
-                json.get("name").asString, json.get("version").asString,
-                finalRange
-            )
+
+        val environment = json.get("environment").asString
+        val side = when (environment) {
+            "*" -> SideType.BOTH
+            "client" -> SideType.CLIENT
+            else -> SideType.SERVER
+        }
+
+        return LocalModInfo(
+            json.get("name").asString, json.get("version").asString,
+            finalRange, side
+        )
     }
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getLiteMod(): LocalModInfo =
         LocalModInfo(
             json.get("name").asString, json.get("version").asString,
-            json.get("mcversion").asString
+            json.get("mcversion").asString, SideType.BOTH
         )
 
     @Throws(AssertionError::class, IllegalStateException::class)
@@ -68,15 +76,23 @@ class ModJsonParser(inputStream: InputStream) {
             json.get("name").asString, json.get("version").let {
                 runCatching { it.asString }.getOrDefault("1.0.0")
             },
-            "1.13"
+            "1.13",
+            SideType.BOTH
         )
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getMcMod(): LocalModInfo {
         val obj = json.asJsonArray.get(0).asJsonObject
+
+        val serverSide = obj.get("serverSideOnly")?.asBoolean ?: false
+        val clientSide = obj.get("clientSideOnly")?.asBoolean ?: false
+
+        val side = if (!serverSide && !clientSide) SideType.BOTH
+        else if (serverSide) SideType.SERVER else SideType.CLIENT
+
         return LocalModInfo(
             obj.get("name").asString, obj.get("version").asString,
-            obj.get("mcversion").asString
+            obj.get("mcversion").asString, side
         )
     }
 }

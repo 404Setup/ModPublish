@@ -96,7 +96,8 @@ enum class PublishType(val fileName: String, val displayName: String, val curseF
             LocalModInfo(
                 name = file.nameWithoutExtension,
                 version = "unknown",
-                versionRange = "1.0.0"
+                versionRange = "1.0.0",
+                sideType = SideType.BOTH
             )
         } else null
 
