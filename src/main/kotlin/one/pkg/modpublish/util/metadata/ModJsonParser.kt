@@ -22,6 +22,7 @@ import one.pkg.modpublish.util.io.JsonParser
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
+import java.util.ArrayList
 
 class ModJsonParser(inputStream: InputStream) {
     private val json: JsonObject
@@ -32,11 +33,27 @@ class ModJsonParser(inputStream: InputStream) {
     }
 
     @Throws(AssertionError::class, IllegalStateException::class)
-    fun getFabric(): LocalModInfo =
-        LocalModInfo(
-            json.get("name").asString, json.get("version").asString,
-            json.get("depends").asJsonObject.get("minecraft").asString
-        )
+    fun getFabric(): LocalModInfo {
+        val range = json.get("depends").asJsonObject.get("minecraft")
+        var finalRange = ""
+        runCatching {
+            finalRange = range.asString
+        }.onFailure {
+            val arr = range.asJsonArray
+            val arrMain = ArrayList<String>(arr.size())
+            arr.forEach { arrMain.add(it.asString) }
+            arrMain.reverse()
+            finalRange = buildString {
+                append("[")
+                append(arrMain.joinToString(","))
+                append("]")
+            }
+        }
+            return LocalModInfo(
+                json.get("name").asString, json.get("version").asString,
+                finalRange
+            )
+    }
 
     @Throws(AssertionError::class, IllegalStateException::class)
     fun getLiteMod(): LocalModInfo =

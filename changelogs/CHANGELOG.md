@@ -5,6 +5,9 @@
 - Support sync README to Modrinth
 - Support LiteLoader and JavaAgent
 
+### Fix
+- Fixed the parsing failure caused by multiple ways of writing the minecraft version range in fabric.mod.json
+
 ### Change
 - Changelog input box is now scrollable
 
