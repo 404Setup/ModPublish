@@ -21,10 +21,9 @@ import one.pkg.modpublish.data.internal.PublishType
 import one.pkg.modpublish.data.internal.ReleaseChannel
 import one.pkg.modpublish.data.internal.RequestStatus
 import one.pkg.modpublish.data.local.MinecraftVersion
-import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.createEmbedded
-import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.createIncompatible
-import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.createOptional
-import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.createRequired
+import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.embedded
+import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.optional
+import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.required
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import java.io.File
 
@@ -114,19 +113,19 @@ data class ModrinthData(
     }
 
     fun requiredDependency(slug: String) {
-        return dependency(createRequired(slug))
+        return dependency(required(slug))
     }
 
     fun optionalDependency(slug: String) {
-        return dependency(createOptional(slug))
+        return dependency(optional(slug))
     }
 
     fun embeddedLibrary(slug: String) {
-        return dependency(createEmbedded(slug))
+        return dependency(embedded(slug))
     }
 
     fun incompatible(slug: String) {
-        return dependency(createIncompatible(slug))
+        return dependency(ProjectRelation.Companion.incompatible(slug))
     }
 
     fun gameVersion(gameVersion: String) {

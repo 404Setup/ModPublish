@@ -73,13 +73,11 @@ class PublishModAction : AnAction() {
         if (file != null && !file.isDirectory) {
             val isJarFile = file.name.endsWith(".jar") || file.name.endsWith(".litemod")
             if (isJarFile) {
-                try {
+                runCatching {
                     val modType = file.toFile().toModType()
                     shouldShow = true
                     shouldEnable = modType != null
-                } catch (_: Exception) {
-                    shouldShow = true
-                }
+                }.onFailure { shouldShow = true }
             }
         }
 

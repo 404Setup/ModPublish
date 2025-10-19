@@ -25,7 +25,7 @@ import java.lang.AutoCloseable
 @Suppress("UNUSED")
 data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     fun get(): LocalModInfo? {
-        return try {
+        return runCatching {
             val mods = parser.getAsTomlParser("mods")
             if (mods == null || mods.isEmpty()) {
                 LOG.warn("No mods section found in TOML file")
@@ -36,10 +36,7 @@ data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
             val version = mods.getAsString("version")
 
             LocalModInfo(displayName, version, getMinecraftVersions(mods.getAsString("modId")))
-        } catch (e: Exception) {
-            LOG.error("Failed to parse mod.toml", e)
-            null
-        }
+        }.onFailure { LOG.error("Failed to parse mod.toml", it) }.getOrNull()
     }
 
     fun getMinecraftVersions(modId: String): String {

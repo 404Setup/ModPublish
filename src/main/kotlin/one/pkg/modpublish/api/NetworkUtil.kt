@@ -61,7 +61,7 @@ object NetworkUtil {
         }.build()
     }
 
-    private fun isValidIpAddress(ip: String): Boolean = try {
+    private fun isValidIpAddress(ip: String): Boolean = runCatching {
         ip.split('.').let { parts ->
             if (parts.size == 4) return parts.all { it.toInt() in 0..255 }
         }
@@ -69,9 +69,7 @@ object NetworkUtil {
             if (parts.isNotEmpty()) return parts.all { it.isEmpty() || it.length <= 4 && it.toInt(16) >= 0 }
         }
         false
-    } catch (_: NumberFormatException) {
-        false
-    }
+    }.getOrDefault(false)
 
     fun getProxy(state: ModPublishSettings.State): Proxy {
         if (state.autoProxy) return ProxyConfigReader.getProxy(Proxy.NO_PROXY)

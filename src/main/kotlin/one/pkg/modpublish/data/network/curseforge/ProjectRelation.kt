@@ -60,11 +60,11 @@ data class ProjectRelation(
          * @param slug Project slug
          * @return ProjectRelation object
          */
-        fun createRequired(slug: String): ProjectRelation {
+        fun required(slug: String): ProjectRelation {
             return ProjectRelation(slug, DependencyType.REQUIRED.curseForgeName)
         }
 
-        fun createRequired(slug: String, projectID: Int): ProjectRelation {
+        fun required(slug: String, projectID: Int): ProjectRelation {
             return ProjectRelation(slug, projectID, DependencyType.REQUIRED.curseForgeName)
         }
 
@@ -74,11 +74,11 @@ data class ProjectRelation(
          * @param slug Project slug
          * @return ProjectRelation object
          */
-        fun createOptional(slug: String): ProjectRelation {
+        fun optional(slug: String): ProjectRelation {
             return ProjectRelation(slug, DependencyType.OPTIONAL.curseForgeName)
         }
 
-        fun createOptional(slug: String, projectID: Int): ProjectRelation {
+        fun optional(slug: String, projectID: Int): ProjectRelation {
             return ProjectRelation(slug, projectID, DependencyType.OPTIONAL.curseForgeName)
         }
 
@@ -88,11 +88,11 @@ data class ProjectRelation(
          * @param slug Project slug
          * @return ProjectRelation object
          */
-        fun createEmbedded(slug: String): ProjectRelation {
+        fun embedded(slug: String): ProjectRelation {
             return ProjectRelation(slug, DependencyType.EMBEDDED.curseForgeName)
         }
 
-        fun createEmbedded(slug: String, projectID: Int): ProjectRelation {
+        fun embedded(slug: String, projectID: Int): ProjectRelation {
             return ProjectRelation(slug, projectID, DependencyType.EMBEDDED.curseForgeName)
         }
 
@@ -102,29 +102,29 @@ data class ProjectRelation(
          * @param slug Project slug
          * @return ProjectRelation object
          */
-        fun createIncompatible(slug: String): ProjectRelation {
+        fun incompatible(slug: String): ProjectRelation {
             return ProjectRelation(slug, DependencyType.INCOMPATIBLE.curseForgeName)
         }
 
-        fun createIncompatible(slug: String, projectID: Int): ProjectRelation {
+        fun incompatible(slug: String, projectID: Int): ProjectRelation {
             return ProjectRelation(slug, projectID, DependencyType.INCOMPATIBLE.curseForgeName)
         }
 
         fun create(slug: String, type: DependencyType): ProjectRelation {
             return when (type) {
-                DependencyType.EMBEDDED -> createEmbedded(slug)
-                DependencyType.OPTIONAL -> createOptional(slug)
-                DependencyType.REQUIRED -> createRequired(slug)
-                DependencyType.INCOMPATIBLE -> createIncompatible(slug)
+                DependencyType.EMBEDDED -> embedded(slug)
+                DependencyType.OPTIONAL -> optional(slug)
+                DependencyType.REQUIRED -> required(slug)
+                DependencyType.INCOMPATIBLE -> incompatible(slug)
             }
         }
 
         fun create(slug: String, projectID: Int, type: DependencyType): ProjectRelation {
             return when (type) {
-                DependencyType.EMBEDDED -> createEmbedded(slug, projectID)
-                DependencyType.OPTIONAL -> createOptional(slug, projectID)
-                DependencyType.REQUIRED -> createRequired(slug, projectID)
-                DependencyType.INCOMPATIBLE -> createIncompatible(slug, projectID)
+                DependencyType.EMBEDDED -> embedded(slug, projectID)
+                DependencyType.OPTIONAL -> optional(slug, projectID)
+                DependencyType.REQUIRED -> required(slug, projectID)
+                DependencyType.INCOMPATIBLE -> incompatible(slug, projectID)
             }
         }
     }

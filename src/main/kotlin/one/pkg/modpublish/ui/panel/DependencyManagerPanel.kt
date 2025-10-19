@@ -112,9 +112,7 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
         }
     }
 
-    fun getDependencies(): List<DependencyInfo> {
-        return ArrayList(dependencies)
-    }
+    fun getDependencies(): List<DependencyInfo> = ArrayList(dependencies)
 
     fun setDependencies(dependencies: List<DependencyInfo>?) {
         this.dependencies.clear()

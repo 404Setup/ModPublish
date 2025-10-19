@@ -35,7 +35,6 @@ import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.getJsonObject
 import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
-import java.io.IOException
 
 class CurseForgeAPI : API() {
     override val id: String = "CurseForge"
@@ -53,15 +52,13 @@ class CurseForgeAPI : API() {
 
         val request = requestBuilder.post(body).build()
 
-        return try {
+        return runCatching {
             client.newCall(request).execute().use { resp ->
                 resp.status()?.let { return PublishResult.create(this, it) }
                 val result = resp.body.string().fromJson(CurseForgePublishResult::class.java)
                 if (result.isSuccess) BackResult.result(result) else PublishResult.create(resp.body.string())
             }
-        } catch (e: IOException) {
-            PublishResult.create(this, e.message)
-        }
+        }.getOrElse { PublishResult.create(this, it.message) }
     }
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
@@ -77,15 +74,13 @@ class CurseForgeAPI : API() {
 
     override fun getModInfo(modid: String, project: Project): ModInfo {
         val request = request(B_URL, "mods/$modid", project).json().get().build()
-        return try {
+        return runCatching {
             client.newCall(request).execute().use { resp ->
                 resp.status()?.let { return ModInfo.of(it) }
                 val data = resp.body.byteStream().getJsonObject().getAsJsonObject("data")
                 ModInfo.of(modid, data.get("name").asString, data.get("slug").asString)
             }
-        } catch (e: IOException) {
-            ModInfo.of(e.message)
-        }
+        }.getOrElse { ModInfo.of(it.message) }
     }
 
     override fun createJsonBody(data: PublishData, project: Project): String =

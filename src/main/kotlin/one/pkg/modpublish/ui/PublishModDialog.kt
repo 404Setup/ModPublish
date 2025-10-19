@@ -66,7 +66,6 @@ import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.util.concurrent.CompletionException
 import javax.swing.*
 
 class PublishModDialog(
@@ -564,7 +563,7 @@ class PublishModDialog(
             return results
         }
 
-        try {
+        runCatching {
             val curseForgeTask =
                 createPublishTask(PublishTarget.CurseForge.api, curseforgeCheckBox, data)
             val modrinthTask =
@@ -577,14 +576,7 @@ class PublishModDialog(
             runBlocking {
                 joinResult(results, curseForgeTask, modrinthTask, githubTask, gitlabTask)
             }
-        } catch (e: CompletionException) {
-            results.add(
-                PublishResult.of(
-                    "failed.7",
-                    e.message ?: "Unknown error"
-                )
-            )
-        }
+        }.onFailure { results.add(PublishResult.of("failed.7", it.message ?: "Unknown error")) }
         return results
     }
 

@@ -49,11 +49,7 @@ class ModJsonParser(inputStream: InputStream) {
     fun getRiftMod(): LocalModInfo =
         LocalModInfo(
             json.get("name").asString, json.get("version").let {
-                try {
-                    it.asString
-                } catch (_: Exception) {
-                    "1.0.0"
-                }
+                runCatching { it.asString }.getOrDefault("1.0.0")
             },
             "1.13"
         )

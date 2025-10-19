@@ -38,7 +38,7 @@ object VersionProcessor {
     private const val CURSEFORGE_URL = "https://api.curseforge.com/v1/minecraft/version"
 
     private fun fetchMinecraftVersions(): MutableList<MutableMap<String, Any>>? {
-        try {
+        return runCatching {
             LOG.info("Fetching Minecraft version data from Mojang API..")
             val request = API.baseRequestBuilder.url(MOJANG_URL).build()
             NetworkUtil.client.newCall(request).execute().use { response ->
@@ -73,18 +73,17 @@ object VersionProcessor {
                 LOG.info("   Snapshot: " + latestInfo.get("snapshot").asString)
                 return processedVersions
             }
-        } catch (e: IOException) {
-            LOG.error("❌ Network request error", e)
-        } catch (e: JsonParseException) {
-            LOG.error("❌ JSON parsing error", e)
-        } catch (e: Exception) {
-            LOG.error("❌ Unknown error", e)
-        }
-        return null
+        }.onFailure {
+            when (it) {
+                is IOException -> LOG.error("❌ Network request error", it)
+                is JsonParseException -> LOG.error("❌ JSON parsing error", it)
+                else -> LOG.error("❌ Unknown error", it)
+            }
+        }.getOrNull()
     }
 
     private fun fetchCurseforgeVersions(): MutableList<MutableMap<String, Any>>? {
-        try {
+        return runCatching {
             LOG.info("Fetching version data from CurseForge API...")
             val request = API.baseRequestBuilder.url(CURSEFORGE_URL).build()
             NetworkUtil.client.newCall(request).execute().use { response ->
@@ -103,14 +102,13 @@ object VersionProcessor {
                 LOG.info("✅ Successfully got CurseForge API data with ${parsed.size} versions")
                 return parsed
             }
-        } catch (e: IOException) {
-            LOG.error("❌ Network request error", e)
-        } catch (e: JsonParseException) {
-            LOG.error("❌ JSON parsing error", e)
-        } catch (e: Exception) {
-            LOG.error("❌ Unknown error getting CurseForge data", e)
-        }
-        return null
+        }.onFailure {
+            when (it) {
+                is IOException -> LOG.error("❌ Network request error", it)
+                is JsonParseException -> LOG.error("❌ JSON parsing error", it)
+                else -> LOG.error("❌ Unknown error getting CurseForge data", it)
+            }
+        }.getOrNull()
     }
 
     private fun createVersionMapping(curseforgeVersions: MutableList<MutableMap<String, Any>>): MutableMap<String, Int> {
@@ -156,7 +154,7 @@ object VersionProcessor {
     }
 
     private fun saveVersions(versions: MutableList<MutableMap<String, Any>>, outputFile: File): Boolean {
-        try {
+        return runCatching {
             if (outputFile.exists()) outputFile.delete()
             outputFile.createNewFile()
             FileWriter(outputFile, StandardCharsets.UTF_8).use { writer ->
@@ -164,10 +162,7 @@ object VersionProcessor {
                 LOG.info("✅ Successfully saved updated data to $outputFile")
                 return true
             }
-        } catch (e: IOException) {
-            LOG.error("❌ Error saving file, ", e)
-            return false
-        }
+        }.onFailure { LOG.error("❌ Error saving file, ", it) }.getOrDefault(false)
     }
 
     private fun saveVersions(versions: MutableList<MutableMap<String, Any>>, outputFile: String): Boolean {

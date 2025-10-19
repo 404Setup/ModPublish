@@ -91,7 +91,7 @@ class GitlabAPI : API() {
         PublishResult.create(this, "Network error: ${e.message}")
     }
 
-    private fun uploadAssetToProject(file: File, project: Project): String? = try {
+    private fun uploadAssetToProject(file: File, project: Project): String? = runCatching {
         val fileBody = file.asRequestBody("application/octet-stream".toMediaType())
         val request = baseRequestBuilder.url(UPLOAD_URL.replace("{path}", PID.GitlabRepo.get(project)))
             .header("PRIVATE-TOKEN", PID.GitlabToken.getProtect(project).data)
@@ -104,9 +104,7 @@ class GitlabAPI : API() {
                 response.get("url")?.asString
             } else null
         }
-    } catch (_: IOException) {
-        null
-    }
+    }.getOrNull()
 
     private fun linkAssetsToRelease(tagName: String, assetLinks: List<String>, project: Project): PublishResult = try {
         assetLinks.forEach { url ->
@@ -135,19 +133,17 @@ class GitlabAPI : API() {
         PublishResult.create(this, "Failed to link assets: ${e.message}")
     }
 
-    private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = try {
+    private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = runCatching {
         val url = "$RELEASES_URL/$tagName"
         val request = request(url, project).get().build()
         client.newCall(request).execute()
             .use { resp -> if (resp.isSuccessful) resp.body.string().fromJson() else null }
-    } catch (_: IOException) {
-        null
-    }
+    }.getOrNull()
 
     private fun getExistingAssetNames(release: JsonObject?): Set<String> {
         if (release == null) return emptySet()
 
-        return try {
+        return runCatching {
             val assets = release.getAsJsonObject("assets")
                 ?.getAsJsonArray("links")
                 ?: return emptySet()
@@ -155,9 +151,7 @@ class GitlabAPI : API() {
             assets.mapNotNull { element ->
                 element.asJsonObject.get("name")?.asString
             }.toSet()
-        } catch (_: Exception) {
-            emptySet()
-        }
+        }.getOrDefault(emptySet())
     }
 
     private fun updateReleaseDescription(tagName: String, data: PublishData, project: Project): PublishResult = try {

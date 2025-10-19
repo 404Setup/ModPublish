@@ -24,7 +24,7 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 
 data class ModrinthDescription(val body: String) {
     companion object {
-        fun createRequest(body: String): RequestBody =
+        fun request(body: String): RequestBody =
             ModrinthDescription(body).toJson().toRequestBody("application/json; charset=utf-8".toMediaType())
     }
 }

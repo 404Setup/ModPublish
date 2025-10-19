@@ -22,12 +22,10 @@ data class FieldConfig(val label: String?, val fieldBlock: () -> JComponent) {
     constructor(fieldBlock: () -> JComponent) : this(null, fieldBlock)
 
     companion object {
-        fun of(label: String?, fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(label, fieldBlock)
-        }
+        fun of(label: String?, fieldBlock: () -> JComponent): FieldConfig =
+            FieldConfig(label, fieldBlock)
 
-        fun of(fieldBlock: () -> JComponent): FieldConfig {
-            return FieldConfig(fieldBlock)
-        }
+        fun of(fieldBlock: () -> JComponent): FieldConfig =
+            FieldConfig(fieldBlock)
     }
 }

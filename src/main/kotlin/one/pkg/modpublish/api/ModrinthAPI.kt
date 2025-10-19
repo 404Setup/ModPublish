@@ -32,7 +32,6 @@ import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.JsonParser.getJsonObject
 import one.pkg.modpublish.util.io.JsonParser.toJson
-import java.io.IOException
 
 class ModrinthAPI : API() {
     override val id: String = "Modrinth"
@@ -49,14 +48,12 @@ class ModrinthAPI : API() {
 
         val request = requestBuilder.post(body).build()
 
-        return try {
+        return runCatching {
             client.newCall(request).execute().use { resp ->
                 resp.status()?.let { return PublishResult.create(this, it) }
                 PublishResult.EMPTY
             }
-        } catch (e: IOException) {
-            PublishResult.create(this, e.message)
-        }
+        }.getOrElse { PublishResult.create(this, it.message) }
     }
 
     override fun createJsonBody(data: PublishData, project: Project): String {
@@ -82,15 +79,13 @@ class ModrinthAPI : API() {
 
     override fun getModInfo(modid: String, project: Project): ModInfo {
         val request = request("project/$modid", project).json().get().build()
-        return try {
+        return runCatching {
             client.newCall(request).execute().use { resp ->
                 resp.status()?.let { return ModInfo.of(it) }
                 val obj = resp.body.byteStream().getJsonObject()
                 ModInfo.of(modid, obj.get("title").asString, obj.get("slug").asString)
             }
-        } catch (e: IOException) {
-            ModInfo.of(e.message)
-        }
+        }.getOrElse { ModInfo.of(it.message) }
     }
 
     override fun patchDescription(
@@ -98,18 +93,16 @@ class ModrinthAPI : API() {
         body: String,
         project: Project
     ): PublishResult {
-        return try {
+        return runCatching {
             val request = request("project/$modid", project).json()
-                .patch(ModrinthDescription.createRequest(body))
+                .patch(ModrinthDescription.request(body))
                 .build()
 
             client.newCall(request).execute().use { resp ->
                 resp.status()?.let { return PublishResult.create(this, it) }
                 PublishResult.EMPTY
             }
-        } catch (e: IOException) {
-            PublishResult.create(this, e.message)
-        }
+        }.getOrElse { PublishResult.create(this, it.message) }
     }
 
     private fun request(url: String, project: Project): Request.Builder =

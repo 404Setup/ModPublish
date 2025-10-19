@@ -26,7 +26,6 @@ import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
-import java.time.format.DateTimeParseException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
@@ -869,12 +868,9 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
      * Write to file as TOML format
      */
     fun writeToFile(filePath: Path) {
-        try {
+        runCatching {
             Files.writeString(filePath, toTomlString(), StandardCharsets.UTF_8)
-        } catch (e: Exception) {
-            LOG.error("Failed to write TOML to file: $filePath", e)
-            throw e
-        }
+        }.onFailure { LOG.error("Failed to write TOML to file: $filePath", it) }
     }
 
     /**
@@ -902,27 +898,21 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
      * Write to Writer as TOML format
      */
     fun writeToWriter(writer: Writer) {
-        try {
+        runCatching {
             writer.write(toTomlString())
             writer.flush()
-        } catch (e: Exception) {
-            LOG.error("Failed to write TOML to Writer", e)
-            throw e
-        }
+        }.onFailure { LOG.error("Failed to write TOML to Writer", it) }
     }
 
     /**
      * Write to OutputStream as TOML format
      */
     fun writeToStream(outputStream: OutputStream) {
-        try {
+        runCatching {
             OutputStreamWriter(outputStream, StandardCharsets.UTF_8).use { writer ->
                 writeToWriter(writer)
             }
-        } catch (e: Exception) {
-            LOG.error("Failed to write TOML to OutputStream", e)
-            throw e
-        }
+        }.onFailure { LOG.error("Failed to write TOML to OutputStream", it) }
     }
 
     override fun toString(): String {
@@ -984,7 +974,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
         }
 
         fun fromFile(filePath: Path): KTomlParser {
-            return try {
+            return runCatching {
                 val fileSize = Files.size(filePath)
                 if (fileSize > MAX_FILE_SIZE) {
                     LOG.error("TOML file too large: $fileSize bytes (max: $MAX_FILE_SIZE)")
@@ -992,10 +982,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 }
                 val content = Files.readString(filePath, StandardCharsets.UTF_8)
                 fromToml(content)
-            } catch (e: Exception) {
-                LOG.error("Failed to read TOML file: $filePath", e)
-                empty()
-            }
+            }.onFailure { LOG.error("Failed to read TOML file: $filePath", it) }.getOrDefault(empty())
         }
 
         fun fromFile(file: File): KTomlParser {
@@ -1003,7 +990,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
         }
 
         fun fromReader(reader: Reader): KTomlParser {
-            return try {
+            return runCatching {
                 val bufferedReader = reader as? BufferedReader ?: BufferedReader(reader)
                 bufferedReader.use { br ->
                     val content = buildString {
@@ -1013,10 +1000,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                     }
                     fromToml(content)
                 }
-            } catch (e: Exception) {
-                LOG.error("Failed to read TOML from Reader", e)
-                empty()
-            }
+            }.onFailure { LOG.error("Failed to read TOML from Reader", it) }.getOrDefault(empty())
         }
 
         fun fromStream(inputStream: InputStream): KTomlParser {
@@ -1204,24 +1188,21 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 "false" -> return false
             }
 
-            try {
+            runCatching {
                 return if (v.contains('.')) {
                     v.toBigDecimal()
                 } else {
                     v.toLong()
                 }
-            } catch (_: NumberFormatException) {
-                // Continue to date parsing
-            }
+            } // Continue to date parsing
 
-            try {
+            runCatching {
                 return when {
                     v.contains('T') -> LocalDateTime.parse(v)
                     v.contains(':') -> LocalTime.parse(v)
                     v.contains('-') -> LocalDate.parse(v)
                     else -> v
                 }
-            } catch (_: DateTimeParseException) {
             }
 
             return v
@@ -1272,7 +1253,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
         }
 
         private fun cleanupCache() {
-            try {
+            runCatching {
                 val targetSize = (MAX_CACHE_SIZE * (1 - CACHE_CLEANUP_RATIO)).toInt()
                 val currentSize = pathCache.size
 
@@ -1289,9 +1270,7 @@ class KTomlParser internal constructor(val parsedData: MutableMap<String, Any?>)
                 keysToRemove.forEach { pathCache.remove(it) }
 
                 LOG.info("Path cache cleanup: removed $entriesToRemove entries, remaining: ${pathCache.size}")
-            } catch (e: Exception) {
-                LOG.warn("Failed to cleanup path cache", e)
-            }
+            }.onFailure { LOG.warn("Failed to cleanup path cache", it) }
         }
 
         private fun forceCleanupIfNeeded() {

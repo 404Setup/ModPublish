@@ -36,38 +36,31 @@ enum class PID(val id: String, val protect: Boolean) {
     GitlabBranch("modpublish.gitlab.branch", false),
     GenerateForgeUpdateEnabled("modpublish.generate-forge-update.enabled", false),
     GenerateForgeUpdateSplit("modpublish.generate-forge-update.split", false),
-    CommonVersionFormat("modpublish.common.versionFormat", false),;
+    CommonVersionFormat("modpublish.common.versionFormat", false), ;
 
-    fun get(project: Project): String {
-        return get(Properties.getPropertiesComponent(project))
-    }
+    fun get(project: Project): String =
+        get(Properties.getPropertiesComponent(project))
 
-    fun get(properties: PropertiesComponent): String {
-        return properties.getValue(id, "")
-    }
+    fun get(properties: PropertiesComponent): String =
+        properties.getValue(id, "")
 
-    fun getProtect(project: Project): Info {
-        return getProtect(PropertiesComponent.getInstance(project))
-    }
+    fun getProtect(project: Project): Info =
+        getProtect(PropertiesComponent.getInstance(project))
 
-    fun getProtect(properties: PropertiesComponent): Info {
-        return Properties.getProtectValue(properties, this)
-    }
+    fun getProtect(properties: PropertiesComponent): Info =
+        Properties.getProtectValue(properties, this)
 
-    fun set(project: Project, data: String) {
+    fun set(project: Project, data: String) =
         set(PropertiesComponent.getInstance(project), data)
-    }
 
     fun set(properties: PropertiesComponent, data: String) {
         if (protect) Properties.setProtectValue(properties, id, data)
         else properties.setValue(id, data)
     }
 
-    fun set(project: Project, component: JTextField) {
+    fun set(project: Project, component: JTextField) =
         set(project, component.getText())
-    }
 
-    fun set(properties: PropertiesComponent, component: JTextField) {
+    fun set(properties: PropertiesComponent, component: JTextField) =
         set(properties, component.getText())
-    }
 }

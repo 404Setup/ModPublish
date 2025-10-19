@@ -37,6 +37,7 @@ object FileAPI {
         }
     }
 
+    @Throws(NullPointerException::class)
     fun VirtualFile.toFile(): File {
         return File(this.path)
     }

@@ -19,10 +19,9 @@ package one.pkg.modpublish.data.network.curseforge
 import com.google.gson.annotations.SerializedName
 import one.pkg.modpublish.data.internal.ReleaseChannel
 import one.pkg.modpublish.data.local.MinecraftVersion
-import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createEmbedded
-import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createIncompatible
-import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createOptional
-import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.createRequired
+import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.embedded
+import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.optional
+import one.pkg.modpublish.data.network.curseforge.ProjectRelation.Companion.required
 
 @Suppress("UNUSED")
 data class CurseForgeData(
@@ -157,34 +156,34 @@ data class CurseForgeData(
     }
 
     fun requiredDependency(slug: String) {
-        dependency(createRequired(slug))
+        dependency(required(slug))
     }
 
     fun requiredDependency(slug: String, projectID: Int) {
-        dependency(createRequired(slug, projectID))
+        dependency(required(slug, projectID))
     }
 
     fun optionalDependency(slug: String) {
-        dependency(createOptional(slug))
+        dependency(optional(slug))
     }
 
     fun optionalDependency(slug: String, projectID: Int) {
-        dependency(createOptional(slug, projectID))
+        dependency(optional(slug, projectID))
     }
 
     fun embeddedLibrary(slug: String) {
-        dependency(createEmbedded(slug))
+        dependency(embedded(slug))
     }
 
     fun embeddedLibrary(slug: String, projectID: Int) {
-        dependency(createEmbedded(slug, projectID))
+        dependency(embedded(slug, projectID))
     }
 
     fun incompatible(slug: String) {
-        dependency(createIncompatible(slug))
+        dependency(ProjectRelation.Companion.incompatible(slug))
     }
 
     fun incompatible(slug: String, projectID: Int) {
-        dependency(createIncompatible(slug, projectID))
+        dependency(ProjectRelation.Companion.incompatible(slug, projectID))
     }
 }

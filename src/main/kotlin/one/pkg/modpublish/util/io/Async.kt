@@ -23,25 +23,14 @@ import kotlinx.coroutines.async
 import kotlin.coroutines.CoroutineContext
 
 object Async {
-    inline fun <T> rAsync(crossinline block: suspend () -> T): Deferred<T> {
-        return Dispatchers.Default.rAsync {
-            block()
-        }
-    }
+    inline fun <T> rAsync(crossinline block: suspend () -> T): Deferred<T> =
+        Dispatchers.Default.rAsync { block() }
 
-    inline fun <T> CoroutineContext.rAsync(crossinline block: suspend () -> T): Deferred<T> {
-        return CoroutineScope(this).async {
-            block()
-        }
-    }
+    inline fun <T> CoroutineContext.rAsync(crossinline block: suspend () -> T): Deferred<T> =
+        CoroutineScope(this).async { block() }
 
-    inline fun async(crossinline callable: () -> Unit) {
-        Dispatchers.Default.async { callable() }
-    }
+    inline fun async(crossinline callable: () -> Unit) = Dispatchers.Default.async { callable() }
 
-    inline fun CoroutineContext.async(crossinline callable: () -> Unit) {
-        CoroutineScope(this).async {
-            callable()
-        }
-    }
+    inline fun CoroutineContext.async(crossinline callable: () -> Unit) =
+        CoroutineScope(this).async { callable() }
 }

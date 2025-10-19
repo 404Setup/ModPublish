@@ -38,28 +38,28 @@ data class ProjectRelation(
     constructor(projectID: String, type: DependencyType) : this(projectID, type.modrinthName)
 
     companion object {
-        fun createRequired(projectID: String): ProjectRelation {
+        fun required(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.REQUIRED)
         }
 
-        fun createOptional(projectID: String): ProjectRelation {
+        fun optional(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.OPTIONAL)
         }
 
-        fun createEmbedded(projectID: String): ProjectRelation {
+        fun embedded(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.EMBEDDED)
         }
 
-        fun createIncompatible(projectID: String): ProjectRelation {
+        fun incompatible(projectID: String): ProjectRelation {
             return ProjectRelation(projectID, DependencyType.INCOMPATIBLE)
         }
 
         fun create(projectID: String, type: DependencyType): ProjectRelation {
             return when (type) {
-                DependencyType.EMBEDDED -> createEmbedded(projectID)
-                DependencyType.OPTIONAL -> createOptional(projectID)
-                DependencyType.REQUIRED -> createRequired(projectID)
-                DependencyType.INCOMPATIBLE -> createIncompatible(projectID)
+                DependencyType.EMBEDDED -> embedded(projectID)
+                DependencyType.OPTIONAL -> optional(projectID)
+                DependencyType.REQUIRED -> required(projectID)
+                DependencyType.INCOMPATIBLE -> incompatible(projectID)
             }
         }
     }

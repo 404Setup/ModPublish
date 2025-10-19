@@ -37,20 +37,18 @@ class HardwareFingerprint private constructor() {
                 return key!!
             }
 
-        private fun generateKeyBase(): String = try {
+        private fun generateKeyBase(): String = runCatching {
             val digest = MessageDigest.getInstance("SHA-256")
             val hash = digest.digest(getPlatformBindingInfo().toByteArray(StandardCharsets.UTF_8))
             hash.joinToString("") { "%02x".format(it) }.substring(0, 32)
-        } catch (_: Exception) {
-            generateFallbackKey()
-        }
+        }.getOrDefault(generateFallbackKey())
 
         fun getEnvironmentFingerprint(): String = getPlatformBindingInfo()
 
         fun validateEnvironmentBinding(expectedKey: String): Boolean =
             secureProjectKey == expectedKey
 
-        private fun getPlatformBindingInfo(): String = try {
+        private fun getPlatformBindingInfo(): String = runCatching {
             val osInfo = "OS:${System.getProperty("os.name", "unknown")}-${System.getProperty("os.arch", "unknown")}"
             val userInfo =
                 "USER:${System.getProperty("user.name", "unknown")}-${
@@ -62,9 +60,7 @@ class HardwareFingerprint private constructor() {
 
             listOfNotNull(osInfo, userInfo, macInfo, javaInfo, machineInfo)
                 .joinToString("|")
-        } catch (_: Exception) {
-            "FALLBACK:${getStableFallback()}"
-        }
+        }.getOrDefault("FALLBACK:${getStableFallback()}")
 
         private fun getMacAddress(): String? =
             NetworkInterface.getNetworkInterfaces().toList()
@@ -83,12 +79,10 @@ class HardwareFingerprint private constructor() {
                 .sorted()
                 .firstOrNull()
 
-        private fun extractMajorJavaVersion(version: String): String = try {
+        private fun extractMajorJavaVersion(version: String): String = runCatching {
             val parts = version.split(".")
             if (version.startsWith("1.") && parts.size >= 2) "1.${parts[1]}" else parts[0]
-        } catch (_: Exception) {
-            version
-        }
+        }.getOrDefault(version)
 
         private fun getStableMachineId(): String = listOfNotNull(
             System.getProperty("user.home")?.takeIf { it.isNotEmpty() }?.let { "HOME:${it.hashCode()}" },

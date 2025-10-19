@@ -27,14 +27,11 @@ data class Property(
     val common: CommonProperty
 ) {
     data class CommonProperty(val versionFormat: String) : PropertyBase {
-        override fun isEnabled(): Boolean {
-            return true
-        }
+        override fun isEnabled(): Boolean = true
 
         companion object {
-            fun getInstance(properties: PropertiesComponent): CommonProperty {
-                return CommonProperty(PID.CommonVersionFormat.get(properties))
-            }
+            fun getInstance(properties: PropertiesComponent): CommonProperty =
+                CommonProperty(PID.CommonVersionFormat.get(properties))
         }
     }
 
@@ -80,7 +77,7 @@ data class Property(
     data class GitlabProperty(
         val token: Info, val repo: String,
         val branch: String
-    ): PropertyBase {
+    ) : PropertyBase {
         override fun isEnabled(): Boolean {
             return !token.data.trim { it <= ' ' }.isEmpty() && !repo.trim { it <= ' ' }.isEmpty()
         }

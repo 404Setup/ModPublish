@@ -24,9 +24,8 @@ import one.pkg.modpublish.util.protect.HardwareFingerprint
 import one.pkg.modpublish.util.protect.Protect
 
 object Properties {
-    fun getPropertiesComponent(project: Project): PropertiesComponent {
-        return PropertiesComponent.getInstance(project)
-    }
+    fun getPropertiesComponent(project: Project): PropertiesComponent =
+        PropertiesComponent.getInstance(project)
 
     fun getProtectValue(properties: PropertiesComponent, dataKey: PID): Info {
         val v = dataKey.get(properties)
@@ -57,7 +56,6 @@ object Properties {
         )
     }
 
-    fun getProperties(project: Project): Property {
-        return Property.getInstance(getPropertiesComponent(project))
-    }
+    fun getProperties(project: Project): Property =
+        Property.getInstance(getPropertiesComponent(project))
 }

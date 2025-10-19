@@ -40,7 +40,7 @@ class GithubAPI : API() {
     override val id: String = "Github"
 
     override fun createVersion(data: PublishData, project: Project): PublishResult {
-        return try {
+        return runCatching {
             val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
             var existingRelease = checkExistingRelease(tagName, project)?.asJsonObject
             if (existingRelease == null) {
@@ -57,12 +57,10 @@ class GithubAPI : API() {
             data.files.fold(PublishResult.EMPTY) { acc, file ->
                 if (!acc.isSuccess) acc else uploadAsset(file, project, uploadUrl)
             }
-        } catch (e: Exception) {
-            PublishResult.create(this, "Failed to create GitHub release: ${e.message}")
-        }
+        }.getOrElse { PublishResult.create(this, "Failed to create GitHub release: ${it.message}") }
     }
 
-    private fun createRelease(data: PublishData, project: Project): Result = try {
+    private fun createRelease(data: PublishData, project: Project): Result = runCatching {
         val request = request(RELEASES_URL, project).json()
             .post(createJsonBody(data, project).toRequestBody("application/json".toMediaType()))
             .build()
@@ -71,11 +69,9 @@ class GithubAPI : API() {
             resp.status()?.let { return PublishResult.create(this, "Failed to create release: $it") }
             BackResult.result(resp.body.string())
         }
-    } catch (e: IOException) {
-        PublishResult.create(this, "Network error: ${e.message}")
-    }
+    }.getOrElse { PublishResult.create(this, "Network error: ${it.message}") }
 
-    private fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = try {
+    private fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = runCatching {
         val assetUrl = "$uploadUrl?name=${file.name}"
         val fileBody = file.asRequestBody("application/java-archive".toMediaType())
         val request = request(assetUrl, project)
@@ -87,18 +83,14 @@ class GithubAPI : API() {
             resp.status()?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
             PublishResult.EMPTY
         }
-    } catch (e: IOException) {
-        PublishResult.create(this, "Failed to upload asset: ${e.message}")
-    }
+    }.getOrElse { PublishResult.create(this, "Failed to upload asset: ${it.message}") }
 
-    private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = try {
+    private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = runCatching {
         val url = "$RELEASES_URL/tags/$tagName"
         val request = request(url, project).get().build()
         client.newCall(request).execute()
             .use { resp -> if (resp.isSuccessful) resp.body.string().fromJson() else null }
-    } catch (_: IOException) {
-        null
-    }
+    }.getOrNull()
 
     private fun getTargetCommitish(branch: String, project: Project): String = try {
         branch.takeIf { it.isNotBlank() }?.let { getLatestCommitHash(it, project) } ?: getDefaultBranch(project)
