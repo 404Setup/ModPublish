@@ -162,7 +162,7 @@ If not configured, ModPublish will still use the default name generation rules
 | Version name      | Supported   |
 | ModLoader         | Supported   |
 | Minecraft version | Supported   |
-| Supported target  | Unsupported |
+| Supported target  | Supported   |
 | Dependencies      | Unsupported |
 
 ModPublish can detect the type of mod you want to publish and identify mod metadata based on file characteristics, and
