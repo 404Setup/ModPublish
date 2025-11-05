@@ -2,7 +2,7 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
 
     id("org.jetbrains.intellij.platform") version "2.8.0"
 }

@@ -14,6 +14,7 @@
 
 ### Chore
 - Bump minecraft version list
+- Bump kotlin version
 
 ## v0.0.9
 
