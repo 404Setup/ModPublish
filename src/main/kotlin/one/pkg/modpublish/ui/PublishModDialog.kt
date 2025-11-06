@@ -48,6 +48,7 @@ import one.pkg.modpublish.ui.base.FieldConfig
 import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer
+import one.pkg.modpublish.ui.renderer.JarFilesRenderer
 import one.pkg.modpublish.util.io.Async
 import one.pkg.modpublish.util.io.Async.async
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
@@ -61,7 +62,6 @@ import one.pkg.modpublish.util.version.constraint.VersionConstraint
 import one.pkg.modpublish.util.version.constraint.VersionConstraintParser
 import org.intellij.plugins.markdown.lang.MarkdownFileType
 import java.awt.BorderLayout
-import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.MouseAdapter
@@ -215,15 +215,7 @@ class PublishModDialog(
         // Primary file
         primaryFile = ComboBox(jarFiles).apply {
             addActionListener { onPrimaryFileUpdate() }
-            renderer = object : DefaultListCellRenderer() {
-                override fun getListCellRendererComponent(
-                    list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean
-                ): Component {
-                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
-                    if (value is VirtualFile) text = value.name
-                    return this
-                }
-            }
+            renderer = JarFilesRenderer()
         }
         formBuilder.addLabeledComponent(
             get("component.name.primary-file"),
