@@ -13,6 +13,7 @@ val targetJavaVersion = 17
 
 repositories {
     mavenCentral()
+    maven("https://mvnc.pkg.one/releases")
 
     intellijPlatform {
         defaultRepositories()
@@ -50,6 +51,9 @@ dependencies {
     }
 
     implementation("one.tranic:t-proxy:1.0.1")
+    implementation("one.pkg:sktoml:1.0.0") {
+        exclude("*")
+    }
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 

@@ -11,6 +11,7 @@
 
 ### Change
 - Changelog input box is now scrollable
+- Import SKToml as a separate dependency
 
 ### Chore
 - Bump minecraft version list

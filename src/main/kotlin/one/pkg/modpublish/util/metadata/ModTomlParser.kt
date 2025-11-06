@@ -19,13 +19,13 @@ package one.pkg.modpublish.util.metadata
 import com.intellij.openapi.diagnostic.Logger
 import one.pkg.modpublish.data.internal.LocalModInfo
 import one.pkg.modpublish.data.internal.SideType
-import one.pkg.modpublish.util.io.toml.KTomlArray
-import one.pkg.modpublish.util.io.toml.KTomlParser
+import one.pkg.sktoml.SKTomlArray
+import one.pkg.sktoml.SKTomlParser
 import java.io.InputStream
 import java.lang.AutoCloseable
 
 @Suppress("UNUSED")
-data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
+data class ModTomlParser(val parser: SKTomlParser) : AutoCloseable {
     fun get(): LocalModInfo? = runCatching {
         val mods = parser.getAsTomlParser("mods")?.takeUnless { it.isEmpty() } ?: run {
             LOG.warn("No mods section found in TOML file")
@@ -43,7 +43,7 @@ data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
         )
     }.onFailure { LOG.error("Failed to parse mod.toml", it) }.getOrNull()
 
-    private fun getSideType(arrays: KTomlArray): SideType =
+    private fun getSideType(arrays: SKTomlArray): SideType =
         arrays.firstOrNull { it.getAsString("modId") in setOf("minecraft", "forge", "neoforge") }
             ?.getAsString("side")
             ?.let {
@@ -54,12 +54,12 @@ data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
                 }
             } ?: SideType.BOTH
 
-    private fun getArray(modId: String): KTomlArray? =
+    private fun getArray(modId: String): SKTomlArray? =
         parser.getAsTomlParser("dependencies")
             ?.getAsTomlArray(modId)
             ?.takeUnless { it.isEmpty }
 
-    private fun getMinecraftVersions(arrays: KTomlArray): String =
+    private fun getMinecraftVersions(arrays: SKTomlArray): String =
         arrays.firstOrNull { it.getAsString("modId") == "minecraft" }
             ?.getAsString("versionRange")
             ?: ""
@@ -70,6 +70,6 @@ data class ModTomlParser(val parser: KTomlParser) : AutoCloseable {
     companion object {
         private val LOG = Logger.getInstance(ModTomlParser::class.java)
 
-        fun InputStream.toModTomlParser(): ModTomlParser = ModTomlParser(KTomlParser.fromStream(this))
+        fun InputStream.toModTomlParser(): ModTomlParser = ModTomlParser(SKTomlParser.fromStream(this))
     }
 }
