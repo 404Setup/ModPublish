@@ -92,6 +92,8 @@ Build steps:
   License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
 - [TProxy](https://github.com/404Setup/t-proxy) -
   License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
+- [TinyUtils](https://github.com/404Setup/tiny-utils) -
+  License [Apache 2.0](https://github.com/404Setup/tiny-utils/blob/master/LICENSE)
 - [Flexmark](https://github.com/vsch/flexmark-java) -
   License [BSD 2-Clause "Simplified" License](https://github.com/vsch/flexmark-java/blob/master/LICENSE.txt)
 
