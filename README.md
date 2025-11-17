@@ -18,6 +18,7 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 - Automatically detect Mod information, no need to repeatedly manually select/input
 - Quick saving of last operation records (dependencies, changelog)
 - One-click publishing of mods to Modrinth, CurseForge, GitHub, and GitLab
+- Update Mod Description Page
 
 ### Unsupported Features
 
