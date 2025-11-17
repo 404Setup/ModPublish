@@ -51,6 +51,7 @@ dependencies {
     }
 
     implementation("one.tranic:t-proxy:1.0.1")
+    implementation("one.pkg:tiny-utils:2.1.0")
     implementation("one.pkg:sktoml:1.0.0") {
         exclude("*")
     }

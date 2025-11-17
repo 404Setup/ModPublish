@@ -58,8 +58,8 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 import one.pkg.modpublish.util.io.VersionProcessor
 import one.pkg.modpublish.util.metadata.ModVersion.extractVersionNumber
 import one.pkg.modpublish.util.resources.LocalResources
-import one.pkg.modpublish.util.version.constraint.VersionConstraint
-import one.pkg.modpublish.util.version.constraint.VersionConstraintParser
+import one.pkg.tinyutils.minecraft.version.constraint.VersionConstraint
+import one.pkg.tinyutils.minecraft.version.constraint.VersionConstraintParser
 import org.intellij.plugins.markdown.lang.MarkdownFileType
 import java.awt.BorderLayout
 import java.awt.Dimension
