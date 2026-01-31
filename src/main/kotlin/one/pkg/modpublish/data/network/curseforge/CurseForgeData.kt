@@ -180,10 +180,10 @@ data class CurseForgeData(
     }
 
     fun incompatible(slug: String) {
-        dependency(ProjectRelation.Companion.incompatible(slug))
+        dependency(ProjectRelation.incompatible(slug))
     }
 
     fun incompatible(slug: String, projectID: Int) {
-        dependency(ProjectRelation.Companion.incompatible(slug, projectID))
+        dependency(ProjectRelation.incompatible(slug, projectID))
     }
 }

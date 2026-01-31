@@ -12,6 +12,7 @@
 ### Change
 - Changelog input box is now scrollable
 - Import SKToml as a separate dependency
+- Java 21 is now required
 
 ### Chore
 - Bump minecraft version list

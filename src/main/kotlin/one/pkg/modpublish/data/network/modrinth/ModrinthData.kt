@@ -125,7 +125,7 @@ data class ModrinthData(
     }
 
     fun incompatible(slug: String) {
-        return dependency(ProjectRelation.Companion.incompatible(slug))
+        return dependency(ProjectRelation.incompatible(slug))
     }
 
     fun gameVersion(gameVersion: String) {

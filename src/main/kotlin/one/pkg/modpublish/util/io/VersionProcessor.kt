@@ -43,7 +43,7 @@ object VersionProcessor {
             val request = API.baseRequestBuilder.url(MOJANG_URL).build()
             NetworkUtil.client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    LOG.error("❌ Network request error: ${response.code}")
+                    LOG.error("Network request error: ${response.code}")
                     return null
                 }
                 val body = response.body.string()
@@ -65,19 +65,19 @@ object VersionProcessor {
                     processedVersions.add(processedVersion)
                 }
 
-                LOG.info("✅ Successfully processed ${processedVersions.size} versions")
+                LOG.info("Successfully processed ${processedVersions.size} versions")
 
                 val latestInfo = data.getAsJsonObject("latest")
-                LOG.info("📋 Latest version info:")
+                LOG.info("Latest version info:")
                 LOG.info("   Release: " + latestInfo.get("release").asString)
                 LOG.info("   Snapshot: " + latestInfo.get("snapshot").asString)
                 return processedVersions
             }
         }.onFailure {
             when (it) {
-                is IOException -> LOG.error("❌ Network request error", it)
-                is JsonParseException -> LOG.error("❌ JSON parsing error", it)
-                else -> LOG.error("❌ Unknown error", it)
+                is IOException -> LOG.error("Network request error", it)
+                is JsonParseException -> LOG.error("JSON parsing error", it)
+                else -> LOG.error("Unknown error", it)
             }
         }.getOrNull()
     }
@@ -88,7 +88,7 @@ object VersionProcessor {
             val request = API.baseRequestBuilder.url(CURSEFORGE_URL).build()
             NetworkUtil.client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    LOG.error("❌ Network request error: ${response.code}")
+                    LOG.error("Network request error: ${response.code}")
                     return null
                 }
                 val body = response.body.string()
@@ -99,14 +99,14 @@ object VersionProcessor {
                 }.type
                 val parsed = versions.fromJson<MutableList<MutableMap<String, Any>>>(listType)
 
-                LOG.info("✅ Successfully got CurseForge API data with ${parsed.size} versions")
+                LOG.info("Successfully got CurseForge API data with ${parsed.size} versions")
                 return parsed
             }
         }.onFailure {
             when (it) {
-                is IOException -> LOG.error("❌ Network request error", it)
-                is JsonParseException -> LOG.error("❌ JSON parsing error", it)
-                else -> LOG.error("❌ Unknown error getting CurseForge data", it)
+                is IOException -> LOG.error("Network request error", it)
+                is JsonParseException -> LOG.error("JSON parsing error", it)
+                else -> LOG.error("Unknown error getting CurseForge data", it)
             }
         }.getOrNull()
     }
@@ -120,7 +120,7 @@ object VersionProcessor {
                 versionMapping[versionString] = gameVersionId.toInt()
             }
         }
-        LOG.info("✅ Created version mapping table with ${versionMapping.size} entries")
+        LOG.info("Created version mapping table with ${versionMapping.size} entries")
         return versionMapping
     }
 
@@ -149,7 +149,7 @@ object VersionProcessor {
             updatedVersions.add(updated)
         }
 
-        LOG.info("✅ Version update complete: $matchedCount/${minecraftVersions.size} versions found matching game version IDs")
+        LOG.info("Version update complete: $matchedCount/${minecraftVersions.size} versions found matching game version IDs")
         return updatedVersions
     }
 
@@ -159,10 +159,10 @@ object VersionProcessor {
             outputFile.createNewFile()
             FileWriter(outputFile, StandardCharsets.UTF_8).use { writer ->
                 versions.toJson(writer)
-                LOG.info("✅ Successfully saved updated data to $outputFile")
+                LOG.info("Successfully saved updated data to $outputFile")
                 return true
             }
-        }.onFailure { LOG.error("❌ Error saving file, ", it) }.getOrDefault(false)
+        }.onFailure { LOG.error("Error saving file, ", it) }.getOrDefault(false)
     }
 
     private fun saveVersions(versions: MutableList<MutableMap<String, Any>>, outputFile: String): Boolean {
@@ -170,13 +170,13 @@ object VersionProcessor {
     }
 
     private fun showPreview(updatedVersions: MutableList<MutableMap<String, Any>>, count: Int) {
-        LOG.info("📊 Update Result Preview (First $count items):")
+        LOG.info("Update Result Preview (First $count items):")
         LOG.info("------------------------------------------------------------")
 
         for (i in 0..<min(count, updatedVersions.size)) {
             val version = updatedVersions[i]
             val gameVersionId = (version["i"] as Number).toInt()
-            val status = if (gameVersionId != -1) "✅ Matched" else "❌ Unmatched"
+            val status = if (gameVersionId != -1) "Matched" else "Unmatched"
             LOG.info("   " + (i + 1) + ". " + version["v"] + " (" + version["t"] + ") - ID: " + gameVersionId + " - " + status)
         }
 
@@ -190,7 +190,7 @@ object VersionProcessor {
         val totalCount = updatedVersions.size
         val matchRate = if (totalCount > 0) (matchedCount * 100.0 / totalCount) else 0.0
 
-        LOG.info("📈 Match Statistics:")
+        LOG.info("Match Statistics:")
         LOG.info("   Total Versions: $totalCount")
         LOG.info("   Matched Versions: $matchedCount")
         LOG.info("   Unmatched Versions: " + (totalCount - matchedCount))

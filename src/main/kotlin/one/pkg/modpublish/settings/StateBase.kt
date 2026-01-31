@@ -30,9 +30,9 @@ open class StateBase {
     }
 
     fun encryptToken(token: String?): String {
-        return (if (token == null || token.isBlank()) "" else Protect.encryptString(
+        return if (token.isNullOrBlank()) "" else Protect.encryptString(
             token,
             HardwareFingerprint.secureProjectKey
-        ))
+        )
     }
 }

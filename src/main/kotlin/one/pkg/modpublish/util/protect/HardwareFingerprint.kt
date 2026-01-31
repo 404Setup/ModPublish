@@ -75,9 +75,7 @@ class HardwareFingerprint private constructor() {
                         name.startsWith("br-") || name.startsWith("virbr") || (mac[0].toInt() and 0x02 != 0)
                     ) return@mapNotNull null
                     mac.joinToString(":") { "%02X".format(it) }
-                }
-                .sorted()
-                .firstOrNull()
+                }.minOrNull()
 
         private fun extractMajorJavaVersion(version: String): String = runCatching {
             val parts = version.split(".")

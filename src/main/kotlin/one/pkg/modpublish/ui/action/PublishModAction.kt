@@ -31,7 +31,7 @@ import javax.swing.JOptionPane
 class PublishModAction : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         var file: Array<VirtualFile>? = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
-        if (file == null || file.isEmpty()) {
+        if (file.isNullOrEmpty()) {
             val f = event.getData(CommonDataKeys.VIRTUAL_FILE)
             file = if (f != null) arrayOf(f) else arrayOf()
         }
