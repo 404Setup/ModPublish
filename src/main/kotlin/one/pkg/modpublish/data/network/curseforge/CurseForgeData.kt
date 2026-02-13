@@ -94,9 +94,8 @@ data class CurseForgeData(
          *
          * @return true if all required fields are set
          */
-        get() = changelog != null && !changelog!!.trim { it <= ' ' }
-            .isEmpty() && releaseType != null && !releaseType!!.trim { it <= ' ' }.isEmpty() &&
-                (parentFile() || (gameVersions != null && !gameVersions!!.isEmpty()))
+        get() = !changelog.isNullOrBlank() && !releaseType.isNullOrBlank() &&
+                (parentFile() || !gameVersions.isNullOrEmpty())
 
     fun changelog(changelog: String) {
         this.changelog = changelog

@@ -89,10 +89,7 @@ data class ModrinthData(
     constructor() : this(null)
 
     val isValid: Boolean
-        get() = !projectId!!.trim { it <= ' ' }.isEmpty() || !versionNumber!!.trim { it <= ' ' }
-            .isEmpty() || gameVersions != null
-                && !gameVersions!!.isEmpty() || !name!!.trim { it <= ' ' }.isEmpty() || fileParts != null &&
-                !fileParts!!.isEmpty() || primaryFile != null && !primaryFile!!.trim { it <= ' ' }.isEmpty()
+        get() = !projectId.isNullOrBlank() || !versionNumber.isNullOrBlank() || !gameVersions.isNullOrEmpty() || !name.isNullOrBlank() || !fileParts.isNullOrEmpty() || !primaryFile.isNullOrBlank()
 
     /*public String primaryFile() {
         return primaryFile;
@@ -177,8 +174,8 @@ data class ModrinthData(
 
     fun filePart(filePart: String) {
         if (this.fileParts == null) this.fileParts = ArrayList()
-        if (!fileParts!!.isEmpty() && this.fileParts!!.contains(filePart)) return
-        if (this.fileParts!!.isEmpty()) this.fileParts!!.add("$filePart-primary")
+        if (!fileParts.isNullOrEmpty() && this.fileParts!!.contains(filePart)) return
+        if (this.fileParts.isNullOrEmpty()) this.fileParts!!.add("$filePart-primary")
         else {
             val i = this.fileParts!!.size - 1
             this.fileParts!!.add("$filePart-$i")

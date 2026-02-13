@@ -43,7 +43,7 @@ data class Relations(
      * @return true if there are project relations
      */
     fun hasProjects(): Boolean {
-        return projects != null && !projects!!.isEmpty()
+        return !projects.isNullOrEmpty()
     }
 
     /**
