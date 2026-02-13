@@ -26,6 +26,7 @@ import one.pkg.modpublish.api.NetworkUtil
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
+import one.pkg.modpublish.util.resources.LocalResources
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -184,7 +185,11 @@ object VersionProcessor {
         val curseforge = fetchCurseforgeVersions() ?: return false
         val mapping = createVersionMapping(curseforge)
         val merged = mergeCurseforgeIds(mojang, mapping)
-        return saveVersions(merged, "minecraft.version.json".getUserDataFile())
+        val saved = saveVersions(merged, "minecraft.version.json".getUserDataFile())
+        if (saved) {
+            LocalResources.clearMinecraftVersionsCache()
+        }
+        return saved
         //showPreview(merged, 5);
     }
 
