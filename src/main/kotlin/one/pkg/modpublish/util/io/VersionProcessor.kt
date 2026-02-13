@@ -26,7 +26,6 @@ import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
-import java.io.FileWriter
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import kotlin.math.min
@@ -46,8 +45,7 @@ object VersionProcessor {
                     LOG.error("Network request error: ${response.code}")
                     return null
                 }
-                val body = response.body.string()
-                val data = body.fromJson().asJsonObject
+                val data = response.body.charStream().fromJson()
                 val processedVersions: MutableList<MutableMap<String, Any>> = arrayListOf()
 
                 val versions = data.getAsJsonArray("versions")
@@ -91,8 +89,7 @@ object VersionProcessor {
                     LOG.error("Network request error: ${response.code}")
                     return null
                 }
-                val body = response.body.string()
-                val data = body.fromJson().asJsonObject
+                val data = response.body.charStream().fromJson()
                 val versions = if (data.has("data")) data.getAsJsonArray("data") else JsonArray()
 
                 val listType = object : TypeToken<MutableList<MutableMap<String, Any>>>() {
@@ -157,7 +154,7 @@ object VersionProcessor {
         return runCatching {
             if (outputFile.exists()) outputFile.delete()
             outputFile.createNewFile()
-            FileWriter(outputFile, StandardCharsets.UTF_8).use { writer ->
+            outputFile.bufferedWriter(StandardCharsets.UTF_8).use { writer ->
                 versions.toJson(writer)
                 LOG.info("Successfully saved updated data to $outputFile")
                 return true
