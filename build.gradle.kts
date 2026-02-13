@@ -198,7 +198,11 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 tasks.named<SignPluginTask>("signPlugin") {
-    certificateChain.set(file("chain.crt").readText())
-    privateKey.set(file("private.pem").readText())
-    password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    val chainFile = file("chain.crt")
+    val keyFile = file("private.pem")
+    if (chainFile.exists() && keyFile.exists()) {
+        certificateChain.set(chainFile.readText())
+        privateKey.set(keyFile.readText())
+        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    }
 }
