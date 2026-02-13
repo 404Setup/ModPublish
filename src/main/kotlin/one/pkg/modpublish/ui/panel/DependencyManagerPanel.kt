@@ -96,9 +96,7 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
 
             val displayText = String.format(
                 "%s (%s) - %s",
-                if (dependency.customTitle != null && !dependency.customTitle!!.isBlank())
-                    dependency.customTitle
-                else "Unknown Dependency",
+                if (!dependency.customTitle.isNullOrBlank()) dependency.customTitle else "Unknown Dependency",
                 dependency.projectId,
                 dependency.type.displayName
             )
