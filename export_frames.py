@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from xml.etree import ElementTree as ET
+from defusedxml import ElementTree as ET
 
 FRAMES = 60
 CENTER_X, CENTER_Y = 12, 12
