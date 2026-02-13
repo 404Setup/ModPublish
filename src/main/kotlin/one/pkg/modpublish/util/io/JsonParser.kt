@@ -24,7 +24,8 @@ import java.lang.reflect.Type
 
 @Suppress("UNUSED")
 object JsonParser {
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+    private val gson: Gson = GsonBuilder().create()
+    private val gsonPretty: Gson = GsonBuilder().setPrettyPrinting().create()
 
     @Throws(JsonParseException::class)
     fun getJsonObject(reader: Reader): JsonObject {
@@ -43,7 +44,11 @@ object JsonParser {
 
     fun Any.toJson(): String = gson.toJson(this)
 
+    fun Any.toPrettyJson(): String = gsonPretty.toJson(this)
+
     fun Any.toJson(writer: Writer) = gson.toJson(this, writer)
+
+    fun Any.toPrettyJson(writer: Writer) = gsonPretty.toJson(this, writer)
 
     fun String.fromJson(): JsonObject = gson.fromJson(this, JsonObject::class.java)
 
