@@ -31,6 +31,7 @@ import java.lang.reflect.Type
 object LocalResources {
     val dpType: Type = object : TypeToken<List<DependencyInfo>>() {}.type
     private val mvType = object : TypeToken<List<MinecraftVersion>>() {}.type
+    private var cachedMinecraftVersions: List<MinecraftVersion>? = null
 
     @Throws(
         ResourcesNotFoundException::class,
@@ -51,7 +52,11 @@ object LocalResources {
         SecurityException::class,
         NullPointerException::class
     )
+    // Cache the result to avoid repeated file IO and JSON parsing on every call.
+    @Synchronized
     fun getMinecraftVersions(): List<MinecraftVersion> {
+        cachedMinecraftVersions?.let { return it }
+
         val localFile = "minecraft.version.json".getUserDataFile()
         val stream = if (localFile.exists()) FileInputStream(localFile)
         else LocalResources.javaClass.getResourceAsStream("/META-INF/minecraft.version.json")
@@ -59,6 +64,12 @@ object LocalResources {
             InputStreamReader(it).use { reader ->
                 reader.fromJson<List<MinecraftVersion>>(mvType)
             }
-        } ?: throw ResourcesNotFoundException("minecraft.version.json not found")
+        }?.also { cachedMinecraftVersions = it }
+            ?: throw ResourcesNotFoundException("minecraft.version.json not found")
+    }
+
+    @Synchronized
+    fun clearMinecraftVersionsCache() {
+        cachedMinecraftVersions = null
     }
 }
