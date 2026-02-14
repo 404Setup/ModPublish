@@ -9,12 +9,16 @@
 ### Fix
 - Fixed the parsing failure caused by multiple ways of writing the minecraft version range in fabric.mod.json
 
-### Change
-- Refactor VersionProcessor to use data classes for better performance
-- refactor: simplify verbose null and blank/empty checks
+### Refactor
+- VersionProcessor to use data classes for better performance
+- simplify verbose null and blank/empty checks
+
+### Performance
 - Cache local Minecraft versions
 - optimize version processor with streaming JSON
-- perf: Default to compact JSON serialization
+- Default to compact JSON serialization
+
+### Change
 - Changelog input box is now scrollable
 - Import SKToml as a separate dependency
 - Java 21 is now required
