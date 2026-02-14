@@ -50,6 +50,10 @@ dependencies {
         bundledPlugin("Git4Idea")
     }
 
+    implementation("com.squareup.okhttp3:okhttp:5.3.2") {
+        exclude(group = "org.jetbrains.kotlin")
+    }
+
     implementation("one.tranic:t-proxy:1.0.1")
     implementation("one.pkg:tiny-utils:2.2.0")
     implementation("one.pkg:sktoml:1.0.0") {

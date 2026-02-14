@@ -8,6 +8,7 @@
 
 ### Fix
 - Fixed the parsing failure caused by multiple ways of writing the minecraft version range in fabric.mod.json
+- Bundling OkHttp to fix the issue where ModPublish could not be used in IntelliJ IDEA 26
 
 ### Refactor
 - VersionProcessor to use data classes for better performance
