@@ -16,6 +16,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 !.idea/*.svg
+!.idea/copyright/*
 
 ### Eclipse ###
 .apt_generated

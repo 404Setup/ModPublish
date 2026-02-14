@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 404Setup (https://github.com/404Setup)
+ * Copyright (C) 2025 - 2026 404Setup (https://github.com/404Setup)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

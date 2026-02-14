@@ -1,0 +1,10 @@
+<component name="CopyrightManager">
+  <settings default="LGPL3.0">
+    <module2copyright>
+      <element module="Project Files" copyright="LGPL3.0" />
+    </module2copyright>
+    <LanguageOptions name="JAVA">
+      <option name="fileTypeOverride" value="3" />
+    </LanguageOptions>
+  </settings>
+</component>
