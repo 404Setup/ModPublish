@@ -26,6 +26,7 @@ import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.option
 import one.pkg.modpublish.data.network.modrinth.ProjectRelation.Companion.required
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import java.io.File
+import kotlin.jvm.Transient
 
 /**
  * Comment: Why are many parameters here inconsistent with the API docs?
@@ -104,9 +105,22 @@ data class ModrinthData(
         return primaryFile(primaryFile.getName());
     }*/
 
+    /**
+     * Cache of project IDs to optimize dependency() method.
+     * Note: This cache is transient and lazy-loaded. It may become out of sync if
+     * 'dependencies' list is modified directly. Always use dependency() method to ensure consistency.
+     */
+    @Transient
+    private var dependencyIds: MutableSet<String>? = null
+
     fun dependency(dependency: ProjectRelation) {
-        for (rel in this.dependencies) if (rel.projectID == dependency.projectID) return
+        if (dependencyIds == null) {
+            dependencyIds = HashSet()
+            dependencies.forEach { dependencyIds!!.add(it.projectID) }
+        }
+        if (dependencyIds!!.contains(dependency.projectID)) return
         this.dependencies.add(dependency)
+        dependencyIds!!.add(dependency.projectID)
     }
 
     fun requiredDependency(slug: String) {
