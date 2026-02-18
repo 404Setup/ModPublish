@@ -64,6 +64,9 @@ dependencies {
 
     compileOnly("com.vladsch.flexmark:flexmark:0.64.8")
     compileOnly("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
+
+    testImplementation(kotlin("test"))
+    testImplementation("junit:junit:4.13.2")
 }
 
 intellijPlatform {
@@ -198,6 +201,13 @@ tasks.named<ProcessResources>("processResources") {
     filteringCharset = "UTF-8"
     filesMatching("META-INF/plugin.xml") {
         expand(props)
+    }
+}
+
+tasks.named<Test>("test") {
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showStandardStreams = true
     }
 }
 

@@ -29,6 +29,7 @@ import javax.swing.*
 
 class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPanel(BorderLayout()) {
     private val dependencies: MutableList<DependencyInfo> = ArrayList()
+    private val dependencyPanels = java.util.IdentityHashMap<DependencyInfo, JPanel>()
     private val dependencyListPanel: JPanel
 
     init {
@@ -70,19 +71,30 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
 
     fun addDependency(dependency: DependencyInfo) {
         dependencies.add(dependency)
-        refreshDependencyList()
+        val depPanel = createDependencyPanel(dependency)
+        dependencyPanels[dependency] = depPanel
+        dependencyListPanel.add(depPanel)
+        dependencyListPanel.revalidate()
+        dependencyListPanel.repaint()
     }
 
     fun removeDependency(dependency: DependencyInfo) {
         dependencies.remove(dependency)
-        refreshDependencyList()
+        val panel = dependencyPanels.remove(dependency)
+        if (panel != null) {
+            dependencyListPanel.remove(panel)
+        }
+        dependencyListPanel.revalidate()
+        dependencyListPanel.repaint()
     }
 
-    private fun refreshDependencyList() {
+    private fun rebuildDependencyList() {
         dependencyListPanel.removeAll()
+        dependencyPanels.clear()
 
         for (dependency in dependencies) {
             val depPanel = createDependencyPanel(dependency)
+            dependencyPanels[dependency] = depPanel
             dependencyListPanel.add(depPanel)
         }
 
@@ -115,6 +127,6 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
     fun setDependencies(dependencies: List<DependencyInfo>?) {
         this.dependencies.clear()
         if (dependencies != null) this.dependencies.addAll(dependencies)
-        refreshDependencyList()
+        rebuildDependencyList()
     }
 }
