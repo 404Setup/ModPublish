@@ -4,11 +4,11 @@ plugins {
     id("java")
     kotlin("jvm") version "2.3.0"
 
-    id("org.jetbrains.intellij.platform") version "2.8.0"
+    id("org.jetbrains.intellij.platform") version "2.13.1"
 }
 
 group = "one.pkg"
-version = "1.10.0"
+version = "1.10.1"
 val targetJavaVersion = 21
 
 repositories {

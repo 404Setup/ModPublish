@@ -1,3 +1,9 @@
+## v1.10.1
+
+### Chore
+- Bump minecraft version list
+- Bump kotlin version
+
 ## v1.10.0
 
 ### Feature
