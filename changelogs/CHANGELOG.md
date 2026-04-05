@@ -1,3 +1,9 @@
+## v1.10.2
+
+### Chore
+- Bump minecraft version list
+
+
 ## v1.10.1
 
 ### Chore
