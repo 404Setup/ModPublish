@@ -40,8 +40,7 @@ data class Property(
         val modid: String
     ) : PropertyBase {
         override fun isEnabled(): Boolean {
-            return !token.data.trim { it <= ' ' }.isEmpty() && !studioToken.data.trim { it <= ' ' }
-                .isEmpty() && !modid.trim { it <= ' ' }.isEmpty()
+            return !token.data.trim { it <= ' ' }.isEmpty() && !modid.trim { it <= ' ' }.isEmpty()
         }
 
         companion object {

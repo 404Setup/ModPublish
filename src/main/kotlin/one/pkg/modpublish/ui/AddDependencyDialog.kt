@@ -25,6 +25,7 @@ import one.pkg.modpublish.data.internal.PublishTarget
 import one.pkg.modpublish.data.internal.Selector
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.DependencyType
+import one.pkg.modpublish.settings.properties.Properties.getProperties
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -91,7 +92,14 @@ class AddDependencyDialog(
         resultDependency = DependencyInfo(projectId, selectedType, null)
 
         validateDependency(resultDependency).apply {
-            modrinth?.failed?.let { showFailedDialogRaw(it, get("title.failed")) }
+            modrinth?.failed?.let {
+                showFailedDialogRaw(it, get("title.failed"))
+                return
+            }
+            curseForge?.failed?.let {
+                showFailedDialogRaw(it, get("title.failed"))
+                return
+            }
 
             modrinth?.let { resultDependency.apply { customTitle = it.name; modrinthModInfo = it } }
             curseForge?.let { resultDependency.apply { customTitle = it.name; curseforgeModInfo = it } }
@@ -116,6 +124,9 @@ class AddDependencyDialog(
             } else null
 
             val curseforgeInfo = if (selector.curseForge && parts[1].isNotBlank()) {
+                if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
+                    return ModInfos(null, ModInfo.of(get("failed.11")))
+                }
                 PublishTarget.CurseForge.api.getModInfo(parts[1], requireNotNull(project)).also {
                     if (it.failed != null) return ModInfos(null, it)
                 }
@@ -129,6 +140,9 @@ class AddDependencyDialog(
             } else null
 
             val curseforgeInfo = if (selector.curseForge) {
+                if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
+                    return ModInfos(null, ModInfo.of(get("failed.11")))
+                }
                 PublishTarget.CurseForge.api.getModInfo(projectId, requireNotNull(project)).also {
                     if (it.failed != null) return ModInfos(null, it)
                 }

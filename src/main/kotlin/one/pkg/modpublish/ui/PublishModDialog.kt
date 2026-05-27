@@ -419,7 +419,7 @@ class PublishModDialog(
         if (!p2.curseforge.isEnabled()) {
             curseforgeCheckBox.isEnabled = false
             curseforgeCheckBox.toolTipText = get("tooltip.curseforge.disable")
-        } else if (p2.curseforge.token.failed || p2.curseforge.studioToken.failed) {
+        } else if (p2.curseforge.token.failed) {
             curseforgeCheckBox.setFailedSelect()
         }
 
