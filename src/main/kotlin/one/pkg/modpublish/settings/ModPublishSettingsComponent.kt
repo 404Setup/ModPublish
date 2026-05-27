@@ -86,7 +86,7 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
             FieldConfig.of {
                 createActionLink(
                     "Create CurseForge Token",
-                    "https://legacy.curseforge.com/account/api-tokens"
+                    "https://authors.curseforge.com/#/settings/api-tokens"
                 ).also { curseforgeTokenLink = it }
             }
         )
