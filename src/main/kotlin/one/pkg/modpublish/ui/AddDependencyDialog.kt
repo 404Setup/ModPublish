@@ -56,12 +56,21 @@ class AddDependencyDialog(
 
         var row = 0
 
+        val p = getProperties(requireNotNull(project))
+        val modrinthTokenFailed = p.modrinth.token.failed
+        val curseforgeStudioTokenFailed = p.curseforge.studioToken.failed
+
         if (selector.modrinth) {
             gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
             panel.add(getJBLabel("component.name.depend-id.modrinth"), gbc)
 
             gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-            modrinthIdField = JBTextField(30).also { panel.add(it, gbc) }
+            modrinthIdField = JBTextField(30).apply {
+                if (modrinthTokenFailed) {
+                    isEnabled = false
+                    toolTipText = get("tooltip.modrinth.disable")
+                }
+            }.also { panel.add(it, gbc) }
             row++
         }
 
@@ -70,7 +79,12 @@ class AddDependencyDialog(
             panel.add(getJBLabel("component.name.depend-id.curseforge"), gbc)
 
             gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-            curseforgeIdField = JBTextField(30).also { panel.add(it, gbc) }
+            curseforgeIdField = JBTextField(30).apply {
+                if (curseforgeStudioTokenFailed) {
+                    isEnabled = false
+                    toolTipText = get("failed.11")
+                }
+            }.also { panel.add(it, gbc) }
             row++
         }
 
@@ -80,8 +94,8 @@ class AddDependencyDialog(
             modrinthIdField?.text = parts[0]
             curseforgeIdField?.text = parts[1]
         } else {
-            if (selector.modrinth && existingDependency?.modrinthModInfo != null) modrinthIdField?.text = pid
-            if (selector.curseForge && existingDependency?.curseforgeModInfo != null) curseforgeIdField?.text = pid
+            if (selector.modrinth) modrinthIdField?.text = pid
+            if (selector.curseForge) curseforgeIdField?.text = pid
         }
 
         // Dependency type
@@ -121,7 +135,15 @@ class AddDependencyDialog(
         }
 
         val selectedType = dependencyTypeCombo.selectedItem as DependencyType
-        resultDependency = DependencyInfo(projectId, selectedType, null)
+        resultDependency = DependencyInfo(projectId, selectedType, existingDependency?.customTitle)
+
+        if (existingDependency != null && existingDependency.projectId == projectId) {
+            resultDependency.modrinthModInfo = existingDependency.modrinthModInfo
+            resultDependency.curseforgeModInfo = existingDependency.curseforgeModInfo
+            isDone = true
+            super.doOKAction()
+            return
+        }
 
         validateDependency(resultDependency).apply {
             modrinth?.failed?.let {
