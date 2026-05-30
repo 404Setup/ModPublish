@@ -17,6 +17,7 @@
 package one.pkg.modpublish.ui.panel
 
 import com.intellij.ui.components.JBLabel
+import com.intellij.ide.BrowserUtil
 import com.intellij.ui.components.JBScrollPane
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.ui.AddDependencyDialog
@@ -24,6 +25,7 @@ import one.pkg.modpublish.ui.PublishModDialog
 import one.pkg.modpublish.util.resources.Lang
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.Font
 import javax.swing.*
 
@@ -67,6 +69,35 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
 
         val dialog = AddDependencyDialog(parentDialog, selector)
         if (dialog.showAndGet() && dialog.isOK) addDependency(dialog.getDependency())
+    }
+
+    private fun onEditDependency(dependency: DependencyInfo) {
+        val selector = parentDialog.getPublishTargets()
+        val dialog = AddDependencyDialog(parentDialog, selector, dependency)
+        if (dialog.showAndGet() && dialog.isOK) {
+            val index = dependencies.indexOf(dependency)
+            if (index != -1) {
+                val newDependency = dialog.getDependency()
+                dependencies[index] = newDependency
+
+                val oldPanel = dependencyPanels.remove(dependency)
+                if (oldPanel != null) {
+                    val compIndex = dependencyListPanel.components.indexOf(oldPanel)
+                    dependencyListPanel.remove(oldPanel)
+
+                    val newPanel = createDependencyPanel(newDependency)
+                    dependencyPanels[newDependency] = newPanel
+                    if (compIndex >= 0 && compIndex <= dependencyListPanel.componentCount) {
+                        dependencyListPanel.add(newPanel, compIndex)
+                    } else {
+                        dependencyListPanel.add(newPanel)
+                    }
+
+                    dependencyListPanel.revalidate()
+                    dependencyListPanel.repaint()
+                }
+            }
+        }
     }
 
     fun addDependency(dependency: DependencyInfo) {
@@ -114,11 +145,27 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
             )
 
             add(JBLabel(displayText), BorderLayout.CENTER)
-            add(JButton(Lang.get("button.delete")).apply {
-                addActionListener {
-                    removeDependency(dependency)
-                }
-            }, BorderLayout.EAST)
+
+            val actionPanel = JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
+                add(JButton(Lang.get("button.open")).apply {
+                    addActionListener {
+                        dependency.modrinthModInfo?.slug?.let { BrowserUtil.browse("https://modrinth.com/mod/$it") }
+                        dependency.curseforgeModInfo?.slug?.let { BrowserUtil.browse("https://www.curseforge.com/minecraft/mc-mods/$it") }
+                    }
+                })
+                add(JButton(Lang.get("button.edit")).apply {
+                    addActionListener {
+                        onEditDependency(dependency)
+                    }
+                })
+                add(JButton(Lang.get("button.delete")).apply {
+                    addActionListener {
+                        removeDependency(dependency)
+                    }
+                })
+            }
+
+            add(actionPanel, BorderLayout.EAST)
         }
     }
 

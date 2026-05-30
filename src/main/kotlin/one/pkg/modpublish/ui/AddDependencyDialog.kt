@@ -34,10 +34,12 @@ import javax.swing.JPanel
 
 class AddDependencyDialog(
     parent: PublishModDialog,
-    private val selector: Selector
+    private val selector: Selector,
+    private val existingDependency: DependencyInfo? = null
 ) : BaseDialogWrapper(parent.project, true) {
 
-    private lateinit var projectIdField: JBTextField
+    private var modrinthIdField: JBTextField? = null
+    private var curseforgeIdField: JBTextField? = null
     private lateinit var dependencyTypeCombo: ComboBox<DependencyType>
     var isDone: Boolean = false
         private set
@@ -52,23 +54,59 @@ class AddDependencyDialog(
         val panel = JPanel(GridBagLayout())
         val gbc = GridBagConstraints().apply { insets = JBUI.insets(5); anchor = GridBagConstraints.WEST }
 
-        // Project ID
-        gbc.gridx = 0; gbc.gridy = 0
-        panel.add(getJBLabel("component.name.depend-id"), gbc)
+        var row = 0
 
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-        projectIdField = JBTextField(30).also { panel.add(it, gbc) }
+        val p = getProperties(requireNotNull(project))
+        val modrinthTokenFailed = p.modrinth.token.failed
+        val curseforgeStudioTokenFailed = p.curseforge.studioToken.failed
 
-        // Help text
-        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
-        panel.add(createLabel(get("tips.1")), gbc)
+        if (selector.modrinth) {
+            gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
+            panel.add(getJBLabel("component.name.depend-id.modrinth"), gbc)
+
+            gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
+            modrinthIdField = JBTextField(30).apply {
+                if (modrinthTokenFailed) {
+                    isEnabled = false
+                    toolTipText = get("tooltip.modrinth.disable")
+                }
+            }.also { panel.add(it, gbc) }
+            row++
+        }
+
+        if (selector.curseForge) {
+            gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
+            panel.add(getJBLabel("component.name.depend-id.curseforge"), gbc)
+
+            gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
+            curseforgeIdField = JBTextField(30).apply {
+                if (curseforgeStudioTokenFailed) {
+                    isEnabled = false
+                    toolTipText = get("failed.11")
+                }
+            }.also { panel.add(it, gbc) }
+            row++
+        }
+
+        val pid = existingDependency?.projectId ?: ""
+        if (pid.contains(",")) {
+            val parts = pid.split(",", limit = 2)
+            modrinthIdField?.text = parts[0]
+            curseforgeIdField?.text = parts[1]
+        } else {
+            if (selector.modrinth) modrinthIdField?.text = pid
+            if (selector.curseForge) curseforgeIdField?.text = pid
+        }
 
         // Dependency type
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1
+        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
         panel.add(getJBLabel("component.name.depend-status"), gbc)
 
         gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-        dependencyTypeCombo = ComboBox(DependencyType.entries.toTypedArray()).also { panel.add(it, gbc) }
+        dependencyTypeCombo = ComboBox(DependencyType.entries.toTypedArray()).also {
+            it.selectedItem = existingDependency?.type ?: DependencyType.REQUIRED
+            panel.add(it, gbc)
+        }
 
         return panel
     }
@@ -82,14 +120,30 @@ class AddDependencyDialog(
             return
         }
 
-        val projectId = projectIdField.text.trim()
-        if (projectId.isEmpty()) {
+        val mId = modrinthIdField?.text?.trim() ?: ""
+        val cId = curseforgeIdField?.text?.trim() ?: ""
+
+        if (mId.isEmpty() && cId.isEmpty()) {
             showFailedDialog("failed.9", "title.failed")
             return
         }
 
+        val projectId = if (selector.modrinth && selector.curseForge) {
+            if (mId == cId && mId.isNotEmpty()) mId else "$mId,$cId"
+        } else {
+            if (selector.modrinth) mId else cId
+        }
+
         val selectedType = dependencyTypeCombo.selectedItem as DependencyType
-        resultDependency = DependencyInfo(projectId, selectedType, null)
+        resultDependency = DependencyInfo(projectId, selectedType, existingDependency?.customTitle)
+
+        if (existingDependency != null && existingDependency.projectId == projectId) {
+            resultDependency.modrinthModInfo = existingDependency.modrinthModInfo
+            resultDependency.curseforgeModInfo = existingDependency.curseforgeModInfo
+            isDone = true
+            super.doOKAction()
+            return
+        }
 
         validateDependency(resultDependency).apply {
             modrinth?.failed?.let {
