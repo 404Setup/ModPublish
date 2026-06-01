@@ -119,20 +119,6 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
         dependencyListPanel.repaint()
     }
 
-    private fun rebuildDependencyList() {
-        dependencyListPanel.removeAll()
-        dependencyPanels.clear()
-
-        for (dependency in dependencies) {
-            val depPanel = createDependencyPanel(dependency)
-            dependencyPanels[dependency] = depPanel
-            dependencyListPanel.add(depPanel)
-        }
-
-        dependencyListPanel.revalidate()
-        dependencyListPanel.repaint()
-    }
-
     private fun createDependencyPanel(dependency: DependencyInfo): JPanel {
         return JPanel(BorderLayout()).apply {
             setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
@@ -172,8 +158,32 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
     fun getDependencies(): List<DependencyInfo> = ArrayList(dependencies)
 
     fun setDependencies(dependencies: List<DependencyInfo>?) {
-        this.dependencies.clear()
-        if (dependencies != null) this.dependencies.addAll(dependencies)
-        rebuildDependencyList()
+        val incoming = dependencies ?: emptyList()
+        val toRemove = this.dependencies.filter { it !in incoming }
+        for (dep in toRemove) {
+            this.dependencies.remove(dep)
+            dependencyPanels.remove(dep)?.let { dependencyListPanel.remove(it) }
+        }
+        for (i in incoming.indices) {
+            val dep = incoming[i]
+            if (dep !in this.dependencies) {
+                this.dependencies.add(i, dep)
+                val panel = createDependencyPanel(dep)
+                dependencyPanels[dep] = panel
+                dependencyListPanel.add(panel, i)
+            } else {
+                val currentIndex = this.dependencies.indexOf(dep)
+                if (currentIndex != i) {
+                    this.dependencies.removeAt(currentIndex)
+                    this.dependencies.add(i, dep)
+                    dependencyPanels[dep]?.let {
+                        dependencyListPanel.remove(it)
+                        dependencyListPanel.add(it, i)
+                    }
+                }
+            }
+        }
+        dependencyListPanel.revalidate()
+        dependencyListPanel.repaint()
     }
 }
