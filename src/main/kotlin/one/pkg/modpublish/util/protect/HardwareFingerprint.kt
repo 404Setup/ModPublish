@@ -63,7 +63,7 @@ class HardwareFingerprint private constructor() {
         }.getOrDefault("FALLBACK:${getStableFallback()}")
 
         private fun getMacAddress(): String? =
-            NetworkInterface.getNetworkInterfaces().toList()
+            NetworkInterface.getNetworkInterfaces()
                 .asSequence()
                 .filter { !it.isLoopback && it.hardwareAddress != null }
                 .mapNotNull { ni ->
@@ -99,12 +99,6 @@ class HardwareFingerprint private constructor() {
         private fun generateFallbackKey(): String {
             val hash = abs(getStableFallback().hashCode())
             return "%032d".format(hash).substring(0, 32)
-        }
-
-        private fun <T> java.util.Enumeration<T>.toList(): List<T> {
-            val list = mutableListOf<T>()
-            while (hasMoreElements()) list.add(nextElement())
-            return list
         }
     }
 }
