@@ -537,8 +537,8 @@ class PublishModDialog(
     }
 
     private fun collectPublishData(): PublishData {
-        val selectedLoaders = loaderCheckBoxes
-            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) PublishType.valuesList[index] else null }
+        val selectedLoaders = loaderCheckBoxes.asSequence()
+            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) PublishType.valuesList[index] else null }.toList()
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
             .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }
@@ -548,7 +548,7 @@ class PublishModDialog(
         supportedInfo.client.enabled = clientCheckBox.isSelected
         supportedInfo.server.enabled = serverCheckBox.isSelected
 
-        val files = jarFiles.map { it.toFile() }.toTypedArray()
+        val files = Array(jarFiles.size) { jarFiles[it].toFile() }
 
         return PublishData(
             versionNameField.text,
