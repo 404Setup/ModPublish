@@ -148,9 +148,11 @@ class GitlabAPI : API() {
                 ?.getAsJsonArray("links")
                 ?: return emptySet()
 
-            assets.mapNotNull { element ->
+            if (assets.isEmpty) return emptySet()
+
+            assets.mapNotNullTo(HashSet(assets.size())) { element ->
                 element.asJsonObject.get("name")?.asString
-            }.toSet()
+            }
         }.getOrDefault(emptySet())
     }
 
