@@ -35,8 +35,7 @@ object ModVersion {
         }
 
         val pattern = "(\\d+(?:\\.\\d+)*(?:[-.]?(?:alpha|beta|rc|snapshot|dev)\\d*)?)".toRegex(RegexOption.IGNORE_CASE)
-        val matches = pattern.findAll(filename).map { it.groupValues[1] }.toList()
-        val lastMatch = matches.lastOrNull()
+        val lastMatch = pattern.findAll(filename).lastOrNull()?.groupValues?.get(1)
         return if (isValidVersionPattern(lastMatch)) lastMatch else null
     }
 
