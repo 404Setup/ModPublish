@@ -37,16 +37,8 @@ class ModJsonParser(inputStream: InputStream) {
         val range = json.get("depends").asJsonObject.get("minecraft")
         val finalRange = runCatching {
             range.asString
-        }.onFailure {
-            val arr = range.asJsonArray
-            val arrMain = ArrayList<String>(arr.size())
-            arr.forEach { arrMain.add(it.asString) }
-            arrMain.reverse()
-            buildString {
-                append("[")
-                append(arrMain.joinToString(","))
-                append("]")
-            }
+        }.recover {
+            range.asJsonArray.reversed().joinToString(",", "[", "]") { it.asString }
         }.getOrDefault("")
 
         val side = when (json.get("environment").asString) {
