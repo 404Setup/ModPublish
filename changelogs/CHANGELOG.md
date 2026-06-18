@@ -1,7 +1,17 @@
+## v1.11.2
+
+### Fix
+
+- CurseForge's changelog is missing line breaks. After implementing this fix, users on Linux platforms and those using
+  LF line delimiters may encounter unexpected issues. Since I do not have a Linux or macOS graphical device, this fix
+  has only been tested on Windows. If you encounter any problems, please open any issues section to let me know.
+
 ## v1.11.1
 
 ### Fix
-- Fixed an issue where component caching caused the Minecraft version list to not update correctly after using the "Update Version List" and "Clear Version List Cache" features.
+
+- Fixed an issue where component caching caused the Minecraft version list to not update correctly after using the "
+  Update Version List" and "Clear Version List Cache" features.
 
 ## v1.11.0
 

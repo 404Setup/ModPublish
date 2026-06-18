@@ -16,6 +16,7 @@
  */
 package one.pkg.modpublish.api
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -74,7 +75,9 @@ class ModrinthAPI : API() {
                     this.dependency(ProjectRelation.create(info.modid, d.type))
                 }
             }
-        }.toJson()
+        }.toJson().apply {
+            LOG.info("now run $id publish: $this")
+        }
     }
 
     override fun getModInfo(modid: String, project: Project): ModInfo {
@@ -111,5 +114,6 @@ class ModrinthAPI : API() {
 
     companion object {
         private const val URL = "https://api.modrinth.com/v2/"
+        private val LOG = Logger.getInstance(ModrinthAPI::class.java)
     }
 }

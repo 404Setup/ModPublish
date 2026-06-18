@@ -16,6 +16,7 @@
  */
 package one.pkg.modpublish.api
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -90,6 +91,7 @@ class CurseForgeAPI : API() {
         return CurseForgeData().apply {
             this.releaseType(data.releaseChannel)
             this.markdownChangelog(data.changelog)
+
             this.displayName = data.versionName
             bResult?.let { this.parentFileID = it.asCurseForgePublishResult().id } ?: run {
                 data.minecraftVersions.forEach { gameVersion(it) }
@@ -104,7 +106,9 @@ class CurseForgeAPI : API() {
                     }
                 }
             }
-        }.toJson()
+        }.toJson().apply {
+            LOG.info("now run $id publish: $this")
+        }
     }
 
     private fun request(server: String, url: String, project: Project): Request.Builder {
@@ -119,5 +123,6 @@ class CurseForgeAPI : API() {
     companion object {
         private const val A_URL = "https://minecraft.curseforge.com/api/"
         private const val B_URL = "https://api.curseforge.com/v1/"
+        private val LOG = Logger.getInstance(CurseForgeAPI::class.java)
     }
 }

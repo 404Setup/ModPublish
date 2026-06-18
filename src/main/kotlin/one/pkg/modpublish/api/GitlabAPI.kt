@@ -17,6 +17,7 @@
 package one.pkg.modpublish.api
 
 import com.google.gson.JsonObject
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -216,7 +217,9 @@ class GitlabAPI : API() {
             this.name = data.versionName
             this.description = data.changelog
             this.setReleaseChannel(data.releaseChannel)
-        }.toJson()
+        }.toJson().apply {
+            LOG.info("now run $id publish: $this")
+        }
     }
 
     private fun request(url: String, project: Project): Request.Builder =
@@ -231,5 +234,6 @@ class GitlabAPI : API() {
         private const val REPO_INFO_URL = "https://gitlab.com/api/v4/projects/{path}"
         private const val BRANCH_COMMIT_URL = "https://gitlab.com/api/v4/projects/{path}/repository/branches/{branch}"
         private const val UPLOAD_URL = "https://gitlab.com/api/v4/projects/{path}/uploads"
+        private val LOG = Logger.getInstance(GitlabAPI::class.java)
     }
 }

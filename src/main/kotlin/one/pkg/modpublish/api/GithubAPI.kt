@@ -17,6 +17,7 @@
 package one.pkg.modpublish.api
 
 import com.google.gson.JsonObject
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -135,7 +136,9 @@ class GithubAPI : API() {
             this.draft = false
             this.generateReleaseNotes = true
             this.makeLatest(true)
-        }.toJson()
+        }.toJson().apply {
+            LOG.info("now run $id publish: $this")
+        }
     }
 
     private fun request(url: String, project: Project): Request.Builder =
@@ -150,5 +153,6 @@ class GithubAPI : API() {
         private const val RELEASES_URL = "https://api.github.com/repos/{path}/releases"
         private const val REPO_INFO_URL = "https://api.github.com/repos/{path}"
         private const val BRANCH_COMMIT_URL = "https://api.github.com/repos/{path}/branches/{branch}"
+        private val LOG = Logger.getInstance(GithubAPI::class.java)
     }
 }

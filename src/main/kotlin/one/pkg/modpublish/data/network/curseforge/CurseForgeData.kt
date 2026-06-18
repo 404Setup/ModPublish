@@ -36,7 +36,7 @@ data class CurseForgeData(
      * Valid values: text, html, markdown
      */
     @SerializedName("changelogType")
-    var changelogType: String? = null,
+    var changelogType: String = MD_TYPE,
 
     /**
      * Display name - Optional, friendly name shown on website
@@ -77,7 +77,7 @@ data class CurseForgeData(
     @SerializedName("relations")
     var relations: Relations? = null
 ) {
-    constructor(): this(null)
+    constructor() : this(null)
 
     /**
      * Checks if there is a parent file
@@ -99,7 +99,7 @@ data class CurseForgeData(
 
     fun changelog(changelog: String) {
         this.changelog = changelog
-        this.changelogType = "text"
+        this.changelogType = DEFAULT_TYPE
     }
 
     /**
@@ -109,7 +109,7 @@ data class CurseForgeData(
      */
     fun htmlChangelog(htmlChangelog: String) {
         this.changelog = htmlChangelog
-        this.changelogType = "html"
+        this.changelogType = HTML_TYPE
     }
 
     /**
@@ -118,8 +118,8 @@ data class CurseForgeData(
      * @param markdownChangelog Changelog in Markdown format
      */
     fun markdownChangelog(markdownChangelog: String) {
-        this.changelog = markdownChangelog
-        this.changelogType = "markdown"
+        this.changelog = markdownChangelog.replace("\r\n", "\n").replace("\n", "\n\n")
+        this.changelogType = MD_TYPE
     }
 
     fun gameVersion(version: MinecraftVersion) {
@@ -184,5 +184,11 @@ data class CurseForgeData(
 
     fun incompatible(slug: String, projectID: Int) {
         dependency(ProjectRelation.incompatible(slug, projectID))
+    }
+
+    companion object {
+        private const val DEFAULT_TYPE = "text"
+        private const val HTML_TYPE = "html"
+        private const val MD_TYPE = "markdown"
     }
 }
