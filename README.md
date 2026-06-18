@@ -15,30 +15,15 @@ It may not be as convenient as some Gradle plugins, but I want to do it.
 ## Feature
 
 - Fully GUI-based operation
+- Full I18n support
 - Automatically detect Mod information, no need to repeatedly manually select/input
 - Quick saving of last operation records (dependencies, changelog)
 - One-click publishing of mods to Modrinth, CurseForge, GitHub, and GitLab
 - Update Mod Description Page
 
-### Unsupported Features
-
-> These features will never be supported unless someone submits a pull request,
-> or I suddenly want to implement them
-
-- Publishing to custom Git servers
-
 ### TODO
 
-> Priority order from top to bottom, smaller numbers indicate higher priority
-
-1. Publishing resource packs/data packs
-2. Publishing plugins
-3. Improve dependency manager
-4. Simplify the CurseForge setup process
-5. Compatible with VSCode
-6. Allow syncing README to ~~Modrinth and~~ CurseForge (no API available)
-7. Publishing to Hangar/SpigotMC
-8. Update Forge/NeoForge update.json during publishing
+- https://github.com/404Setup/ModPublish/issues/18
 
 ## Installation
 
@@ -56,7 +41,7 @@ project. If you don't do this, the corresponding publishing targets will be auto
 
 Building ModPublish requires the following tools
 
-- JDK 17
+- JDK 25
 - Gradle 9
 - Python3
 
