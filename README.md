@@ -41,7 +41,7 @@ project. If you don't do this, the corresponding publishing targets will be auto
 
 Building ModPublish requires the following tools
 
-- JDK 25
+- JDK 21
 - Gradle 9
 - Python3
 
