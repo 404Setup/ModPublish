@@ -82,7 +82,6 @@ class PublishModDialog(
 
     private var modInfo: LocalModInfo? = null
     private var parser: VersionConstraint? = null
-    private var updateVersionList = false
 
     // UI Components
     private lateinit var versionNameField: JBTextField
@@ -268,7 +267,7 @@ class PublishModDialog(
                             isEnabled = false
                             setButtonLoading(this)
                             if (VersionProcessor.updateVersions()) {
-                                updateVersionList = true
+                                minecraftVersions = null
                                 showSuccessDialog("message.update.success", "title.success")
                                 updateMinecraftVersions()
                             } else showFailedDialog("message.update.failed", "title.failed")
@@ -284,8 +283,9 @@ class PublishModDialog(
                     addActionListener { _ ->
                         async {
                             "minecraft.version.json".getUserDataFile().takeIf { it.exists() }?.delete()
+                            LocalResources.clearMinecraftVersionsCache()
+                            minecraftVersions = null
                             showSuccessDialog("message.update.success", "title.success")
-                            updateVersionList = true
                             updateMinecraftVersions()
                         }
                     }
@@ -324,8 +324,7 @@ class PublishModDialog(
             minecraftVersionModel.clear()
             val includeSnapshots = showSnapshotsCheckBox.isSelected
 
-            if (minecraftVersions == null || updateVersionList) {
-                updateVersionList = false
+            if (minecraftVersions == null) {
                 minecraftVersions = LocalResources.getMinecraftVersions()
             }
 

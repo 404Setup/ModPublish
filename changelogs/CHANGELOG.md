@@ -1,3 +1,8 @@
+## v1.11.1
+
+### Fix
+- Fixed an issue where component caching caused the Minecraft version list to not update correctly after using the "Update Version List" and "Clear Version List Cache" features.
+
 ## v1.11.0
 
 ### Feature
