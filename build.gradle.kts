@@ -2,9 +2,9 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.4.0"
 
-    id("org.jetbrains.intellij.platform") version "2.13.1"
+    id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
 group = "one.pkg"
@@ -50,12 +50,12 @@ dependencies {
         bundledPlugin("Git4Idea")
     }
 
-    implementation("com.squareup.okhttp3:okhttp:5.3.2") {
+    implementation("com.squareup.okhttp3:okhttp:5.4.0") {
         exclude(group = "org.jetbrains.kotlin")
     }
 
     implementation("one.tranic:t-proxy:1.0.1")
-    implementation("one.pkg:tiny-utils:2.2.0")
+    implementation("one.pkg:tiny-utils:2.4.0")
     implementation("one.pkg:sktoml:1.0.0") {
         exclude("*")
     }
