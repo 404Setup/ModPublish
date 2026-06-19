@@ -328,9 +328,13 @@ class PublishModDialog(
                 minecraftVersions = LocalResources.getMinecraftVersions()
             }
 
-            minecraftVersions.orEmpty()
-                .filter { it.type == "release" || (includeSnapshots && it.type == "snapshot") }
-                .forEach { minecraftVersionModel.addElement(MinecraftVersionItem(it, false)) }
+            // Performance: Replaced .filter {}.forEach {} with .forEach { if () {} }
+            // to avoid allocating an intermediate collection on the EDT.
+            minecraftVersions.orEmpty().forEach {
+                if (it.type == "release" || (includeSnapshots && it.type == "snapshot")) {
+                    minecraftVersionModel.addElement(MinecraftVersionItem(it, false))
+                }
+            }
 
             autoFillMinecraftVersions()
         }
@@ -536,8 +540,10 @@ class PublishModDialog(
     }
 
     private fun collectPublishData(): PublishData {
-        val selectedLoaders = loaderCheckBoxes.asSequence()
-            .mapNotNull { if (it.second.isSelected) it.first else null }.toList()
+        // Performance: Eager evaluation instead of .asSequence()...toList()
+        // since the list is very small (6 items), avoiding Sequence allocation overhead.
+        val selectedLoaders = loaderCheckBoxes
+            .mapNotNull { if (it.second.isSelected) it.first else null }
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
             .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }
