@@ -20,6 +20,9 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.vfs.VirtualFile
 import one.pkg.modpublish.data.internal.PublishType.Companion.toModType
 import one.pkg.modpublish.ui.PublishModDialog
@@ -35,24 +38,44 @@ class PublishModAction : AnAction() {
             val f = event.getData(CommonDataKeys.VIRTUAL_FILE)
             file = if (f != null) arrayOf(f) else arrayOf()
         }
-        if (file.isNotEmpty()) {
-            val list: MutableList<VirtualFile> = ArrayList()
-            for (virtualFile in file) {
-                if (!virtualFile.isDirectory &&
-                    (virtualFile.name.endsWith(".jar") || virtualFile.name.endsWith(".litemod")) &&
-                    virtualFile.toFile().toModType() != null
-                ) {
-                    list.add(virtualFile)
-                }
-            }
-            if (!list.isEmpty()) {
-                PublishModDialog(
-                    event.project,
-                    list.toTypedArray()
-                ).show()
-                return
+
+        val candidates = mutableListOf<VirtualFile>()
+        for (virtualFile in file) {
+            if (!virtualFile.isDirectory &&
+                (virtualFile.name.endsWith(".jar") || virtualFile.name.endsWith(".litemod"))
+            ) {
+                candidates.add(virtualFile)
             }
         }
+
+        if (candidates.isNotEmpty()) {
+            val project = event.project
+            object : Task.Backgroundable(project, "Scanning Mod Files", true) {
+                override fun run(indicator: ProgressIndicator) {
+                    val validFiles = candidates.filter {
+                        indicator.checkCanceled()
+                        it.toFile().toModType() != null
+                    }
+
+                    ApplicationManager.getApplication().invokeLater {
+                        if (validFiles.isNotEmpty()) {
+                            PublishModDialog(
+                                project,
+                                validFiles.toTypedArray()
+                            ).show()
+                        } else {
+                            showInvalidFileMessage()
+                        }
+                    }
+                }
+            }.queue()
+            return
+        }
+
+        showInvalidFileMessage()
+    }
+
+    private fun showInvalidFileMessage() {
         JOptionPane.showMessageDialog(
             null,
             Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE,
