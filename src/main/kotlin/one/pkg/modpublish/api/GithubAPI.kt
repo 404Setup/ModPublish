@@ -43,15 +43,14 @@ class GithubAPI : API() {
     override fun createVersion(data: PublishData, project: Project): PublishResult {
         return runCatching {
             val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
-            var existingRelease = checkExistingRelease(tagName, project)?.asJsonObject
-            if (existingRelease == null) {
+            val existingRelease = checkExistingRelease(tagName, project)?.asJsonObject ?: run {
                 val result = createRelease(data, project)
                 if (result is PublishResult) return result
-                existingRelease = (result as BackResult).asString().fromJson().asJsonObject
+                (result as BackResult).asString().fromJson().asJsonObject
             }
 
             val uploadUrl =
-                existingRelease?.get("upload_url")?.asString?.split("{")?.first() ?: return PublishResult.create(
+                existingRelease.get("upload_url")?.asString?.split("{")?.first() ?: return PublishResult.create(
                     this,
                     "Failed to get upload URL"
                 )
