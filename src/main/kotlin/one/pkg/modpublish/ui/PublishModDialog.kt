@@ -94,7 +94,7 @@ class PublishModDialog(
     private lateinit var serverCheckBox: JBCheckBox
     private lateinit var releaseType: JComboBox<ReleaseChannel>
     private lateinit var primaryFile: JComboBox<VirtualFile>
-    private lateinit var loaderCheckBoxes: List<JBCheckBox>
+    private lateinit var loaderCheckBoxes: List<Pair<PublishType, JBCheckBox>>
     private lateinit var minecraftVersionList: JBList<MinecraftVersionItem>
     private lateinit var minecraftVersionModel: DefaultListModel<MinecraftVersionItem>
     private lateinit var showSnapshotsCheckBox: JBCheckBox
@@ -154,7 +154,7 @@ class PublishModDialog(
         updateJarFiles(current)
 
         val types = publishTypes[current].orEmpty()
-        loaderCheckBoxes.forEach { it.isSelected = types.contains(it.text.lowercase().toModType()) }
+        loaderCheckBoxes.forEach { it.second.isSelected = types.contains(it.first) }
 
         updateParser(current)
         loadModInfo(current)
@@ -201,14 +201,14 @@ class PublishModDialog(
 
         // Loaders
         loaderCheckBoxes = PublishType.valuesList.map { launcher ->
-            JBCheckBox(launcher.displayName).apply {
+            launcher to JBCheckBox(launcher.displayName).apply {
                 isSelected = publishTypes.values.first().contains(launcher)
             }
         }
 
         formBuilder.addLabeledComponent(
             get("component.name.loaders"),
-            JPanel(FlowLayout(FlowLayout.LEFT)).apply { loaderCheckBoxes.forEach(::add) }
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply { loaderCheckBoxes.forEach { add(it.second) } }
         )
 
         // Primary file
@@ -479,7 +479,7 @@ class PublishModDialog(
             return PublishResult.of("failed.2")
         }
 
-        if (hasModrinthOrCurseforge && loaderCheckBoxes.none { it.isSelected }) {
+        if (hasModrinthOrCurseforge && loaderCheckBoxes.none { it.second.isSelected }) {
             return PublishResult.of("failed.3")
         }
         return null
@@ -537,7 +537,7 @@ class PublishModDialog(
 
     private fun collectPublishData(): PublishData {
         val selectedLoaders = loaderCheckBoxes.asSequence()
-            .mapIndexedNotNull { index, checkBox -> if (checkBox.isSelected) PublishType.valuesList[index] else null }.toList()
+            .mapNotNull { if (it.second.isSelected) it.first else null }.toList()
 
         val selectedMinecraftVersions = (0 until minecraftVersionModel.size)
             .mapNotNull { i -> minecraftVersionModel.getElementAt(i).takeIf { it.selected }?.version }
