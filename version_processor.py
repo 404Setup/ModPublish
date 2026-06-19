@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 import sys
 import requests
 
@@ -118,10 +119,18 @@ def merge_curseforge_ids(minecraft_versions, version_mapping):
 
 def save_versions(versions, output_file='minecraft.version.json'):
     """Save final version data"""
+    # Prevent path traversal by ensuring the resolved absolute path starts with the intended base directory (CWD)
+    base_dir = os.path.abspath(os.getcwd())
+    safe_output_file = os.path.abspath(output_file)
+
+    if os.path.commonpath([base_dir, safe_output_file]) != base_dir:
+        print(f"❌ Error: Invalid output path. Output must be within the current directory.")
+        return False
+
     try:
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(safe_output_file, 'w', encoding='utf-8') as f:
             json.dump(versions, f, ensure_ascii=False, indent=2)
-        print(f"✅ Successfully saved updated data to {output_file}")
+        print(f"✅ Successfully saved updated data to {safe_output_file}")
         return True
     except Exception as e:
         print(f"❌ Error saving file: {e}")
