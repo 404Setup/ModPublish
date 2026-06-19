@@ -48,10 +48,10 @@ object VersionProcessor {
                     return null
                 }
                 val manifest = response.body.charStream().fromJson<MojangManifest>(MojangManifest::class.java)
-                val processedVersions = manifest.versions.map { version ->
+                val processedVersions = manifest.versions.mapTo(ArrayList(manifest.versions.size)) { version ->
                     var releaseTime = version.releaseTime
                     if (releaseTime.endsWith("+00:00")) {
-                        releaseTime = releaseTime.take(releaseTime.length - 6) + "Z"
+                        releaseTime = releaseTime.substring(0, releaseTime.length - 6) + "Z"
                     }
                     ProcessedVersion(
                         version = version.id,
