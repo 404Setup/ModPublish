@@ -1,4 +1,4 @@
-### v1.11.3
+## v1.11.3
 
 ### Refactor
 
@@ -7,6 +7,11 @@
 ### Performance
 
 - Remove some stream list/map operations
+- optimize loaders array iteration in CurseForgeAPI
+- Optimize UI performance by avoiding string-based enum lookup in PublishModDialog
+- Optimize redundant string allocation in VersionProcessor map loop
+- optimize file parsing in PublishModAction to prevent UI freezing
+- optimize intermediate collections in PublishModDialog
 
 ### Fix
 
