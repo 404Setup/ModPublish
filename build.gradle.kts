@@ -56,7 +56,7 @@ dependencies {
 
     implementation("one.tranic:t-proxy:1.0.1")
     implementation("one.pkg:tiny-utils:2.4.0")
-    implementation("one.pkg:sktoml:1.0.0") {
+    implementation("one.pkg:sj-toml:2.0.1") {
         exclude("*")
     }
 

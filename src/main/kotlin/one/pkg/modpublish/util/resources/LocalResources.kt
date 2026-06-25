@@ -52,7 +52,7 @@ object LocalResources {
         SecurityException::class,
         NullPointerException::class
     )
-    // Cache the result to avoid repeated file IO and JSON parsing on every call.
+
     @Synchronized
     fun getMinecraftVersions(): List<MinecraftVersion> {
         cachedMinecraftVersions?.let { return it }

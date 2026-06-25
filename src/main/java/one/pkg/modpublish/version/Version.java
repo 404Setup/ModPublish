@@ -59,8 +59,6 @@ public class Version implements Comparable<Version> {
             pat = matcher.group(3).charAt(0) - 'a';
             verType = VersionType.SNAPSHOT;
         } else {
-            // Bolt: Optimization - Avoid split("\\.") overhead by manually parsing dot separation.
-            // We simulate string.split("\\.") behavior without trailing empty strings.
             int end = trimmed.length();
             while (end > 0 && trimmed.charAt(end - 1) == '.') {
                 end--;
@@ -79,10 +77,8 @@ public class Version implements Comparable<Version> {
             min = parseIntOrZero(!part2.isEmpty() ? getDigits(part2) : "0");
             pat = parseIntOrZero(!part3.isEmpty() ? getDigits(part3) : "0");
 
-            // Replicate original length check: parts.length >= 2
             boolean hasAtLeastTwoParts = dotIndex1 != -1;
 
-            // Replicate allDigits which rejected empty parts
             boolean allPartsDigits = allDigitsString(part1) && (dotIndex1 == -1 || allDigitsString(part2)) && (dotIndex2 == -1 || allDigitsString(part3));
 
             if (dotIndex3 != -1) {

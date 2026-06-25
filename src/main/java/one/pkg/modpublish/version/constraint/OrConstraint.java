@@ -1,49 +1,62 @@
 package one.pkg.modpublish.version.constraint;
 
 import one.pkg.modpublish.version.Version;
-import one.pkg.modpublish.version.constraint.VersionConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public record OrConstraint(List<one.pkg.modpublish.version.constraint.VersionConstraint> constraints, String original) implements one.pkg.modpublish.version.constraint.VersionConstraint {
-    public OrConstraint(List<one.pkg.modpublish.version.constraint.VersionConstraint> constraints, String original) {
+public record OrConstraint(List<VersionConstraint> constraints, String original) implements VersionConstraint {
+    public OrConstraint(List<VersionConstraint> constraints, String original) {
         this.constraints = new ArrayList<>(constraints);
         this.original = original;
     }
 
     @Override
     public boolean satisfies(Version version) {
-        return constraints.stream().anyMatch(constraint -> constraint.satisfies(version));
+        for (VersionConstraint constraint : constraints) {
+            if (constraint.satisfies(version)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public List<String> getVersions() {
-        return constraints.stream()
-                .flatMap(constraint -> constraint.getVersions().stream())
-                .collect(Collectors.toList());
+        List<String> result = new ArrayList<>();
+        for (VersionConstraint constraint : constraints) {
+            result.addAll(constraint.getVersions());
+        }
+        return result;
     }
 
     @Override
     public String getLowVersion() {
-        return constraints.stream()
-                .map(one.pkg.modpublish.version.constraint.VersionConstraint::getLowVersion)
-                .filter(s -> !s.isEmpty())
-                .map(Version::new)
-                .min(Version::compareTo)
-                .map(Version::toString)
-                .orElse("");
+        Version minVersion = null;
+        for (VersionConstraint constraint : constraints) {
+            String lowVersion = constraint.getLowVersion();
+            if (!lowVersion.isEmpty()) {
+                Version version = new Version(lowVersion);
+                if (minVersion == null || version.compareTo(minVersion) < 0) {
+                    minVersion = version;
+                }
+            }
+        }
+        return minVersion != null ? minVersion.toString() : "";
     }
 
     @Override
     public String getMaxVersion() {
-        return constraints.stream()
-                .map(VersionConstraint::getMaxVersion)
-                .filter(s -> !s.isEmpty())
-                .map(Version::new)
-                .max(Version::compareTo)
-                .map(Version::toString)
-                .orElse("");
+        Version maxVersion = null;
+        for (VersionConstraint constraint : constraints) {
+            String max = constraint.getMaxVersion();
+            if (!max.isEmpty()) {
+                Version version = new Version(max);
+                if (maxVersion == null || version.compareTo(maxVersion) > 0) {
+                    maxVersion = version;
+                }
+            }
+        }
+        return maxVersion != null ? maxVersion.toString() : "";
     }
 }

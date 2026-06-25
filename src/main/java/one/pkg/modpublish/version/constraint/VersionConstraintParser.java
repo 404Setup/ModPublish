@@ -1,19 +1,11 @@
 package one.pkg.modpublish.version.constraint;
 
 import one.pkg.modpublish.version.Version;
-import one.pkg.modpublish.version.constraint.CaretConstraint;
-import one.pkg.modpublish.version.constraint.CompositeConstraint;
-import one.pkg.modpublish.version.constraint.ExactVersionConstraint;
-import one.pkg.modpublish.version.constraint.OrConstraint;
-import one.pkg.modpublish.version.constraint.RangeConstraint;
-import one.pkg.modpublish.version.constraint.TildeConstraint;
-import one.pkg.modpublish.version.constraint.VersionConstraint;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class VersionConstraintParser {
     private static final String VERSION_PATTERN =
@@ -34,7 +26,7 @@ public class VersionConstraintParser {
         if (trimmed.isEmpty()) {
             throw new IllegalArgumentException("Version constraint cannot be empty");
         }
-        
+
         String normalized = trimmed.replaceAll("([><=])\\s+", "$1");
 
         Matcher simpleMatcher = SIMPLE_VERSION_PATTERN.matcher(normalized);
@@ -85,24 +77,22 @@ public class VersionConstraintParser {
         throw new IllegalArgumentException("Unable to parse version constraint: " + constraintStr);
     }
 
-    private static one.pkg.modpublish.version.constraint.VersionConstraint parseComparison(String operator, String versionStr, String original)
+    private static VersionConstraint parseComparison(String operator, String versionStr, String original)
             throws IllegalArgumentException {
         Version version = new Version(versionStr);
         return switch (operator) {
-            case ">=" -> new one.pkg.modpublish.version.constraint.RangeConstraint(version, null, true, false, original);
-            case "<=" -> new one.pkg.modpublish.version.constraint.RangeConstraint(null, version, false, true, original);
-            case ">" -> new one.pkg.modpublish.version.constraint.RangeConstraint(version, null, false, false, original);
-            case "<" -> new one.pkg.modpublish.version.constraint.RangeConstraint(null, version, false, false, original);
+            case ">=" -> new RangeConstraint(version, null, true, false, original);
+            case "<=" -> new RangeConstraint(null, version, false, true, original);
+            case ">" -> new RangeConstraint(version, null, false, false, original);
+            case "<" -> new RangeConstraint(null, version, false, false, original);
             default -> throw new IllegalArgumentException("Unknown comparison operator: " + operator);
         };
     }
 
-    private static one.pkg.modpublish.version.constraint.VersionConstraint parseMavenRange(String original, String content) {
+    private static VersionConstraint parseMavenRange(String original, String content) {
         boolean includeMin = original.startsWith("[");
         boolean includeMax = original.endsWith("]");
 
-        // Bolt: Optimization - Avoid split(",") overhead by manually parsing comma separation
-        // Replicate string.split(",") trailing empty string removal logic
         int end = content.length();
         while (end > 0 && content.charAt(end - 1) == ',') {
             end--;
@@ -114,9 +104,9 @@ public class VersionConstraintParser {
         if (commaIndex == -1) {
             if (original.endsWith(",)")) {
                 Version min = new Version(sliced.trim());
-                return new one.pkg.modpublish.version.constraint.RangeConstraint(min, null, includeMin, false, original);
+                return new RangeConstraint(min, null, includeMin, false, original);
             } else {
-                return new one.pkg.modpublish.version.constraint.ExactVersionConstraint(sliced.trim());
+                return new ExactVersionConstraint(sliced.trim());
             }
         }
 
@@ -138,7 +128,7 @@ public class VersionConstraintParser {
             Version max = partLast.isEmpty() ? null : new Version(partLast);
             RangeConstraint range = new RangeConstraint(min, max, includeMin, includeMax, original);
 
-            List<VersionConstraint> constraints = new java.util.ArrayList<>();
+            List<VersionConstraint> constraints = new ArrayList<>();
             constraints.add(range);
 
             for (int i = 1; i < parts.length - 1; i++) {
@@ -147,7 +137,7 @@ public class VersionConstraintParser {
                     constraints.add(new ExactVersionConstraint(mid));
                 }
             }
-            
+
             return new OrConstraint(constraints, original);
         }
     }

@@ -16,10 +16,8 @@
  */
 package one.pkg.modpublish.util.io
 
-import com.google.gson.JsonArray
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import com.intellij.openapi.diagnostic.Logger
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.api.NetworkUtil

@@ -1,26 +1,36 @@
 ### v1.11.3
 
+### Refactor
+
+- SKToml has been replaced with a completely refactored SJToml. SJToml is also lightweight, but more powerful than SKToml, and has more optimizations applied.
+
+### Performance
+
+- Remove some stream list/map operations
+
 ### Fix
+
 - I tried a different method to fix the problem that v1.11.2 was attempting to fix
 - Version checking fails when a comma follows a space in maven style version constraints (Github/41)
 - In the version constraint `[26.1,26.2)`, version 26.2 is unexpectedly and automatically selected (Github/42)
 - In version constraints, `> 1.20.1 < 1.21.1` cannot be detected. (Github/43)
 - In the version constraint `[26.1, 1.21.1, 26.2)`, the version detector incorrectly selects 26.1, 1.21.1, and 26.2 (Github/44)
 
+### Chore
+
+- Bump minecraft version list
+
 ## v1.11.2
 
 ### Fix
 
-- CurseForge's changelog is missing line breaks. After implementing this fix, users on Linux platforms and those using
-  LF line delimiters may encounter unexpected issues. Since I do not have a Linux or macOS graphical device, this fix
-  has only been tested on Windows. If you encounter any problems, please open any issues section to let me know.
+- CurseForge's changelog is missing line breaks. After implementing this fix, users on Linux platforms and those using LF line delimiters may encounter unexpected issues. Since I do not have a Linux or macOS graphical device, this fix has only been tested on Windows. If you encounter any problems, please open any issues section to let me know.
 
 ## v1.11.1
 
 ### Fix
 
-- Fixed an issue where component caching caused the Minecraft version list to not update correctly after using the "
-  Update Version List" and "Clear Version List Cache" features.
+- Fixed an issue where component caching caused the Minecraft version list to not update correctly after using the "Update Version List" and "Clear Version List Cache" features.
 
 ## v1.11.0
 

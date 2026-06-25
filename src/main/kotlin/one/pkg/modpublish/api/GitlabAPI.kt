@@ -65,7 +65,6 @@ class GitlabAPI : API() {
                 }
             }
 
-            // Link new assets to the release
             if (assetLinks.isNotEmpty()) {
                 linkAssetsToRelease(tagName, assetLinks, project)
             }
