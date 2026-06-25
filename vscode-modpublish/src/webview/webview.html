@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Mod</title>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1 id="title-main">Publish Mod</h1>
+        <div class="subtitle" id="subtitle-files">Files to publish:</div>
+    </header>
+
+    <form id="publish-form">
+        <div class="form-group">
+            <label for="primary-file" id="lbl-primary-file">Primary File</label>
+            <select id="primary-file" class="form-control"></select>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="version-name" id="lbl-version-name">Version Name</label>
+                <input type="text" id="version-name" class="form-control" required placeholder="e.g. 1.0.0 for 1.20">
+            </div>
+            <div class="form-group">
+                <label for="version-number" id="lbl-version-number">Version Number</label>
+                <input type="text" id="version-number" class="form-control" required placeholder="e.g. 1.0.0">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="release-channel" id="lbl-release-channel">Release Channel</label>
+                <select id="release-channel" class="form-control">
+                    <option value="release">Release</option>
+                    <option value="beta">Beta</option>
+                    <option value="alpha">Alpha</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="lbl-support-target">Support Target</label>
+                <div class="checkbox-row" style="margin-top: 6px;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="support-client" checked>
+                        <span class="checkbox-label" id="lbl-client">Client</span>
+                    </label>
+                    <label class="checkbox-container" style="margin-left: 20px;">
+                        <input type="checkbox" id="support-server" checked>
+                        <span class="checkbox-label" id="lbl-server">Server</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-grid">
+            <div class="panel">
+                <div class="panel-header" id="lbl-targets">Publish Targets</div>
+                <div class="panel-body" id="targets-container">
+                    <label class="checkbox-container platform-item">
+                        <input type="checkbox" id="target-modrinth" value="modrinth">
+                        <span class="checkbox-label">Modrinth</span>
+                    </label>
+                    <label class="checkbox-container platform-item">
+                        <input type="checkbox" id="target-curseforge" value="curseforge">
+                        <span class="checkbox-label">CurseForge</span>
+                    </label>
+                    <label class="checkbox-container platform-item">
+                        <input type="checkbox" id="target-github" value="github">
+                        <span class="checkbox-label">GitHub</span>
+                    </label>
+                    <label class="checkbox-container platform-item">
+                        <input type="checkbox" id="target-gitlab" value="gitlab">
+                        <span class="checkbox-label">GitLab</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header" id="lbl-loaders">Loaders</div>
+                <div class="panel-body" id="loaders-container">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-fabric" value="fabric">
+                        <span class="checkbox-label">Fabric</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-quilt" value="quilt">
+                        <span class="checkbox-label">Quilt</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-forge" value="forge">
+                        <span class="checkbox-label">Forge</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-neoforge" value="neoforge">
+                        <span class="checkbox-label">NeoForge</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-rift" value="rift">
+                        <span class="checkbox-label">Rift</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-litemod" value="litemod">
+                        <span class="checkbox-label">LiteLoader</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="loader-javaagent" value="javaagent">
+                        <span class="checkbox-label">JavaAgent</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-top: 15px;">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="lbl-mc-version">Minecraft Versions</span>
+                <label class="checkbox-container" style="font-size: 11px; font-weight: normal;">
+                    <input type="checkbox" id="show-snapshots">
+                    <span class="checkbox-label" id="lbl-show-snapshots">Show Snapshots</span>
+                </label>
+            </div>
+            <div class="panel-body">
+                <input type="text" id="version-search" class="form-control search-box" placeholder="Filter versions...">
+                <div class="version-list-container" id="version-list">
+                </div>
+                <div class="version-buttons-row" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-update-versions">Update Version
+                        List
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-version-cache">Clear Version
+                        Cache
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-top: 15px;">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="lbl-dependencies">Dependencies</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-add-dependency">Add Dependency</button>
+            </div>
+            <div class="panel-body">
+                <div class="dependency-list" id="dependency-list">
+                    <div class="dep-empty" id="dep-empty">No dependencies added yet.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="changelog" id="lbl-changelog">Changelog (Markdown)</label>
+            <textarea id="changelog" class="form-control" rows="8"
+                      placeholder="Describe the changes in this version..."></textarea>
+        </div>
+
+        <div class="button-row">
+            <button type="button" class="btn btn-secondary" id="btn-cancel">Cancel</button>
+            <button type="button" class="btn btn-secondary" id="btn-save">Save Config</button>
+            <button type="submit" class="btn btn-primary" id="btn-publish">Publish</button>
+        </div>
+    </form>
+
+    <div id="status-bar" class="status-bar hidden">
+        <span id="status-text">Uploading...</span>
+        <div class="spinner"></div>
+    </div>
+</div>
+
+<!-- Add Dependency Modal Dialog -->
+<div class="modal-overlay hidden" id="dep-modal">
+    <div class="modal-content">
+        <h3 id="lbl-add-dependency-title">Add Dependency</h3>
+        <div class="form-group" id="dep-modrinth-group">
+            <label for="dep-modrinth-id" id="lbl-dep-modrinth-id">Modrinth Project ID</label>
+            <input type="text" id="dep-modrinth-id" class="form-control" placeholder="e.g. AABBCCDD">
+        </div>
+
+        <div class="form-group" id="dep-curseforge-group">
+            <label for="dep-curseforge-id" id="lbl-dep-curseforge-id">CurseForge Project ID</label>
+            <input type="text" id="dep-curseforge-id" class="form-control" placeholder="e.g. 123456">
+        </div>
+
+        <div class="form-group">
+            <label for="dep-type" id="lbl-dep-type">Dependency Type</label>
+            <select id="dep-type" class="form-control">
+                <option value="required">Required</option>
+                <option value="optional">Optional</option>
+                <option value="embedded">Embedded</option>
+                <option value="incompatible">Incompatible</option>
+            </select>
+        </div>
+
+        <div id="dep-modal-status" class="note-text hidden"
+             style="color: var(--vscode-progressBar-background, #0e639c); display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <span id="dep-modal-status-text">Validating...</span>
+            <div class="spinner" style="width: 12px; height: 12px; border-width: 1.5px; margin: 0;"></div>
+        </div>
+
+        <div class="button-row" style="margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" id="btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btn-modal-ok">Add</button>
+        </div>
+    </div>
+</div>
+
+<script>
+</script>
+</body>
+</html>

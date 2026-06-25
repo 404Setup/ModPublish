@@ -1,0 +1,9 @@
+.vscode/**
+.gitignore
+tsconfig.json
+rolldown.config.mjs
+convert-i18n.js
+src/**/*.ts
+node_modules/**
+out/**
+*.vsix
