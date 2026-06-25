@@ -58,8 +58,8 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 import one.pkg.modpublish.util.io.VersionProcessor
 import one.pkg.modpublish.util.metadata.ModVersion.extractVersionNumber
 import one.pkg.modpublish.util.resources.LocalResources
-import one.pkg.tinyutils.minecraft.version.constraint.VersionConstraint
-import one.pkg.tinyutils.minecraft.version.constraint.VersionConstraintParser
+import one.pkg.modpublish.version.constraint.VersionConstraint
+import one.pkg.modpublish.version.constraint.VersionConstraintParser
 import org.intellij.plugins.markdown.lang.MarkdownFileType
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -370,19 +370,12 @@ class PublishModDialog(
     private fun autoFillMinecraftVersions() {
         if (minecraftVersionModel.size == 0) return
 
-        val indicesToSelect = listOfNotNull(parser?.lowVersion, parser?.maxVersion)
-            .mapNotNull { version ->
-                (0 until minecraftVersionModel.size).firstOrNull { i ->
-                    minecraftVersionModel.getElementAt(i).version.version == version
-                }
+        val indicesToSelect = parser?.let { p ->
+            (0 until minecraftVersionModel.size).filter { i ->
+                val v = minecraftVersionModel.getElementAt(i).version.version
+                p.satisfies(one.pkg.modpublish.version.Version(v))
             }
-            .let { found ->
-                when (found.size) {
-                    2 -> (minOf(found[0], found[1])..maxOf(found[0], found[1]))
-                    1 -> 0..found[0]
-                    else -> listOf(0)
-                }
-            }
+        } ?: listOf(0)
 
         indicesToSelect.toList().onEach { idx ->
             minecraftVersionModel.getElementAt(idx).selected = true

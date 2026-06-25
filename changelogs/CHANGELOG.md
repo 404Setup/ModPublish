@@ -1,3 +1,12 @@
+### v1.11.3
+
+### Fix
+- I tried a different method to fix the problem that v1.11.2 was attempting to fix
+- Version checking fails when a comma follows a space in maven style version constraints (Github/41)
+- In the version constraint `[26.1,26.2)`, version 26.2 is unexpectedly and automatically selected (Github/42)
+- In version constraints, `> 1.20.1 < 1.21.1` cannot be detected. (Github/43)
+- In the version constraint `[26.1, 1.21.1, 26.2)`, the version detector incorrectly selects 26.1, 1.21.1, and 26.2 (Github/44)
+
 ## v1.11.2
 
 ### Fix

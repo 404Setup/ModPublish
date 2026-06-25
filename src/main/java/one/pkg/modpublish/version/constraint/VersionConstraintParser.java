@@ -26,7 +26,7 @@ public class VersionConstraintParser {
     private static final Pattern TILDE_PATTERN = Pattern.compile("^~(" + VERSION_PATTERN + ")$");
     private static final Pattern CARET_PATTERN = Pattern.compile("^\\^(" + VERSION_PATTERN + ")$");
     private static final Pattern COMPARISON_PATTERN = Pattern.compile("^(>=|<=|>|<)\\s*(" + VERSION_PATTERN + ")$");
-    private static final Pattern MAVEN_RANGE_PATTERN = Pattern.compile("^[\\[(]([\\w.,-]+)[])]$");
+    private static final Pattern MAVEN_RANGE_PATTERN = Pattern.compile("^[\\[(]([\\w.,\\s-]+)[])]$");
     private static final Pattern COMPOSITE_PATTERN = Pattern.compile("^(.+?)\\s+(.+)$");
 
     public static one.pkg.modpublish.version.constraint.VersionConstraint parse(String constraintStr) throws IllegalArgumentException {
@@ -37,7 +37,6 @@ public class VersionConstraintParser {
         
         String normalized = trimmed.replaceAll("([><=])\\s+", "$1");
 
-        // Check for simple version pattern first (e.g., 1.12.2)
         Matcher simpleMatcher = SIMPLE_VERSION_PATTERN.matcher(normalized);
         if (simpleMatcher.matches()) {
             return new ExactVersionConstraint(simpleMatcher.group(1));
@@ -80,7 +79,6 @@ public class VersionConstraintParser {
             }
         }
 
-        // Fallback to generic EXACT_PATTERN for other cases
         Matcher exactMatcher = EXACT_PATTERN.matcher(normalized);
         if (exactMatcher.matches()) return new ExactVersionConstraint(exactMatcher.group(1));
 
@@ -115,29 +113,41 @@ public class VersionConstraintParser {
 
         if (commaIndex == -1) {
             if (original.endsWith(",)")) {
-                Version min = new Version(sliced);
+                Version min = new Version(sliced.trim());
                 return new one.pkg.modpublish.version.constraint.RangeConstraint(min, null, includeMin, false, original);
             } else {
-                return new one.pkg.modpublish.version.constraint.ExactVersionConstraint(sliced);
+                return new one.pkg.modpublish.version.constraint.ExactVersionConstraint(sliced.trim());
             }
         }
 
         int nextCommaIndex = sliced.indexOf(',', commaIndex + 1);
 
         if (nextCommaIndex == -1) {
-            String part1 = sliced.substring(0, commaIndex);
-            String part2 = sliced.substring(commaIndex + 1);
+            String part1 = sliced.substring(0, commaIndex).trim();
+            String part2 = sliced.substring(commaIndex + 1).trim();
 
             Version min = new Version(part1);
             Version max = part2.isEmpty() ? null : new Version(part2);
             return new RangeConstraint(min, max, includeMin, includeMax, original);
         } else {
-            // More than one comma, fallback to split (rare case)
             String[] parts = sliced.split(",");
-            List<VersionConstraint> constraints = Arrays.stream(parts)
-                    .filter(s -> !s.isEmpty())
-                    .map(ExactVersionConstraint::new)
-                    .collect(Collectors.toList());
+            String part1 = parts[0].trim();
+            String partLast = parts[parts.length - 1].trim();
+
+            Version min = new Version(part1);
+            Version max = partLast.isEmpty() ? null : new Version(partLast);
+            RangeConstraint range = new RangeConstraint(min, max, includeMin, includeMax, original);
+
+            List<VersionConstraint> constraints = new java.util.ArrayList<>();
+            constraints.add(range);
+
+            for (int i = 1; i < parts.length - 1; i++) {
+                String mid = parts[i].trim();
+                if (!mid.isEmpty()) {
+                    constraints.add(new ExactVersionConstraint(mid));
+                }
+            }
+            
             return new OrConstraint(constraints, original);
         }
     }
