@@ -35,7 +35,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.data.internal.*
-import one.pkg.modpublish.data.internal.PublishType.Companion.toModType
 import one.pkg.modpublish.data.internal.PublishType.Companion.toModTypes
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
@@ -49,6 +48,7 @@ import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer
 import one.pkg.modpublish.ui.renderer.JarFilesRenderer
+import one.pkg.modpublish.ui.renderer.LFRenderer
 import one.pkg.modpublish.util.io.Async
 import one.pkg.modpublish.util.io.Async.async
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
@@ -83,7 +83,6 @@ class PublishModDialog(
     private var modInfo: LocalModInfo? = null
     private var parser: VersionConstraint? = null
 
-    // UI Components
     private lateinit var versionNameField: JBTextField
     private lateinit var versionNumberField: JBTextField
     private lateinit var githubCheckBox: JBCheckBox
@@ -165,13 +164,11 @@ class PublishModDialog(
     override fun createCenterPanel(): JComponent {
         val formBuilder = FormBuilder.createFormBuilder()
 
-        // Version name and number
         versionNameField = JBTextField()
         versionNumberField = JBTextField()
         formBuilder.addLabeledComponent(get("component.name.version-name"), versionNameField)
         formBuilder.addLabeledComponent(get("component.name.version-number"), versionNumberField)
 
-        // Publish targets
         githubCheckBox = JBCheckBox("GitHub")
         gitlabCheckBox = JBCheckBox("GitLab")
         modrinthCheckBox = JBCheckBox("Modrinth")
@@ -187,7 +184,6 @@ class PublishModDialog(
             }
         )
 
-        // Support targets
         clientCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.client"))
         serverCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.server"))
 
@@ -199,7 +195,6 @@ class PublishModDialog(
             }
         )
 
-        // Loaders
         loaderCheckBoxes = PublishType.valuesList.map { launcher ->
             launcher to JBCheckBox(launcher.displayName).apply {
                 isSelected = publishTypes.values.first().contains(launcher)
@@ -211,7 +206,6 @@ class PublishModDialog(
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { loaderCheckBoxes.forEach { add(it.second) } }
         )
 
-        // Primary file
         primaryFile = ComboBox(jarFiles).apply {
             addActionListener { onPrimaryFileUpdate() }
             renderer = JarFilesRenderer()
@@ -220,13 +214,11 @@ class PublishModDialog(
             get("component.name.primary-file"),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(primaryFile) })
 
-        // Release type
         releaseType = ComboBox(ReleaseChannel.entries.toTypedArray())
         formBuilder.addLabeledComponent(
             get("component.name.release-channel"),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(releaseType) })
 
-        // Minecraft versions
         minecraftVersionModel = DefaultListModel()
         minecraftVersionList = JBList(minecraftVersionModel).apply {
             cellRenderer = CheckBoxListCellRenderer()
@@ -298,7 +290,6 @@ class PublishModDialog(
             }
         )
 
-        // Changelog
         formBuilder.addPlatformSection(get("component.name.changelog"), Icons.Static.Clipboard, FieldConfig.of {
             EditorTextFieldProvider.getInstance().getEditorField(
                 Language.ANY, requireNotNull(project), arrayListOf(HorizontalScrollBarEditorCustomization.ENABLED)
@@ -307,10 +298,11 @@ class PublishModDialog(
                 preferredSize = Dimension(500, 150)
                 minimumSize = Dimension(500, 100)
                 setOneLineMode(false)
+
+                addDocumentListener(LFRenderer())
             }.also { changelogField = it }
         })
 
-        // Dependency manager
         formBuilder.addPlatformSection(
             get("component.name.dependencies"), Icons.Static.Library,
             FieldConfig.of { DependencyManagerPanel(this).also { dependencyPanel = it } })
@@ -328,8 +320,6 @@ class PublishModDialog(
                 minecraftVersions = LocalResources.getMinecraftVersions()
             }
 
-            // Performance: Replaced .filter {}.forEach {} with .forEach { if () {} }
-            // to avoid allocating an intermediate collection on the EDT.
             minecraftVersions.orEmpty().forEach {
                 if (it.type == "release" || (includeSnapshots && it.type == "snapshot")) {
                     minecraftVersionModel.addElement(MinecraftVersionItem(it, false))
@@ -440,7 +430,7 @@ class PublishModDialog(
             gitlabCheckBox.setFailedSelect()
         }
 
-        changelogField.text = properties.getValue("modpublish.changelog", "")
+        changelogField.text = properties.getValue("modpublish.changelog", "").replace("\r\n", "\n").replace("\r", "\n")
 
         val savedDependenciesJson = properties.getValue("modpublish.dependencies", "[]")
         val savedDependencies: List<DependencyInfo> = try {
@@ -540,8 +530,6 @@ class PublishModDialog(
     }
 
     private fun collectPublishData(): PublishData {
-        // Performance: Eager evaluation instead of .asSequence()...toList()
-        // since the list is very small (6 items), avoiding Sequence allocation overhead.
         val selectedLoaders = loaderCheckBoxes
             .mapNotNull { if (it.second.isSelected) it.first else null }
 

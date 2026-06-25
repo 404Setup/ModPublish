@@ -118,7 +118,7 @@ data class CurseForgeData(
      * @param markdownChangelog Changelog in Markdown format
      */
     fun markdownChangelog(markdownChangelog: String) {
-        this.changelog = markdownChangelog.replace("\r\n", "\n").replace("\n", "\n\n")
+        this.changelog = markdownChangelog
         this.changelogType = MD_TYPE
     }
 

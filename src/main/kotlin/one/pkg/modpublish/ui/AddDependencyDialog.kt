@@ -98,7 +98,6 @@ class AddDependencyDialog(
             if (selector.curseForge) curseforgeIdField?.text = pid
         }
 
-        // Dependency type
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
         panel.add(getJBLabel("component.name.depend-status"), gbc)
 

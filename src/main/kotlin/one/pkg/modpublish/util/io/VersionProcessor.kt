@@ -190,7 +190,6 @@ object VersionProcessor {
             LocalResources.clearMinecraftVersionsCache()
         }
         return saved
-        //showPreview(merged, 5);
     }
 
     private data class MojangManifest(

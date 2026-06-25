@@ -52,17 +52,14 @@ class GitlabAPI : API() {
                 if (result is PublishResult) return result
                 existingRelease = (result as BackResult).asString().fromJson()
             } else {
-                // Update existing release with new description if needed
                 updateReleaseDescription(tagName, data, project)
             }
 
-            // Get existing asset names to avoid duplicate uploads
             val existingAssets = getExistingAssetNames(existingRelease)
 
-            // Upload assets first to get their URLs (skip if already exists)
             val assetLinks = data.files.mapNotNull { file ->
                 if (existingAssets.contains(file.name)) {
-                    null // Skip already uploaded assets
+                    null
                 } else {
                     uploadAssetToProject(file, project)
                 }
