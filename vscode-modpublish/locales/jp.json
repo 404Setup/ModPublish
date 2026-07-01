@@ -83,6 +83,8 @@
   "setting.proxy.type": "種類",
   "setting.proxy.user": "ユーザー名",
   "subtitle.files": "パブリッシュするファイル ({0})",
+  "tab.edit": "編集",
+  "tab.preview": "プレビュー",
   "tips.1": "ヒント: カンマを使用して複数のプラットフォームのIDを区切ります（左側がModrinth、右側がCurseForge）",
   "tips.2": "自動プロキシが機能しない場合や効果がない場合は、プロキシサーバーを手動で入力できます。<br> ネットワークおよびプロキシ関連の設定変更は、反映するために IDEA の再起動が必要です。",
   "title.add-dependency": "依存関係を追加",

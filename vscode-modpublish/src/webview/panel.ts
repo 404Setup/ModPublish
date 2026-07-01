@@ -108,6 +108,15 @@ export class PublishModPanel {
                         vscode.env.openExternal(vscode.Uri.parse(message.url));
                         break;
                     }
+                    case 'renderMarkdown': {
+                        vscode.commands.executeCommand('markdown.api.render', message.text || '').then(html => {
+                            this._panel.webview.postMessage({
+                                command: 'markdownRendered',
+                                html: typeof html === 'string' ? html : (html as any)?.value || ''
+                            });
+                        });
+                        break;
+                    }
                 }
             },
             null,

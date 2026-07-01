@@ -83,6 +83,8 @@
   "setting.proxy.type": "Typ",
   "setting.proxy.user": "Benutzername",
   "subtitle.files": "Dateien zum Veröffentlichen ({0})",
+  "tab.edit": "Bearbeiten",
+  "tab.preview": "Vorschau",
   "tips.1": "Tipp: Verwenden Sie Kommas, um mehrere Plattform-IDs zu trennen (Modrinth links, CurseForge rechts)",
   "tips.2": "Wenn AutoProxy nicht funktioniert oder nicht effektiv ist, können Sie den Proxy-Server manuell eintragen.<br> Alle Änderungen an Netzwerk- und Proxy-Einstellungen erfordern einen Neustart von IDEA, um wirksam zu werden.",
   "title.add-dependency": "Abhängigkeit hinzufügen",

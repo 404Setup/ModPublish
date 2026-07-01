@@ -265,6 +265,31 @@ body.vscode-high-contrast .checkbox-label::after {
     font-style: italic;
 }
 
+.tabs-container {
+    display: flex;
+    gap: 10px;
+}
+.tab {
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 13px;
+    border-bottom: 2px solid transparent;
+    user-select: none;
+}
+.tab.active {
+    border-bottom: 2px solid var(--vscode-focusBorder, #007acc);
+}
+.changelog-preview {
+    min-height: 150px;
+    background-color: var(--vscode-input-background, #3c3c3c);
+    color: var(--vscode-input-foreground, #cccccc);
+    border: 1px solid var(--vscode-input-border, transparent);
+    padding: 8px 10px;
+    border-radius: 2px;
+    overflow-y: auto;
+    font-family: inherit;
+}
+
 .dep-item {
     display: flex;
     align-items: center;

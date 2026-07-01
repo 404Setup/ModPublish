@@ -83,6 +83,8 @@
   "setting.proxy.type": "類型",
   "setting.proxy.user": "用戶名",
   "subtitle.files": "待發佈的文件 ({0})",
+  "tab.edit": "編輯",
+  "tab.preview": "預覽",
   "tips.1": "提示: 使用逗號分隔多個平台的ID (左側為Modrinth，右側為CurseForge)",
   "tips.2": "如果自動代理服務器無法工作或無效，您可以手動填寫代理服務器。<br> 任何網路和代理相關配置變更需要重新啟動 IDEA 才能生效。",
   "title.add-dependency": "添加依賴項",

@@ -83,6 +83,8 @@
   "setting.proxy.type": "Type",
   "setting.proxy.user": "Username",
   "subtitle.files": "Files to publish ({0})",
+  "tab.edit": "Edit",
+  "tab.preview": "Preview",
   "tips.1": "Tips: Use comma to separate multiple platform IDs (Modrinth on the left, CurseForge on the right)",
   "tips.2": "If AutoProxy does not work or is not effective, you can manually fill in the proxy server.<br> Any network and proxy-related configuration changes require IDEA restart to take effect.",
   "title.add-dependency": "Add Dependency",

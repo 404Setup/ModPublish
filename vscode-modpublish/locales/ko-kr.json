@@ -83,6 +83,8 @@
   "setting.proxy.type": "유형",
   "setting.proxy.user": "사용자 이름",
   "subtitle.files": "게시할 파일 ({0})",
+  "tab.edit": "편집",
+  "tab.preview": "미리보기",
   "tips.1": "팁: 여러 플랫폼 ID를 구분하려면 쉼표를 사용하세요 (왼쪽은 Modrinth, 오른쪽은 CurseForge)",
   "tips.2": "AutoProxy가 작동하지 않거나 효과가 없는 경우 프록시 서버를 수동으로 입력할 수 있습니다.<br> 네트워크 및 프록시 관련 구성을 변경하면 변경 사항을 적용하기 위해 IDEA를 다시 시작해야 합니다.",
   "title.add-dependency": "의존성 추가",

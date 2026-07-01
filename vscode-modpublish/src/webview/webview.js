@@ -69,6 +69,7 @@ function init() {
     loadVersions();
     loadPrefilledData();
     setupEventListeners();
+    setupTabs();
     renderDependencies();
 }
 
@@ -93,6 +94,11 @@ function localizeUI() {
     document.getElementById('btn-add-dependency').textContent = t('title.add-dependency');
     document.getElementById('lbl-changelog').textContent = t('component.name.changelog');
     
+    const tabEdit = document.getElementById('tab-edit');
+    if (tabEdit) tabEdit.textContent = t('tab.edit') || 'Edit';
+    const tabPreview = document.getElementById('tab-preview');
+    if (tabPreview) tabPreview.textContent = t('tab.preview') || 'Preview';
+
     document.getElementById('version-search').placeholder = t('component.desc.filter-versions');
     document.getElementById('dep-empty').textContent = t('component.desc.dep-empty');
     document.getElementById('changelog').placeholder = t('component.desc.changelog');
@@ -659,6 +665,37 @@ function hideStatus() {
     btnPublish.disabled = false;
 }
 
+function setupTabs() {
+    const tabEdit = document.getElementById('tab-edit');
+    const tabPreview = document.getElementById('tab-preview');
+    const changelogTextarea = document.getElementById('changelog');
+    const changelogPreview = document.getElementById('changelog-preview');
+
+    if (tabEdit && tabPreview) {
+        tabEdit.addEventListener('click', () => {
+            if (tabEdit.classList.contains('active')) return;
+            tabEdit.classList.add('active');
+            tabPreview.classList.remove('active');
+            changelogTextarea.classList.remove('hidden');
+            changelogPreview.classList.add('hidden');
+        });
+
+        tabPreview.addEventListener('click', () => {
+            if (tabPreview.classList.contains('active')) return;
+            tabPreview.classList.add('active');
+            tabEdit.classList.remove('active');
+            changelogTextarea.classList.add('hidden');
+            changelogPreview.classList.remove('hidden');
+            
+            changelogPreview.innerHTML = 'Loading preview...';
+            vscode.postMessage({
+                command: 'renderMarkdown',
+                text: changelogTextarea.value
+            });
+        });
+    }
+}
+
 window.addEventListener('message', event => {
     const message = event.data;
     switch (message.command) {
@@ -719,6 +756,13 @@ window.addEventListener('message', event => {
             const btnUpdateErr = document.getElementById('btn-update-versions');
             if (btnUpdateErr) btnUpdateErr.disabled = false;
             showNotification(t('message.update.failed'), 'error');
+            break;
+
+        case 'markdownRendered':
+            const changelogPreview = document.getElementById('changelog-preview');
+            if (changelogPreview) {
+                changelogPreview.innerHTML = message.html;
+            }
             break;
     }
 });

@@ -168,9 +168,16 @@
         </div>
 
         <div class="form-group" style="margin-top: 15px;">
-            <label for="changelog" id="lbl-changelog">Changelog (Markdown)</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="changelog" id="lbl-changelog" style="margin-bottom: 0;">Changelog (Markdown)</label>
+                <div class="tabs-container">
+                    <span id="tab-edit" class="tab active">Edit</span>
+                    <span id="tab-preview" class="tab">Preview</span>
+                </div>
+            </div>
             <textarea id="changelog" class="form-control" rows="8"
                       placeholder="Describe the changes in this version..."></textarea>
+            <div id="changelog-preview" class="changelog-preview hidden"></div>
         </div>
 
         <div class="button-row">
