@@ -94,5 +94,8 @@
   "tooltip.curseforge.disable": "CurseForge 토큰 또는 모드 ID가 구성되지 않았습니다.",
   "tooltip.decrypt.failed": "토큰 복호화 실패, 하드웨어 변경으로 인한 것일 수 있습니다. 토큰을 다시 구성하세요!",
   "tooltip.git.disable": "{0} 토큰/저장소 구성되지 않았습니다.",
-  "tooltip.modrinth.disable": "Modrinth 토큰 또는 모드 ID가 구성되지 않았습니다."
+  "tooltip.modrinth.disable": "Modrinth 토큰 또는 modID가 구성되지 않았습니다.",
+  "tooltip.missing.token": "API 토큰이 구성되지 않았습니다",
+  "tooltip.missing.modid": "ModID가 구성되지 않았습니다",
+  "tooltip.missing.repo": "저장소가 구성되지 않았습니다"
 }

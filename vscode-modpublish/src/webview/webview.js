@@ -238,18 +238,28 @@ function loadPrefilledData() {
         const cb = document.getElementById(`target-${target}`);
         if (cb) {
             cb.checked = isConfigured;
+            const labelSpan = cb.nextElementSibling;
             if (!isConfigured) {
                 cb.disabled = true;
                 cb.parentElement.style.opacity = '0.5';
-                cb.parentElement.style.pointerEvents = 'none';
-                cb.parentElement.title = (target === 'modrinth' || target === 'curseforge') ?
-                    t(`tooltip.${target}.disable`) :
-                    t('tooltip.git.disable', target.toUpperCase());
+                cb.parentElement.style.pointerEvents = 'auto'; // allow hover
+
+                let reasons = [];
+                if (!config[`${target}TokenAvailable`]) reasons.push(t('tooltip.missing.token'));
+                if (target === 'modrinth' || target === 'curseforge') {
+                    if (!config[`${target}IdAvailable`]) reasons.push(t('tooltip.missing.modid'));
+                } else {
+                    if (!config[`${target}RepoAvailable`]) reasons.push(t('tooltip.missing.repo'));
+                }
+                
+                cb.parentElement.title = reasons.join('\\n');
+                if (labelSpan) labelSpan.style.textDecoration = 'line-through';
             } else {
                 cb.disabled = false;
                 cb.parentElement.style.opacity = '1';
                 cb.parentElement.style.pointerEvents = 'auto';
                 cb.parentElement.title = '';
+                if (labelSpan) labelSpan.style.textDecoration = 'none';
             }
         }
     });

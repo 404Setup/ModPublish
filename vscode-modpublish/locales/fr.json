@@ -94,5 +94,8 @@
   "tooltip.curseforge.disable": "Le jeton CurseForge ou l'ID du mod n'est pas configuré.",
   "tooltip.decrypt.failed": "Le déchiffrement du jeton a échoué, probablement en raison de changements matériels. Veuillez reconfigurer le jeton !",
   "tooltip.git.disable": "Le jeton/dépôt {0} n'est pas configuré.",
-  "tooltip.modrinth.disable": "Le jeton Modrinth ou l'ID du mod n'est pas configuré."
+  "tooltip.modrinth.disable": "Le jeton ou l'identifiant du module Modrinth n'est pas configuré.",
+  "tooltip.missing.token": "Le jeton API n'est pas configuré",
+  "tooltip.missing.modid": "ModID n'est pas configuré",
+  "tooltip.missing.repo": "Le dépôt n'est pas configuré"
 }

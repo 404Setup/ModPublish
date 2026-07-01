@@ -94,5 +94,8 @@
   "tooltip.curseforge.disable": "CurseForge token or modID is not configured.",
   "tooltip.decrypt.failed": "Token decryption failed, possibly due to hardware changes. Please reconfigure the token!",
   "tooltip.git.disable": "{0} token/repo is not configured.",
-  "tooltip.modrinth.disable": "Modrinth token or modID is not configured."
+  "tooltip.modrinth.disable": "Modrinth token or modID is not configured.",
+  "tooltip.missing.token": "API Token is not configured",
+  "tooltip.missing.modid": "ModID is not configured",
+  "tooltip.missing.repo": "Repository is not configured"
 }

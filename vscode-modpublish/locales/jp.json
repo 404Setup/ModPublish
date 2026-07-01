@@ -94,5 +94,8 @@
   "tooltip.curseforge.disable": "CurseForgeのトークンまたはmodIDが設定されていません",
   "tooltip.decrypt.failed": "ハードウェア情報の変更によりトークンの復号化に失敗した可能性があります。トークンを再設定してください!",
   "tooltip.git.disable": "{0} のトークン/リポジトリが設定されていません",
-  "tooltip.modrinth.disable": "ModrinthのトークンまたはmodIDが設定されていません"
+  "tooltip.modrinth.disable": "Modrinth のトークンまたは modID が設定されていません",
+  "tooltip.missing.token": "APIトークンが設定されていません",
+  "tooltip.missing.modid": "ModIDが設定されていません",
+  "tooltip.missing.repo": "リポジトリが設定されていません"
 }

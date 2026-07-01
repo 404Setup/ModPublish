@@ -94,5 +94,8 @@
   "tooltip.curseforge.disable": "CurseForge API金鑰或者modID未配置。",
   "tooltip.decrypt.failed": "可能因為硬體資訊發生變更導致Token解密失敗，請重新設定Token!",
   "tooltip.git.disable": "{0} API金鑰/倉庫 未配置",
-  "tooltip.modrinth.disable": "Modrinth API金鑰或者modID未配置。"
+  "tooltip.modrinth.disable": "Modrinth API金鑰或者modID未配置。",
+  "tooltip.missing.token": "未設定API金鑰",
+  "tooltip.missing.modid": "未設定ModID",
+  "tooltip.missing.repo": "未設定倉庫"
 }

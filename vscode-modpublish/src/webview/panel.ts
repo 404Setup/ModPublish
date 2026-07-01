@@ -180,7 +180,14 @@ export class PublishModPanel {
             githubConfigured: !!(githubToken && config.get('github.repo')),
             gitlabConfigured: !!(gitlabToken && config.get('gitlab.repo')),
             modrinthTokenAvailable: !!modrinthToken,
+            curseforgeTokenAvailable: !!curseforgeToken,
             curseforgeStudioTokenAvailable: !!curseforgeStudioToken,
+            githubTokenAvailable: !!githubToken,
+            gitlabTokenAvailable: !!gitlabToken,
+            modrinthIdAvailable: !!config.get('modrinth.modid'),
+            curseforgeIdAvailable: !!config.get('curseforge.modid'),
+            githubRepoAvailable: !!config.get('github.repo'),
+            gitlabRepoAvailable: !!config.get('gitlab.repo'),
             releaseChannel: config.get('common.releaseChannel') || 'release',
             dependencies: config.get('common.dependencies') || []
         };
