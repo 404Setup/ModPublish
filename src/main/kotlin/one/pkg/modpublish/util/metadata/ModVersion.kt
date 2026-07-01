@@ -19,6 +19,11 @@ package one.pkg.modpublish.util.metadata
 import com.intellij.openapi.vfs.VirtualFile
 
 object ModVersion {
+    private val VERSION_PREFIX_REGEX = "^[vV]".toRegex()
+    private val VALID_VERSION_PATTERN = "^\\d+(?:\\.\\d+)*(?:[-.]?(?:alpha|beta|rc|snapshot|dev|final|release)\\d*)?$".toRegex()
+    private val EXTRACT_VERSION_PATTERN = "(\\d+(?:\\.\\d+)*(?:[-.]?(?:alpha|beta|rc|snapshot|dev)\\d*)?)".toRegex(RegexOption.IGNORE_CASE)
+    private val NORMALIZE_VERSION_SPLIT_PATTERN = "[-.](?=alpha|beta|rc|snapshot|dev|final|release)".toRegex()
+
     fun VirtualFile.extractVersionNumber(): String {
         val name = nameWithoutExtension
         val extracted = extractVersionFromPattern(name)
@@ -34,25 +39,23 @@ object ModVersion {
             }
         }
 
-        val pattern = "(\\d+(?:\\.\\d+)*(?:[-.]?(?:alpha|beta|rc|snapshot|dev)\\d*)?)".toRegex(RegexOption.IGNORE_CASE)
-        val lastMatch = pattern.findAll(filename).lastOrNull()?.groupValues?.get(1)
+        val lastMatch = EXTRACT_VERSION_PATTERN.findAll(filename).lastOrNull()?.groupValues?.get(1)
         return if (isValidVersionPattern(lastMatch)) lastMatch else null
     }
 
     private fun isValidVersionPattern(version: String?): Boolean {
         if (version.isNullOrBlank()) return false
-        val v = version.replaceFirst("^[vV]".toRegex(), "")
-        val versionPattern = "^\\d+(?:\\.\\d+)*(?:[-.]?(?:alpha|beta|rc|snapshot|dev|final|release)\\d*)?$".toRegex()
-        return versionPattern.matches(v)
+        val v = version.replaceFirst(VERSION_PREFIX_REGEX, "")
+        return VALID_VERSION_PATTERN.matches(v)
     }
 
     private fun validateAndNormalizeVersion(version: String?): String {
-        val v = version?.trim()?.replaceFirst("^[vV]".toRegex(), "") ?: return "1.0.0"
+        val v = version?.trim()?.replaceFirst(VERSION_PREFIX_REGEX, "") ?: return "1.0.0"
         return if (isValidVersionPattern(v)) normalizeVersionFormat(v) else "1.0.0"
     }
 
     private fun normalizeVersionFormat(version: String): String {
-        val parts = version.split("[-.](?=alpha|beta|rc|snapshot|dev|final|release)".toRegex(), 2)
+        val parts = version.split(NORMALIZE_VERSION_SPLIT_PATTERN, 2)
         var mainVersion = parts[0]
         val preRelease = parts.getOrNull(1)
 
