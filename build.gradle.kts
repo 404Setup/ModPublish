@@ -210,3 +210,14 @@ tasks.named<SignPluginTask>("signPlugin") {
         password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
     }
 }
+dependencies {
+    testImplementation("junit:junit:4.13.2")
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showStandardStreams = true
+    }
+}

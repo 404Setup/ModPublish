@@ -19,6 +19,8 @@ package one.pkg.modpublish.util.metadata
 import com.intellij.openapi.vfs.VirtualFile
 
 object ModVersion {
+    private val SPLIT_PATTERN = "[-.](?=alpha|beta|rc|snapshot|dev|final|release)".toRegex()
+
     fun VirtualFile.extractVersionNumber(): String {
         val name = nameWithoutExtension
         val extracted = extractVersionFromPattern(name)
@@ -52,7 +54,7 @@ object ModVersion {
     }
 
     private fun normalizeVersionFormat(version: String): String {
-        val parts = version.split("[-.](?=alpha|beta|rc|snapshot|dev|final|release)".toRegex(), 2)
+        val parts = version.split(SPLIT_PATTERN, 2)
         var mainVersion = parts[0]
         val preRelease = parts.getOrNull(1)
 
