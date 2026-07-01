@@ -92,6 +92,10 @@ function localizeUI() {
     document.getElementById('lbl-dependencies').textContent = t('component.name.dependencies');
     document.getElementById('btn-add-dependency').textContent = t('title.add-dependency');
     document.getElementById('lbl-changelog').textContent = t('component.name.changelog');
+    
+    document.getElementById('version-search').placeholder = t('component.desc.filter-versions');
+    document.getElementById('dep-empty').textContent = t('component.desc.dep-empty');
+    document.getElementById('changelog').placeholder = t('component.desc.changelog');
 
     document.getElementById('lbl-add-dependency-title').textContent = t('title.add-dependency');
     document.getElementById('lbl-dep-modrinth-id').textContent = t('component.name.depend-id.modrinth');
