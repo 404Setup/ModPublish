@@ -1,9 +1,14 @@
 {
-  "name": "vscode-modpublish",
+  "name": "modpublish-vsc",
   "displayName": "Minecraft Mod Publish Utils",
   "description": "Quickly publish your Minecraft mods to multiple mod hosting sites from VS Code.",
-  "version": "1.0.0",
+  "version": "1.12.0",
+  "preview": true,
   "publisher": "404Setup",
+  "sponsor": {
+    "url": "https://www.patreon.com/c/tranic"
+  },
+  "pricing": "Free",
   "repository": {
     "type": "git",
     "url": "https://github.com/404Setup/ModPublish.git"
@@ -15,6 +20,7 @@
   "categories": [
     "Other"
   ],
+  "keywords": ["minecraft", "mod", "publisher"],
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
