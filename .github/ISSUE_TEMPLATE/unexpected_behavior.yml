@@ -1,0 +1,85 @@
+name: Unexpected behavior
+description: Something doesn't seem right
+labels: [ "bug", "status: needs triage" ]
+body:
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirm before starting
+      options:
+        - label: This issue can be consistently reproduced
+          required: false
+        - label: I confirm that I am using the latest public version of ModPublish
+          required: true
+        - label: I confirm that I am using the official version of ModPublish
+          required: true
+        - label: I have confirmed that no one has reported this issue
+          required: true
+  - type: dropdown
+    id: plugin-type
+    attributes:
+      label: Plugin Type
+      description: Which version of ModPublish are you using?
+      options:
+        - IntelliJ Idea (Stable)
+        - Visual Studio Code (Preview)
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: ide-type
+    attributes:
+      label: IDE Type
+      description: The IDE you use
+      options:
+        - IntelliJ Idea
+        - Visual Studio Code
+        - VSCodium
+        - CodeServer
+        - Cursor
+        - Trae
+        - Windsurf
+        - Other
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: ide-version
+    attributes:
+      label: IDE Version
+      description: The version of the IDE you are using
+      placeholder: ex. vsc 1.127.0; intellij 2026.1.3
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What happened to it?
+      description: |
+        If you want to report a crash, use [another issue template](https://github.com/404Setup/ModPublish/issues/new?template=crash.yml).
+        If you have a video or something similar, please upload it to youtube and put the link here.
+      placeholder: Please describe in detail what exactly happened, rather than giving vague answers that will make it more difficult to troubleshoot.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actions to reproduce (if known)
+      description: This may include a build schematic, a video, or detailed instructions to help reconstruct the issue. Anything helps!
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Other
+      description: |
+        Please include other helpful information below, if any.
+        The more information we receive, the quicker and more effective we can be at finding the solution to the issue.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting this issue, please ensure the following:
+
+        1. You are running the latest version of ModPublish.
+        2. You searched for and ensured there isn't already an open issue regarding this.
+        3. Your version of IDE is supported by ModPublish.

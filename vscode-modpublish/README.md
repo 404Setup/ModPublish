@@ -13,6 +13,18 @@ This is the VS Code port of the ModPublish JetBrains plugin.
 - **Multi-platform publishing**: One-click upload to Modrinth, CurseForge, GitHub, and GitLab.
 - **Git Integration**: Dynamically pre-fills branch and repo details.
 
+## Install
+
+We have already published it on the Visual Studio Code Marketplace. You can access it from the following URL, or you can
+search for "Minecraft Mod Publish Utils for vsc" in the extension marketplace of your vscode, trae, or any other IDE
+based on Visual Studio Code to install it. (Usually, you don't need to type the full name.)
+
+Please note that this is a completely free extension, with no cloud services operated by the developer, and the code has
+not been obfuscated in any way. If you find someone publishing ModPublish with suspicious code behavior, full of ads or
+paid pop-ups, please report to me immediately.
+
+Download: [Marketplace](https://marketplace.visualstudio.com/items?itemName=404Setup.modpublish-vsc)
+
 ## How to Configure
 
 1. Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and search for **`ModPublish: Set Platform API Token...`**

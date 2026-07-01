@@ -1,6 +1,6 @@
 {
   "name": "modpublish-vsc",
-  "displayName": "Minecraft Mod Publish Utils",
+  "displayName": "Minecraft Mod Publish Utils for vsc",
   "description": "Quickly publish your Minecraft mods to multiple mod hosting sites from VS Code.",
   "version": "1.12.0",
   "preview": true,

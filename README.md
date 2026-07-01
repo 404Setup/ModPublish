@@ -12,6 +12,8 @@ Quickly publish your Minecraft mods to multiple mod hosting sites using Jetbrain
 
 It may not be as convenient as some Gradle plugins, but I want to do it.
 
+**If you're looking for ModPublish for Visual Studio Code, see** [here](vscode-modpublish).
+
 ## Feature
 
 - Fully GUI-based operation
