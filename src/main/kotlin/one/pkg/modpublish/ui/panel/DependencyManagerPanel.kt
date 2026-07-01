@@ -159,7 +159,9 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
 
     fun setDependencies(dependencies: List<DependencyInfo>?) {
         val incoming = dependencies ?: emptyList()
-        val toRemove = this.dependencies.filter { it !in incoming }
+        val incomingSet = incoming.toSet()
+        // Convert incoming to a Set to reduce membership check complexity from O(N*M) to O(N)
+        val toRemove = this.dependencies.filter { it !in incomingSet }
         for (dep in toRemove) {
             this.dependencies.remove(dep)
             dependencyPanels.remove(dep)?.let { dependencyListPanel.remove(it) }
