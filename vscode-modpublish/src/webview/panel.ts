@@ -82,11 +82,15 @@ export class PublishModPanel {
                         break;
                     }
                     case 'clearVersionListCache': {
-                        VersionUtil.clearCache(this._context);
-                        this._panel.webview.postMessage({
-                            command: 'versionsUpdated',
-                            reason: 'clear',
-                            versions: VersionUtil.getVersions(this._context)
+                        vscode.window.showWarningMessage(message.text || 'Clear version list cache?', { modal: true }, 'OK').then(answer => {
+                            if (answer === 'OK') {
+                                VersionUtil.clearCache(this._context);
+                                this._panel.webview.postMessage({
+                                    command: 'versionsUpdated',
+                                    reason: 'clear',
+                                    versions: VersionUtil.getVersions(this._context)
+                                });
+                            }
                         });
                         break;
                     }

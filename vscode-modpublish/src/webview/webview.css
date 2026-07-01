@@ -155,13 +155,15 @@ textarea.form-control {
     margin-right: 8px;
     border-radius: 2px;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
 .checkbox-label::after {
     content: '';
     position: absolute;
     left: 4px;
-    top: 2px;
+    top: 50%;
+    margin-top: -5px;
     width: 5px;
     height: 8px;
     border: solid var(--vscode-checkbox-foreground, #ffffff);
@@ -171,8 +173,8 @@ textarea.form-control {
 }
 
 .checkbox-container input:checked ~ .checkbox-label::before {
-    background-color: var(--vscode-checkbox-selectBackground, #007acc);
-    border-color: var(--vscode-checkbox-selectBorder, #007acc);
+    background-color: var(--vscode-checkbox-background, #3c3c3c);
+    border-color: var(--vscode-focusBorder, #007acc);
 }
 
 .checkbox-container input:checked ~ .checkbox-label::after {
@@ -180,7 +182,26 @@ textarea.form-control {
 }
 
 .checkbox-container input:focus ~ .checkbox-label::before {
-    border-color: var(--vscode-focusBorder, #007acc);
+    outline: 1px solid var(--vscode-focusBorder, #007acc);
+    outline-offset: -1px;
+}
+
+body.vscode-light .checkbox-label::before {
+    background-color: var(--vscode-checkbox-background, #ffffff);
+    border-color: var(--vscode-checkbox-border, #919191);
+}
+
+body.vscode-light .checkbox-container input:checked ~ .checkbox-label::before {
+    background-color: var(--vscode-checkbox-background, #ffffff);
+}
+
+body.vscode-light .checkbox-label::after {
+    border-color: #202020 !important;
+}
+
+body.vscode-dark .checkbox-label::after,
+body.vscode-high-contrast .checkbox-label::after {
+    border-color: #ffffff !important;
 }
 
 .checkbox-row {
@@ -192,7 +213,6 @@ textarea.form-control {
     margin-bottom: 12px;
 }
 
-/* Version List styles */
 .search-box {
     margin-bottom: 10px;
     font-size: 12px;
@@ -229,7 +249,6 @@ textarea.form-control {
     color: var(--vscode-badge-foreground, #ffffff);
 }
 
-/* Dependencies List styles */
 .dependency-list {
     border: 1px solid var(--vscode-panel-border, #3c3c3c);
     background-color: var(--vscode-input-background, #3c3c3c);
@@ -285,7 +304,6 @@ textarea.form-control {
     margin-left: 15px;
 }
 
-/* Button styles */
 .button-row {
     display: flex;
     justify-content: flex-end;
@@ -337,7 +355,6 @@ textarea.form-control {
     background-color: #e03b3b;
 }
 
-/* Modal Overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -379,7 +396,6 @@ textarea.form-control {
     display: none !important;
 }
 
-/* Status Bar */
 .status-bar {
     position: fixed;
     bottom: 20px;

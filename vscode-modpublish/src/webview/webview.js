@@ -75,6 +75,10 @@ function init() {
 function localizeUI() {
     document.getElementById('title-main').textContent = t('action.modpublish.action.publish.text');
     document.getElementById('lbl-primary-file').textContent = t('component.name.primary-file');
+    const descPrimaryFile = document.getElementById('desc-primary-file');
+    if (descPrimaryFile) {
+        descPrimaryFile.textContent = t('component.desc.primary-file');
+    }
     document.getElementById('lbl-version-name').textContent = t('component.name.version-name');
     document.getElementById('lbl-version-number').textContent = t('component.name.version-number');
     document.getElementById('lbl-release-channel').textContent = t('component.name.release-channel');
@@ -180,6 +184,16 @@ function filterAndRenderVersions() {
             const badge = document.createElement('span');
             badge.className = 'type-badge';
             badge.textContent = 'Snapshot';
+            label.appendChild(badge);
+        } else if (v.t === 'old_beta') {
+            const badge = document.createElement('span');
+            badge.className = 'type-badge';
+            badge.textContent = 'Old Beta';
+            label.appendChild(badge);
+        } else if (v.t === 'old_alpha') {
+            const badge = document.createElement('span');
+            badge.className = 'type-badge';
+            badge.textContent = 'Old Alpha';
             label.appendChild(badge);
         }
 
@@ -324,9 +338,10 @@ function setupEventListeners() {
 
     if (btnClear) {
         btnClear.addEventListener('click', () => {
-            if (confirm(t('component.tooltip.reset-version-list'))) {
-                vscode.postMessage({command: 'clearVersionListCache'});
-            }
+            vscode.postMessage({
+                command: 'clearVersionListCache',
+                text: t('component.tooltip.reset-version-list')
+            });
         });
     }
 
