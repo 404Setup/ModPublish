@@ -252,7 +252,7 @@ function loadPrefilledData() {
                     if (!config[`${target}RepoAvailable`]) reasons.push(t('tooltip.missing.repo'));
                 }
                 
-                cb.parentElement.title = reasons.join('\\n');
+                cb.parentElement.title = reasons.join('\n');
                 if (labelSpan) labelSpan.style.textDecoration = 'line-through';
             } else {
                 cb.disabled = false;
