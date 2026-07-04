@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {exec} from 'child_process';
+import {execFile} from 'child_process';
 
 export interface LocalGitInfo {
     branch: string;
@@ -24,9 +24,9 @@ export interface LocalGitInfo {
 }
 
 export class GitUtil {
-    private static runCommand(cmd: string, cwd: string): Promise<string> {
+    private static runGit(args: string[], cwd: string): Promise<string> {
         return new Promise((resolve) => {
-            exec(cmd, {cwd}, (error, stdout) => {
+            execFile('git', args, {cwd}, (error, stdout) => {
                 if (error) {
                     resolve('');
                 } else {
@@ -38,14 +38,14 @@ export class GitUtil {
 
     public static async getGitInfo(workspacePath: string): Promise<LocalGitInfo | null> {
         try {
-            const isGit = await this.runCommand('git rev-parse --is-inside-work-tree', workspacePath);
+            const isGit = await this.runGit(['rev-parse', '--is-inside-work-tree'], workspacePath);
             if (isGit !== 'true') {
                 return null;
             }
 
-            const branchRaw = await this.runCommand('git rev-parse --abbrev-ref HEAD', workspacePath);
+            const branchRaw = await this.runGit(['rev-parse', '--abbrev-ref', 'HEAD'], workspacePath);
             const branch = branchRaw.replace(/[\r\n]/g, '').trim();
-            const remoteUrlRaw = await this.runCommand('git config --get remote.origin.url', workspacePath);
+            const remoteUrlRaw = await this.runGit(['config', '--get', 'remote.origin.url'], workspacePath);
             const remoteUrl = remoteUrlRaw.replace(/[\r\n]/g, '').trim();
 
             let repoPath = '';

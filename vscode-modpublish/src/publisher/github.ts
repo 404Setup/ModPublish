@@ -15,12 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import {API, PublishData, PublishResult} from './api';
+import {API, ModRef, PublishData, PublishResult} from './api';
 
 export class GithubAPI extends API {
     readonly id = 'Github';
+    private readonly baseUrl = 'https://api.github.com/';
 
     async publish(data: PublishData, tokens: Record<string, string>, config: Record<string, any>): Promise<PublishResult> {
         const token = tokens['github'];
@@ -28,27 +27,27 @@ export class GithubAPI extends API {
         const branch = config['githubBranch'] || 'main';
 
         if (!token || !repo) {
-            return {success: false, platform: this.id, message: 'tooltip.git.disable'};
+            return this.failure('tooltip.git.disable');
         }
 
-        try {
-            const tagName = data.versionNumber.startsWith('v') ? data.versionNumber : `v${data.versionNumber}`;
+        return this.runPublish(async () => {
+            const tagName = this.deriveTagName(data.versionNumber);
+            const repoPath = repo.split('/').map(encodeURIComponent).join('/');
 
-            const headers = {
-                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
+            const headers = this.buildHeaders({
                 'Accept': 'application/vnd.github+json',
                 'X-GitHub-Api-Version': '2022-11-28',
                 'Authorization': `Bearer ${token}`
-            };
+            });
 
-            const checkUrl = `https://api.github.com/repos/${repo}/releases/tags/${tagName}`;
+            const checkUrl = `${this.baseUrl}repos/${repoPath}/releases/tags/${encodeURIComponent(tagName)}`;
             const checkResponse = await fetch(checkUrl, {headers});
 
             let releaseData: any = null;
             if (checkResponse.status === 200) {
                 releaseData = await checkResponse.json().catch(() => null);
             } else if (checkResponse.status === 404) {
-                const createUrl = `https://api.github.com/repos/${repo}/releases`;
+                const createUrl = `${this.baseUrl}repos/${repoPath}/releases`;
                 const createBody = {
                     tag_name: tagName,
                     target_commitish: branch,
@@ -70,53 +69,43 @@ export class GithubAPI extends API {
                 });
                 const err = await this.validateResponse(createResponse);
                 if (err) {
-                    return {success: false, platform: this.id, message: `Failed to create release: ${err}`};
+                    return this.failure(`Failed to create release: ${err}`);
                 }
                 releaseData = await createResponse.json().catch(() => null);
             } else {
-                return {
-                    success: false,
-                    platform: this.id,
-                    message: `Failed checking tag: HTTP ${checkResponse.status}`
-                };
+                return this.failure(`Failed checking tag: HTTP ${checkResponse.status}`);
             }
 
             if (!releaseData || !releaseData.upload_url) {
-                return {success: false, platform: this.id, message: 'Failed to get upload URL'};
+                return this.failure('Failed to get upload URL');
             }
 
             const rawUploadUrl = releaseData.upload_url.split('{')[0]; // Extract before '{?name,label}'
 
             for (const filePath of data.files) {
-                const fileName = path.basename(filePath);
+                const {blob, name: fileName} = await this.readFileBlob(filePath);
                 const uploadAssetUrl = `${rawUploadUrl}?name=${encodeURIComponent(fileName)}`;
-
-                const fileBuffer = fs.readFileSync(filePath);
-
-                const uploadHeaders = {
-                    ...headers,
-                    'Content-Type': 'application/java-archive'
-                };
 
                 const uploadResponse = await fetch(uploadAssetUrl, {
                     method: 'POST',
-                    headers: uploadHeaders,
-                    body: fileBuffer
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/java-archive'
+                    },
+                    body: blob
                 });
 
                 const err = await this.validateResponse(uploadResponse);
                 if (err) {
-                    return {success: false, platform: this.id, message: `Failed uploading ${fileName}: ${err}`};
+                    return this.failure(`Failed uploading ${fileName}: ${err}`);
                 }
             }
 
-            return {success: true, platform: this.id};
-        } catch (e: any) {
-            return {success: false, platform: this.id, message: e.message || String(e)};
-        }
+            return this.success();
+        });
     }
 
-    async getModInfo(modid: string, token: string): Promise<{ modid: string; slug: string; title: string } | null> {
+    async getModInfo(modid: string, token: string): Promise<ModRef | null> {
         // GitHub release target doesn't require looking up mod info
         return null;
     }

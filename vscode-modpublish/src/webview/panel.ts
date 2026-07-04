@@ -18,6 +18,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import {Lang} from '../utils/i18n';
 import {Version, VersionConstraintParser, VersionUtil} from '../utils/versions';
 import {LocalModInfo} from '../parser/modParser';
@@ -105,7 +106,14 @@ export class PublishModPanel {
                         break;
                     }
                     case 'openExternal': {
-                        vscode.env.openExternal(vscode.Uri.parse(message.url));
+                        try {
+                            const uri = vscode.Uri.parse(String(message.url), true);
+                            if (uri.scheme === 'https' || uri.scheme === 'http') {
+                                vscode.env.openExternal(uri);
+                            }
+                        } catch {
+                            // Ignore invalid URLs coming from the webview
+                        }
                         break;
                     }
                     case 'renderMarkdown': {
@@ -165,6 +173,33 @@ export class PublishModPanel {
         this._panel.webview.html = await this._getHtmlForWebview();
     }
 
+    private _getConfig(): vscode.WorkspaceConfiguration {
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this._files[0]));
+        return vscode.workspace.getConfiguration('modpublish', workspaceFolder?.uri);
+    }
+
+    private async _getToken(config: vscode.WorkspaceConfiguration, key: string): Promise<string> {
+        return config.get<string>(`${key}`) || await this._context.secrets.get(`modpublish.${key}`) || '';
+    }
+
+    private async _getTokens(config: vscode.WorkspaceConfiguration): Promise<Record<string, string>> {
+        return {
+            modrinth: await this._getToken(config, 'modrinth.token'),
+            curseforge: await this._getToken(config, 'curseforge.token'),
+            curseforgeStudio: await this._getToken(config, 'curseforge.studioToken'),
+            github: await this._getToken(config, 'github.token'),
+            gitlab: await this._getToken(config, 'gitlab.token')
+        };
+    }
+
+    /**
+     * Serializes data for inline script injection, escaping '<' to prevent
+     * script-tag breakout (XSS) from untrusted values such as mod metadata.
+     */
+    private static _safeJson(value: any): string {
+        return JSON.stringify(value).replace(/</g, '\\u003c');
+    }
+
     private async _getHtmlForWebview(): Promise<string> {
         const htmlPath = path.join(this._context.extensionPath, 'src', 'webview', 'webview.html');
         const cssPath = path.join(this._context.extensionPath, 'src', 'webview', 'webview.css');
@@ -174,14 +209,13 @@ export class PublishModPanel {
         const css = fs.readFileSync(cssPath, 'utf8');
         const js = fs.readFileSync(jsPath, 'utf8');
 
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this._files[0]));
-        const config = vscode.workspace.getConfiguration('modpublish', workspaceFolder?.uri);
-
-        const modrinthToken = config.get<string>('modrinth.token') || await this._context.secrets.get('modpublish.modrinth.token') || '';
-        const curseforgeToken = config.get<string>('curseforge.token') || await this._context.secrets.get('modpublish.curseforge.token') || '';
-        const githubToken = config.get<string>('github.token') || await this._context.secrets.get('modpublish.github.token') || '';
-        const gitlabToken = config.get<string>('gitlab.token') || await this._context.secrets.get('modpublish.gitlab.token') || '';
-        const curseforgeStudioToken = config.get<string>('curseforge.studioToken') || await this._context.secrets.get('modpublish.curseforge.studioToken') || '';
+        const config = this._getConfig();
+        const tokens = await this._getTokens(config);
+        const modrinthToken = tokens.modrinth;
+        const curseforgeToken = tokens.curseforge;
+        const githubToken = tokens.github;
+        const gitlabToken = tokens.gitlab;
+        const curseforgeStudioToken = tokens.curseforgeStudio;
 
         const workspaceConfig = {
             modrinthConfigured: !!(modrinthToken && config.get('modrinth.modid')),
@@ -201,44 +235,28 @@ export class PublishModPanel {
             dependencies: config.get('common.dependencies') || []
         };
 
-        const localesDir = path.join(this._context.extensionPath, 'locales');
-        const vsCodeLanguage = vscode.env.language.toLowerCase();
-        let targetLocaleFile = `${vsCodeLanguage}.json`;
-        if (vsCodeLanguage.startsWith('zh')) {
-            if (vsCodeLanguage.includes('hk')) targetLocaleFile = 'zh-hk.json';
-            else if (vsCodeLanguage.includes('tw') || vsCodeLanguage.includes('hant')) targetLocaleFile = 'zh-tw.json';
-            else targetLocaleFile = 'zh-cn.json';
-        }
-
-        let i18nData: Record<string, string> = {};
-        try {
-            const defaultData = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8'));
-            let targetData = {};
-            const targetPath = path.join(localesDir, targetLocaleFile);
-            if (fs.existsSync(targetPath)) {
-                targetData = JSON.parse(fs.readFileSync(targetPath, 'utf8'));
-            }
-            i18nData = {...defaultData, ...targetData};
-        } catch (e) {
-            console.error('Failed to load translations for webview', e);
-        }
+        const i18nData = Lang.loadMergedLocaleData(this._context);
 
         const versions = VersionUtil.getVersions(this._context);
 
         const selectedVersions = this._parseVersionRange(this._modInfo.versionRange, versions);
 
+        const nonce = crypto.randomBytes(16).toString('base64');
+        const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src data: https:;">`;
+
         const dataInjection = `
-            <script>
-                window.FILES = ${JSON.stringify(this._files)};
-                window.MINECRAFT_VERSIONS = ${JSON.stringify(versions)};
-                window.SELECTED_MC_VERSIONS = ${JSON.stringify(selectedVersions)};
-                window.MOD_INFO = ${JSON.stringify(this._modInfo)};
-                window.CONFIG = ${JSON.stringify(workspaceConfig)};
-                window.I18N = ${JSON.stringify(i18nData)};
+            <script nonce="${nonce}">
+                window.FILES = ${PublishModPanel._safeJson(this._files)};
+                window.MINECRAFT_VERSIONS = ${PublishModPanel._safeJson(versions)};
+                window.SELECTED_MC_VERSIONS = ${PublishModPanel._safeJson(selectedVersions)};
+                window.MOD_INFO = ${PublishModPanel._safeJson(this._modInfo)};
+                window.CONFIG = ${PublishModPanel._safeJson(workspaceConfig)};
+                window.I18N = ${PublishModPanel._safeJson(i18nData)};
             </script>
         `;
 
-        html = html.replace('<head>', `<head>${dataInjection}`);
+        html = html.replace('<head>', `<head>${csp}${dataInjection}`);
+        html = html.replace('<script>', `<script nonce="${nonce}">`);
         html = html.replace('/*INJECT_CSS*/', css);
         html = html.replace('/*INJECT_JS*/', js);
 
@@ -265,8 +283,7 @@ export class PublishModPanel {
     }
 
     private async _saveConfig(data: any) {
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this._files[0]));
-        const config = vscode.workspace.getConfiguration('modpublish', workspaceFolder?.uri);
+        const config = this._getConfig();
         await config.update('common.releaseChannel', data.releaseChannel, vscode.ConfigurationTarget.WorkspaceFolder);
 
         const savedDeps = data.dependencies.map((d: any) => ({
@@ -280,10 +297,9 @@ export class PublishModPanel {
     }
 
     private async _resolveDependency(dep: DependencyInfo) {
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this._files[0]));
-        const config = vscode.workspace.getConfiguration('modpublish', workspaceFolder?.uri);
-        const modrinthToken = config.get<string>('modrinth.token') || await this._context.secrets.get('modpublish.modrinth.token') || '';
-        const curseforgeStudioToken = config.get<string>('curseforge.studioToken') || await this._context.secrets.get('modpublish.curseforge.studioToken') || '';
+        const config = this._getConfig();
+        const modrinthToken = await this._getToken(config, 'modrinth.token');
+        const curseforgeStudioToken = await this._getToken(config, 'curseforge.studioToken');
 
         const parts = dep.projectId.split(',');
         const modrinthId = parts[0]?.trim();
@@ -329,16 +345,8 @@ export class PublishModPanel {
     }
 
     private async _publish(data: any) {
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this._files[0]));
-        const config = vscode.workspace.getConfiguration('modpublish', workspaceFolder?.uri);
-
-        const tokens: Record<string, string> = {
-            modrinth: config.get<string>('modrinth.token') || await this._context.secrets.get('modpublish.modrinth.token') || '',
-            curseforge: config.get<string>('curseforge.token') || await this._context.secrets.get('modpublish.curseforge.token') || '',
-            curseforgeStudio: config.get<string>('curseforge.studioToken') || await this._context.secrets.get('modpublish.curseforge.studioToken') || '',
-            github: config.get<string>('github.token') || await this._context.secrets.get('modpublish.github.token') || '',
-            gitlab: config.get<string>('gitlab.token') || await this._context.secrets.get('modpublish.gitlab.token') || ''
-        };
+        const config = this._getConfig();
+        const tokens = await this._getTokens(config);
 
         const versions = VersionUtil.getVersions(this._context);
         const versionMap: Record<string, number> = {};
@@ -356,9 +364,11 @@ export class PublishModPanel {
             minecraftVersionCfIds: versionMap
         };
 
-        const sortedFiles = [data.primaryFile];
+        // Only allow files that were originally selected; never trust paths coming from the webview.
+        const primaryFile = this._files.includes(data.primaryFile) ? data.primaryFile : this._files[0];
+        const sortedFiles = [primaryFile];
         this._files.forEach(f => {
-            if (f !== data.primaryFile) {
+            if (f !== primaryFile) {
                 sortedFiles.push(f);
             }
         });

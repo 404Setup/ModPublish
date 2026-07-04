@@ -30,42 +30,49 @@ export class Lang {
         }
 
         const localeDir = path.join(context.extensionPath, 'locales');
-
-        try {
-            const fallbackPath = path.join(localeDir, 'en.json');
-            if (fs.existsSync(fallbackPath)) {
-                this.fallbackLocaleData = JSON.parse(fs.readFileSync(fallbackPath, 'utf8'));
-            }
-        } catch (e) {
-            console.error('Failed to load fallback locale', e);
-        }
-
-        const vsCodeLanguage = vscode.env.language.toLowerCase();
-        try {
-            let targetPath = path.join(localeDir, `${vsCodeLanguage}.json`);
-            if (!fs.existsSync(targetPath)) {
-                if (vsCodeLanguage.startsWith('zh')) {
-                    if (vsCodeLanguage.includes('hk')) {
-                        targetPath = path.join(localeDir, 'zh-hk.json');
-                    } else if (vsCodeLanguage.includes('tw') || vsCodeLanguage.includes('hant')) {
-                        targetPath = path.join(localeDir, 'zh-tw.json');
-                    } else {
-                        targetPath = path.join(localeDir, 'zh-cn.json');
-                    }
-                }
-            }
-
-            if (fs.existsSync(targetPath)) {
-                this.currentLocaleData = JSON.parse(fs.readFileSync(targetPath, 'utf8'));
-            } else {
-                this.currentLocaleData = this.fallbackLocaleData;
-            }
-        } catch (e) {
-            console.error(`Failed to load target locale: ${vsCodeLanguage}`, e);
-            this.currentLocaleData = this.fallbackLocaleData;
-        }
+        this.fallbackLocaleData = this.readLocaleFile(localeDir, 'en.json') || {};
+        this.currentLocaleData = this.readLocaleFile(localeDir, this.resolveLocaleFile(vscode.env.language)) || this.fallbackLocaleData;
 
         this.isInitialized = true;
+    }
+
+    /**
+     * Resolves the locale file name for a VS Code language identifier.
+     * The identifier is sanitized so it can never escape the locales directory.
+     */
+    public static resolveLocaleFile(language: string): string {
+        const lang = (language || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+        if (lang.startsWith('zh')) {
+            if (lang.includes('hk')) return 'zh-hk.json';
+            if (lang.includes('tw') || lang.includes('hant')) return 'zh-tw.json';
+            return 'zh-cn.json';
+        }
+        return `${lang || 'en'}.json`;
+    }
+
+    /**
+     * Reads and parses a single locale file, returning null when missing or invalid.
+     */
+    private static readLocaleFile(localeDir: string, fileName: string): Record<string, string> | null {
+        try {
+            const filePath = path.join(localeDir, fileName);
+            if (fs.existsSync(filePath)) {
+                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            }
+        } catch (e) {
+            console.error(`Failed to load locale file: ${fileName}`, e);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the English data merged with the current UI language data (used by the webview).
+     */
+    public static loadMergedLocaleData(context: vscode.ExtensionContext): Record<string, string> {
+        const localeDir = path.join(context.extensionPath, 'locales');
+        const defaultData = this.readLocaleFile(localeDir, 'en.json') || {};
+        const targetData = this.readLocaleFile(localeDir, this.resolveLocaleFile(vscode.env.language)) || {};
+        return {...defaultData, ...targetData};
     }
 
     /**

@@ -16,12 +16,25 @@
  */
 
 
+import * as fs from 'fs';
+import * as path from 'path';
+
+export const USER_AGENT = 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)';
+
+export type DependencyType = 'required' | 'optional' | 'embedded' | 'incompatible';
+
+export interface ModRef {
+    modid: string;
+    slug: string;
+    title: string;
+}
+
 export interface DependencyInfo {
     projectId: string;
-    type: 'required' | 'optional' | 'embedded' | 'incompatible';
+    type: DependencyType;
     customTitle?: string;
-    modrinthModInfo?: { modid: string; slug: string; title: string };
-    curseforgeModInfo?: { modid: string; slug: string; title: string };
+    modrinthModInfo?: ModRef;
+    curseforgeModInfo?: ModRef;
 }
 
 export interface PublishData {
@@ -46,13 +59,55 @@ export interface PublishResult {
 export abstract class API {
     abstract readonly id: string;
 
-    protected getBaseConfig(token: string): RequestInit {
+    /**
+     * Builds the common request headers (User-Agent) merged with platform specific headers.
+     */
+    protected buildHeaders(extra: Record<string, string> = {}): Record<string, string> {
         return {
-            headers: {
-                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
-                'Authorization': token
-            }
+            'User-Agent': USER_AGENT,
+            ...extra
         };
+    }
+
+    /**
+     * Reads a local file and returns it as a Blob together with its base name.
+     */
+    protected async readFileBlob(filePath: string): Promise<{ blob: Blob; name: string }> {
+        const fileBuf = await fs.promises.readFile(filePath);
+        return {blob: new Blob([fileBuf]), name: path.basename(filePath)};
+    }
+
+    /**
+     * Maps the generic dependency type to a platform specific value, falling back to the 'optional' mapping.
+     */
+    protected mapDependencyType(type: DependencyType, mapping: Record<DependencyType, string>): string {
+        return mapping[type] || mapping['optional'];
+    }
+
+    /**
+     * Derives a git tag name from a version number (ensures the 'v' prefix).
+     */
+    protected deriveTagName(versionNumber: string): string {
+        return versionNumber.startsWith('v') ? versionNumber : `v${versionNumber}`;
+    }
+
+    protected success(): PublishResult {
+        return {success: true, platform: this.id};
+    }
+
+    protected failure(message: string): PublishResult {
+        return {success: false, platform: this.id, message};
+    }
+
+    /**
+     * Runs the platform specific publish logic, converting thrown errors into a failed PublishResult.
+     */
+    protected async runPublish(fn: () => Promise<PublishResult>): Promise<PublishResult> {
+        try {
+            return await fn();
+        } catch (e: any) {
+            return this.failure(e?.message || String(e));
+        }
     }
 
     protected async validateResponse(response: Response): Promise<string | null> {
@@ -69,7 +124,7 @@ export abstract class API {
         if (code === 500) {
             return 'api.common.err.500';
         }
-        
+
         let text = await response.text().catch(() => '');
         return `HTTP ${code}: ${text}`;
     }
@@ -79,5 +134,5 @@ export abstract class API {
     /**
      * Gets mod details by its ID or slug from the remote platform (used when adding a dependency to look up its info).
      */
-    abstract getModInfo(modid: string, token: string): Promise<{ modid: string; slug: string; title: string } | null>;
+    abstract getModInfo(modid: string, token: string): Promise<ModRef | null>;
 }

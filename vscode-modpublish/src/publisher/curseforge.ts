@@ -15,9 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import {API, PublishData, PublishResult} from './api';
+import {API, ModRef, PublishData, PublishResult} from './api';
+
+const DEP_TYPE_MAP = {
+    required: 'requiredDependency',
+    optional: 'optionalDependency',
+    embedded: 'embeddedLibrary',
+    incompatible: 'incompatible'
+} as const;
 
 export class CurseForgeAPI extends API {
     readonly id = 'CurseForge';
@@ -37,19 +42,17 @@ export class CurseForgeAPI extends API {
         const projectId = config['curseforgeModId'];
 
         if (!token || !projectId) {
-            return {success: false, platform: this.id, message: 'tooltip.curseforge.disable'};
+            return this.failure('tooltip.curseforge.disable');
         }
 
-        try {
+        return this.runPublish(async () => {
             let primaryFileId: number | null = null;
 
             for (let index = 0; index < data.files.length; index++) {
-                const filePath = data.files[index];
-                const fileName = path.basename(filePath);
+                const {blob, name: fileName} = await this.readFileBlob(data.files[index]);
 
                 const form = new FormData();
-                const fileBuf = await fs.promises.readFile(filePath);
-                form.append('file', new Blob([fileBuf]), fileName);
+                form.append('file', blob, fileName);
 
                 const metadata: any = {
                     changelog: data.changelog,
@@ -86,36 +89,24 @@ export class CurseForgeAPI extends API {
 
                     metadata.gameVersions = gameVersions;
 
-                    metadata.relations = data.dependencies.map(dep => {
-                        const slug = dep.curseforgeModInfo?.slug || dep.projectId;
-                        let cfType = 'optionalDependency';
-                        if (dep.type === 'required') cfType = 'requiredDependency';
-                        else if (dep.type === 'embedded') cfType = 'embeddedLibrary';
-                        else if (dep.type === 'incompatible') cfType = 'incompatible';
-
-                        return {
-                            slug: slug,
-                            type: cfType
-                        };
-                    });
+                    metadata.relations = data.dependencies.map(dep => ({
+                        slug: dep.curseforgeModInfo?.slug || dep.projectId,
+                        type: this.mapDependencyType(dep.type, DEP_TYPE_MAP)
+                    }));
                 }
 
                 form.append('metadata', JSON.stringify(metadata));
 
-                const url = `${this.uploadUrl}projects/${projectId}/upload-file`;
-                const headers = {
-                    'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
-                    'X-Api-Token': token
-                };
+                const url = `${this.uploadUrl}projects/${encodeURIComponent(projectId)}/upload-file`;
 
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers,
+                    headers: this.buildHeaders({'X-Api-Token': token}),
                     body: form
                 });
                 const err = await this.validateResponse(response);
                 if (err) {
-                    return {success: false, platform: this.id, message: err};
+                    return this.failure(err);
                 }
 
                 const resData: any = await response.json().catch(() => ({}));
@@ -124,19 +115,14 @@ export class CurseForgeAPI extends API {
                 }
             }
 
-            return {success: true, platform: this.id};
-        } catch (e: any) {
-            return {success: false, platform: this.id, message: e.message || String(e)};
-        }
+            return this.success();
+        });
     }
 
-    async getModInfo(modid: string, token: string): Promise<{ modid: string; slug: string; title: string } | null> {
+    async getModInfo(modid: string, token: string): Promise<ModRef | null> {
         try {
-            const url = `${this.apiUrl}mods/${modid}`;
-            const headers = {
-                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
-                'x-api-key': token
-            };
+            const url = `${this.apiUrl}mods/${encodeURIComponent(modid)}`;
+            const headers = this.buildHeaders({'x-api-key': token});
 
             const response = await fetch(url, {headers});
             if (response.status === 200) {

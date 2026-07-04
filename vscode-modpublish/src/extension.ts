@@ -26,24 +26,17 @@ export function activate(context: vscode.ExtensionContext) {
     Lang.initialize(context);
     console.log('ModPublish extension is now active!');
 
-    const publishCommand = vscode.commands.registerCommand('modpublish.publish', async (uri: vscode.Uri, uris?: vscode.Uri[]) => {
-        const filesToScan: string[] = [];
-
-        if (uris && uris.length > 0) {
-            uris.forEach(u => {
-                if (u.scheme === 'file') {
-                    const ext = path.extname(u.fsPath).toLowerCase();
-                    if (ext === '.jar' || ext === '.litemod') {
-                        filesToScan.push(u.fsPath);
-                    }
-                }
-            });
-        } else if (uri && uri.scheme === 'file') {
-            const ext = path.extname(uri.fsPath).toLowerCase();
-            if (ext === '.jar' || ext === '.litemod') {
-                filesToScan.push(uri.fsPath);
-            }
+    const isModFile = (u: vscode.Uri | undefined): u is vscode.Uri => {
+        if (!u || u.scheme !== 'file') {
+            return false;
         }
+        const ext = path.extname(u.fsPath).toLowerCase();
+        return ext === '.jar' || ext === '.litemod';
+    };
+
+    const publishCommand = vscode.commands.registerCommand('modpublish.publish', async (uri: vscode.Uri, uris?: vscode.Uri[]) => {
+        const candidates = (uris && uris.length > 0) ? uris : [uri];
+        const filesToScan = candidates.filter(isModFile).map(u => u.fsPath);
 
         if (filesToScan.length === 0) {
             vscode.window.showWarningMessage(Lang.get('message.invalid-file'));

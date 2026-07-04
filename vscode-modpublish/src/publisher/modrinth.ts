@@ -15,9 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as fs from 'fs';
 import * as path from 'path';
-import {API, PublishData, PublishResult} from './api';
+import {API, ModRef, PublishData, PublishResult} from './api';
+
+const DEP_TYPE_MAP = {
+    required: 'required',
+    optional: 'optional',
+    embedded: 'embedded',
+    incompatible: 'incompatible'
+} as const;
 
 export class ModrinthAPI extends API {
     readonly id = 'Modrinth';
@@ -28,10 +34,10 @@ export class ModrinthAPI extends API {
         const projectId = config['modrinthModId'];
 
         if (!token || !projectId) {
-            return {success: false, platform: this.id, message: 'tooltip.modrinth.disable'};
+            return this.failure('tooltip.modrinth.disable');
         }
 
-        try {
+        return this.runPublish(async () => {
             const url = `${this.baseUrl}version`;
             const form = new FormData();
 
@@ -39,18 +45,10 @@ export class ModrinthAPI extends API {
                 name: data.versionName,
                 version_number: data.versionNumber,
                 changelog: data.changelog,
-                dependencies: data.dependencies.map(dep => {
-                    const id = dep.modrinthModInfo?.modid || dep.projectId;
-                    let depType = 'optional';
-                    if (dep.type === 'required') depType = 'required';
-                    else if (dep.type === 'embedded') depType = 'embedded';
-                    else if (dep.type === 'incompatible') depType = 'incompatible';
-
-                    return {
-                        project_id: id,
-                        dependency_type: depType
-                    };
-                }),
+                dependencies: data.dependencies.map(dep => ({
+                    project_id: dep.modrinthModInfo?.modid || dep.projectId,
+                    dependency_type: this.mapDependencyType(dep.type, DEP_TYPE_MAP)
+                })),
                 game_versions: data.minecraftVersions,
                 version_type: data.releaseChannel,
                 loaders: data.loaders.map(l => l.toLowerCase()),
@@ -62,44 +60,30 @@ export class ModrinthAPI extends API {
             form.append('data', JSON.stringify(modrinthData));
 
             for (let index = 0; index < data.files.length; index++) {
-                const filePath = data.files[index];
-                const fileName = path.basename(filePath);
-                const fileKey = index === 0 ? `${fileName}-primary` : `${fileName}-${index - 1}`;
-                const fileBuf = await fs.promises.readFile(filePath);
-                form.append(fileKey, new Blob([fileBuf]), fileName);
+                const {blob, name} = await this.readFileBlob(data.files[index]);
+                const fileKey = index === 0 ? `${name}-primary` : `${name}-${index - 1}`;
+                form.append(fileKey, blob, name);
             }
-
-            const headers = {
-                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
-                'Authorization': token
-            };
 
             const response = await fetch(url, {
                 method: 'POST',
-                headers,
+                headers: this.buildHeaders({'Authorization': token}),
                 body: form
             });
 
             const err = await this.validateResponse(response);
             if (err) {
-                return {success: false, platform: this.id, message: err};
+                return this.failure(err);
             }
 
-            return {success: true, platform: this.id};
-        } catch (e: any) {
-            return {success: false, platform: this.id, message: e.message || String(e)};
-        }
+            return this.success();
+        });
     }
 
-    async getModInfo(modid: string, token: string): Promise<{ modid: string; slug: string; title: string } | null> {
+    async getModInfo(modid: string, token: string): Promise<ModRef | null> {
         try {
-            const url = `${this.baseUrl}project/${modid}`;
-            const headers: Record<string, string> = {
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)'
-            };
-            if (token) {
-                headers['Authorization'] = token;
-            }
+            const url = `${this.baseUrl}project/${encodeURIComponent(modid)}`;
+            const headers = this.buildHeaders(token ? {'Authorization': token} : {});
 
             const response = await fetch(url, {headers});
             if (response.status === 200) {

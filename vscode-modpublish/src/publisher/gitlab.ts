@@ -15,9 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as fs from 'fs';
 import * as path from 'path';
-import {API, PublishData, PublishResult} from './api';
+import {API, ModRef, PublishData, PublishResult} from './api';
 
 export class GitlabAPI extends API {
     readonly id = 'GitLab';
@@ -29,27 +28,26 @@ export class GitlabAPI extends API {
         const branch = config['gitlabBranch'] || 'main';
 
         if (!token || !repo) {
-            return {success: false, platform: this.id, message: 'tooltip.git.disable'};
+            return this.failure('tooltip.git.disable');
         }
 
-        try {
+        return this.runPublish(async () => {
             const projectPathEncoded = encodeURIComponent(repo);
-            const tagName = data.versionNumber.startsWith('v') ? data.versionNumber : `v${data.versionNumber}`;
+            const tagName = this.deriveTagName(data.versionNumber);
+            const tagNameEncoded = encodeURIComponent(tagName);
 
-            const headers = {
-                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
+            const headers = this.buildHeaders({
                 'Accept': 'application/json',
                 'PRIVATE-TOKEN': token
-            };
+            });
 
-            const checkUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagName}`;
-            const checkResponse = await fetch(checkUrl, {headers});
+            const releaseUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagNameEncoded}`;
+            const checkResponse = await fetch(releaseUrl, {headers});
 
             let releaseData: any = null;
             if (checkResponse.status === 200) {
                 releaseData = await checkResponse.json().catch(() => null);
-                const updateUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagName}`;
-                await fetch(updateUrl, {
+                await fetch(releaseUrl, {
                     method: 'PUT',
                     headers: { ...headers, 'Content-Type': 'application/json' },
                     body: JSON.stringify({description: data.changelog})
@@ -70,15 +68,11 @@ export class GitlabAPI extends API {
                 });
                 const err = await this.validateResponse(createResponse);
                 if (err) {
-                    return {success: false, platform: this.id, message: `Failed to create release: ${err}`};
+                    return this.failure(`Failed to create release: ${err}`);
                 }
                 releaseData = await createResponse.json().catch(() => null);
             } else {
-                return {
-                    success: false,
-                    platform: this.id,
-                    message: `Failed checking tag: HTTP ${checkResponse.status}`
-                };
+                return this.failure(`Failed checking tag: HTTP ${checkResponse.status}`);
             }
 
             const existingAssets = new Set<string>();
@@ -99,8 +93,8 @@ export class GitlabAPI extends API {
 
                 const uploadUrl = `${this.baseUrl}projects/${projectPathEncoded}/uploads`;
                 const form = new FormData();
-                const fileBuf = await fs.promises.readFile(filePath);
-                form.append('file', new Blob([fileBuf]), fileName);
+                const {blob} = await this.readFileBlob(filePath);
+                form.append('file', blob, fileName);
 
                 const uploadResponse = await fetch(uploadUrl, {
                     method: 'POST',
@@ -110,23 +104,19 @@ export class GitlabAPI extends API {
 
                 const uploadErr = await this.validateResponse(uploadResponse);
                 if (uploadErr) {
-                    return {success: false, platform: this.id, message: `Failed uploading ${fileName}: ${uploadErr}`};
+                    return this.failure(`Failed uploading ${fileName}: ${uploadErr}`);
                 }
 
                 const uploadData: any = await uploadResponse.json().catch(() => ({}));
                 const uploadedUrl = uploadData.url;
                 if (!uploadedUrl) {
-                    return {
-                        success: false,
-                        platform: this.id,
-                        message: `Failed uploading ${fileName}: Missing relative URL in response`
-                    };
+                    return this.failure(`Failed uploading ${fileName}: Missing relative URL in response`);
                 }
 
                 const gitlabRepoUrl = `https://gitlab.com/${repo.replace('%2F', '/')}`;
                 const linkUrl = `${gitlabRepoUrl}${uploadedUrl}`;
 
-                const linkApiUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagName}/assets/links`;
+                const linkApiUrl = `${releaseUrl}/assets/links`;
                 const linkBody = {
                     name: fileName,
                     url: linkUrl,
@@ -140,17 +130,15 @@ export class GitlabAPI extends API {
                 });
                 const linkErr = await this.validateResponse(linkResponse);
                 if (linkErr) {
-                    return {success: false, platform: this.id, message: `Failed linking ${fileName}: ${linkErr}`};
+                    return this.failure(`Failed linking ${fileName}: ${linkErr}`);
                 }
             }
 
-            return {success: true, platform: this.id};
-        } catch (e: any) {
-            return {success: false, platform: this.id, message: e.message || String(e)};
-        }
+            return this.success();
+        });
     }
 
-    async getModInfo(modid: string, token: string): Promise<{ modid: string; slug: string; title: string } | null> {
+    async getModInfo(modid: string, token: string): Promise<ModRef | null> {
         // GitLab release target doesn't require looking up mod info
         return null;
     }
