@@ -50,7 +50,7 @@ export abstract class API {
     protected getBaseConfig(token: string): AxiosRequestConfig {
         return {
             headers: {
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)',
+                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                 'Authorization': token
             }
         };

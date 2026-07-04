@@ -36,7 +36,7 @@ export class GithubAPI extends API {
             const tagName = data.versionNumber.startsWith('v') ? data.versionNumber : `v${data.versionNumber}`;
 
             const headers = {
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)',
+                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                 'Accept': 'application/vnd.github+json',
                 'X-GitHub-Api-Version': '2022-11-28',
                 'Authorization': `Bearer ${token}`

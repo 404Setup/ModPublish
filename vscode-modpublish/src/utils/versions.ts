@@ -81,7 +81,7 @@ export class VersionUtil {
             }
 
             const headers: Record<string, string> = {
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)'
+                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)'
             };
 
             const cfRes = await axios.get('https://api.curseforge.com/v1/minecraft/version', {
@@ -299,7 +299,7 @@ class RangeConstraint implements VersionConstraint {
 }
 
 class TildeConstraint implements VersionConstraint {
-    private baseVersion: Version;
+    private readonly baseVersion: Version;
 
     constructor(versionStr: string) {
         this.baseVersion = new Version(versionStr.startsWith('~') ? versionStr.substring(1) : versionStr);
@@ -313,7 +313,7 @@ class TildeConstraint implements VersionConstraint {
 }
 
 class CaretConstraint implements VersionConstraint {
-    private baseVersion: Version;
+    private readonly baseVersion: Version;
 
     constructor(versionStr: string) {
         this.baseVersion = new Version(versionStr.startsWith('^') ? versionStr.substring(1) : versionStr);

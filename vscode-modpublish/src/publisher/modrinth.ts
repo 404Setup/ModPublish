@@ -76,7 +76,7 @@ export class ModrinthAPI extends API {
 
             const headers = {
                 ...form.getHeaders(),
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)',
+                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                 'Authorization': token
             };
 

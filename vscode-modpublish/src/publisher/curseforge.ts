@@ -109,7 +109,7 @@ export class CurseForgeAPI extends API {
                 const url = `${this.uploadUrl}projects/${projectId}/upload-file`;
                 const headers = {
                     ...form.getHeaders(),
-                    'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)',
+                    'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                     'X-Api-Token': token
                 };
 
@@ -134,7 +134,7 @@ export class CurseForgeAPI extends API {
         try {
             const url = `${this.apiUrl}mods/${modid}`;
             const headers = {
-                'User-Agent': 'modpublish/v1 (github.com/404Setup/ModPublish)',
+                'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                 'x-api-key': token
             };
 
