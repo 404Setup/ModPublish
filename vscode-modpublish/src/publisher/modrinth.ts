@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
-import FormData from 'form-data';
 import {API, PublishData, PublishResult} from './api';
 
 export class ModrinthAPI extends API {
@@ -61,28 +59,28 @@ export class ModrinthAPI extends API {
                 file_parts: data.files.map(f => path.basename(f))
             };
 
-            form.append('data', JSON.stringify(modrinthData), {
-                contentType: 'application/json'
-            });
+            form.append('data', JSON.stringify(modrinthData));
 
-            data.files.forEach((filePath, index) => {
+            for (let index = 0; index < data.files.length; index++) {
+                const filePath = data.files[index];
                 const fileName = path.basename(filePath);
                 const fileKey = index === 0 ? `${fileName}-primary` : `${fileName}-${index - 1}`;
-                form.append(fileKey, fs.createReadStream(filePath), {
-                    filename: fileName,
-                    contentType: 'application/java-archive'
-                });
-            });
+                const fileBuf = await fs.promises.readFile(filePath);
+                form.append(fileKey, new Blob([fileBuf]), fileName);
+            }
 
             const headers = {
-                ...form.getHeaders(),
                 'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                 'Authorization': token
             };
 
-            const response = await axios.post(url, form, {headers, validateStatus: () => true});
+            const response = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: form
+            });
 
-            const err = this.validateResponse(response);
+            const err = await this.validateResponse(response);
             if (err) {
                 return {success: false, platform: this.id, message: err};
             }
@@ -103,13 +101,16 @@ export class ModrinthAPI extends API {
                 headers['Authorization'] = token;
             }
 
-            const response = await axios.get(url, {headers, validateStatus: () => true});
-            if (response.status === 200 && response.data) {
-                return {
-                    modid: response.data.id,
-                    slug: response.data.slug,
-                    title: response.data.title
-                };
+            const response = await fetch(url, {headers});
+            if (response.status === 200) {
+                const resData: any = await response.json().catch(() => null);
+                if (resData) {
+                    return {
+                        modid: resData.id,
+                        slug: resData.slug,
+                        title: resData.title
+                    };
+                }
             }
         } catch (e) {
             console.error('Failed to get Modrinth mod info', e);

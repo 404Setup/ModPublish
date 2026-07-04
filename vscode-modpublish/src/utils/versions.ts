@@ -18,7 +18,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import axios from 'axios';
 
 export interface MinecraftVersionItem {
     v: string;
@@ -75,8 +74,9 @@ export class VersionUtil {
 
     public static async updateVersions(context: vscode.ExtensionContext): Promise<boolean> {
         try {
-            const mojangRes = await axios.get('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json');
-            if (mojangRes.status !== 200 || !mojangRes.data || !mojangRes.data.versions) {
+            const mojangRes = await fetch('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json');
+            const mojangData: any = mojangRes.status === 200 ? await mojangRes.json().catch(() => null) : null;
+            if (!mojangData || !mojangData.versions) {
                 return false;
             }
 
@@ -84,16 +84,16 @@ export class VersionUtil {
                 'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)'
             };
 
-            const cfRes = await axios.get('https://api.curseforge.com/v1/minecraft/version', {
-                headers,
-                validateStatus: () => true
+            const cfRes = await fetch('https://api.curseforge.com/v1/minecraft/version', {
+                headers
             });
-            if (cfRes.status !== 200 || !cfRes.data || !cfRes.data.data) {
+            const cfData: any = cfRes.status === 200 ? await cfRes.json().catch(() => null) : null;
+            if (!cfData || !cfData.data) {
                 return false;
             }
 
-            const manifest = mojangRes.data;
-            const cfVersions = cfRes.data.data;
+            const manifest = mojangData;
+            const cfVersions = cfData.data;
 
             const versionMapping = new Map<string, number>();
             for (const v of cfVersions) {

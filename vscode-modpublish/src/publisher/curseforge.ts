@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
-import FormData from 'form-data';
 import {API, PublishData, PublishResult} from './api';
 
 export class CurseForgeAPI extends API {
@@ -50,10 +48,8 @@ export class CurseForgeAPI extends API {
                 const fileName = path.basename(filePath);
 
                 const form = new FormData();
-                form.append('file', fs.createReadStream(filePath), {
-                    filename: fileName,
-                    contentType: 'application/java-archive'
-                });
+                const fileBuf = await fs.promises.readFile(filePath);
+                form.append('file', new Blob([fileBuf]), fileName);
 
                 const metadata: any = {
                     changelog: data.changelog,
@@ -108,19 +104,23 @@ export class CurseForgeAPI extends API {
 
                 const url = `${this.uploadUrl}projects/${projectId}/upload-file`;
                 const headers = {
-                    ...form.getHeaders(),
                     'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
                     'X-Api-Token': token
                 };
 
-                const response = await axios.post(url, form, {headers, validateStatus: () => true});
-                const err = this.validateResponse(response);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers,
+                    body: form
+                });
+                const err = await this.validateResponse(response);
                 if (err) {
                     return {success: false, platform: this.id, message: err};
                 }
 
-                if (index === 0 && response.data && response.data.id) {
-                    primaryFileId = response.data.id;
+                const resData: any = await response.json().catch(() => ({}));
+                if (index === 0 && resData && resData.id) {
+                    primaryFileId = resData.id;
                 }
             }
 
@@ -138,14 +138,17 @@ export class CurseForgeAPI extends API {
                 'x-api-key': token
             };
 
-            const response = await axios.get(url, {headers, validateStatus: () => true});
-            if (response.status === 200 && response.data && response.data.data) {
-                const mod = response.data.data;
-                return {
-                    modid: String(mod.id),
-                    slug: mod.slug,
-                    title: mod.name
-                };
+            const response = await fetch(url, {headers});
+            if (response.status === 200) {
+                const resData: any = await response.json().catch(() => null);
+                if (resData && resData.data) {
+                    const mod = resData.data;
+                    return {
+                        modid: String(mod.id),
+                        slug: mod.slug,
+                        title: mod.name
+                    };
+                }
             }
         } catch (e) {
             console.error('Failed to get CurseForge mod info', e);

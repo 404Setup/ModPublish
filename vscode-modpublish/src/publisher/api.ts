@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {AxiosRequestConfig, AxiosResponse} from 'axios';
 
 export interface DependencyInfo {
     projectId: string;
@@ -47,7 +46,7 @@ export interface PublishResult {
 export abstract class API {
     abstract readonly id: string;
 
-    protected getBaseConfig(token: string): AxiosRequestConfig {
+    protected getBaseConfig(token: string): RequestInit {
         return {
             headers: {
                 'User-Agent': 'modpublish-vsc/v1 (github.com/404Setup/ModPublish)',
@@ -56,7 +55,7 @@ export abstract class API {
         };
     }
 
-    protected validateResponse(response: AxiosResponse): string | null {
+    protected async validateResponse(response: Response): Promise<string | null> {
         const code = response.status;
         if (code >= 200 && code < 300) {
             return null;
@@ -70,7 +69,9 @@ export abstract class API {
         if (code === 500) {
             return 'api.common.err.500';
         }
-        return `HTTP ${code}: ${JSON.stringify(response.data)}`;
+        
+        let text = await response.text().catch(() => '');
+        return `HTTP ${code}: ${text}`;
     }
 
     abstract publish(data: PublishData, tokens: Record<string, string>, config: Record<string, any>): Promise<PublishResult>;

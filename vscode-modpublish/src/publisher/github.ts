@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 import {API, PublishData, PublishResult} from './api';
@@ -43,11 +42,11 @@ export class GithubAPI extends API {
             };
 
             const checkUrl = `https://api.github.com/repos/${repo}/releases/tags/${tagName}`;
-            const checkResponse = await axios.get(checkUrl, {headers, validateStatus: () => true});
+            const checkResponse = await fetch(checkUrl, {headers});
 
             let releaseData: any = null;
             if (checkResponse.status === 200) {
-                releaseData = checkResponse.data;
+                releaseData = await checkResponse.json().catch(() => null);
             } else if (checkResponse.status === 404) {
                 const createUrl = `https://api.github.com/repos/${repo}/releases`;
                 const createBody = {
@@ -61,12 +60,19 @@ export class GithubAPI extends API {
                     make_latest: 'true'
                 };
 
-                const createResponse = await axios.post(createUrl, createBody, {headers, validateStatus: () => true});
-                const err = this.validateResponse(createResponse);
+                const createResponse = await fetch(createUrl, {
+                    method: 'POST',
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(createBody)
+                });
+                const err = await this.validateResponse(createResponse);
                 if (err) {
                     return {success: false, platform: this.id, message: `Failed to create release: ${err}`};
                 }
-                releaseData = createResponse.data;
+                releaseData = await createResponse.json().catch(() => null);
             } else {
                 return {
                     success: false,
@@ -92,14 +98,13 @@ export class GithubAPI extends API {
                     'Content-Type': 'application/java-archive'
                 };
 
-                const uploadResponse = await axios.post(uploadAssetUrl, fileBuffer, {
+                const uploadResponse = await fetch(uploadAssetUrl, {
+                    method: 'POST',
                     headers: uploadHeaders,
-                    maxContentLength: Infinity,
-                    maxBodyLength: Infinity,
-                    validateStatus: () => true
+                    body: fileBuffer
                 });
 
-                const err = this.validateResponse(uploadResponse);
+                const err = await this.validateResponse(uploadResponse);
                 if (err) {
                     return {success: false, platform: this.id, message: `Failed uploading ${fileName}: ${err}`};
                 }

@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
-import FormData from 'form-data';
 import {API, PublishData, PublishResult} from './api';
 
 export class GitlabAPI extends API {
@@ -45,13 +43,17 @@ export class GitlabAPI extends API {
             };
 
             const checkUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagName}`;
-            const checkResponse = await axios.get(checkUrl, {headers, validateStatus: () => true});
+            const checkResponse = await fetch(checkUrl, {headers});
 
             let releaseData: any = null;
             if (checkResponse.status === 200) {
-                releaseData = checkResponse.data;
+                releaseData = await checkResponse.json().catch(() => null);
                 const updateUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases/${tagName}`;
-                await axios.put(updateUrl, {description: data.changelog}, {headers, validateStatus: () => true});
+                await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({description: data.changelog})
+                });
             } else if (checkResponse.status === 404) {
                 const createUrl = `${this.baseUrl}projects/${projectPathEncoded}/releases`;
                 const createBody = {
@@ -61,12 +63,16 @@ export class GitlabAPI extends API {
                     description: data.changelog
                 };
 
-                const createResponse = await axios.post(createUrl, createBody, {headers, validateStatus: () => true});
-                const err = this.validateResponse(createResponse);
+                const createResponse = await fetch(createUrl, {
+                    method: 'POST',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(createBody)
+                });
+                const err = await this.validateResponse(createResponse);
                 if (err) {
                     return {success: false, platform: this.id, message: `Failed to create release: ${err}`};
                 }
-                releaseData = createResponse.data;
+                releaseData = await createResponse.json().catch(() => null);
             } else {
                 return {
                     success: false,
@@ -93,29 +99,22 @@ export class GitlabAPI extends API {
 
                 const uploadUrl = `${this.baseUrl}projects/${projectPathEncoded}/uploads`;
                 const form = new FormData();
-                form.append('file', fs.createReadStream(filePath), {
-                    filename: fileName,
-                    contentType: 'application/octet-stream'
+                const fileBuf = await fs.promises.readFile(filePath);
+                form.append('file', new Blob([fileBuf]), fileName);
+
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers,
+                    body: form
                 });
 
-                const uploadHeaders = {
-                    ...headers,
-                    ...form.getHeaders()
-                };
-
-                const uploadResponse = await axios.post(uploadUrl, form, {
-                    headers: uploadHeaders,
-                    maxContentLength: Infinity,
-                    maxBodyLength: Infinity,
-                    validateStatus: () => true
-                });
-
-                const uploadErr = this.validateResponse(uploadResponse);
+                const uploadErr = await this.validateResponse(uploadResponse);
                 if (uploadErr) {
                     return {success: false, platform: this.id, message: `Failed uploading ${fileName}: ${uploadErr}`};
                 }
 
-                const uploadedUrl = uploadResponse.data.url;
+                const uploadData: any = await uploadResponse.json().catch(() => ({}));
+                const uploadedUrl = uploadData.url;
                 if (!uploadedUrl) {
                     return {
                         success: false,
@@ -134,11 +133,12 @@ export class GitlabAPI extends API {
                     link_type: 'package'
                 };
 
-                const linkResponse = await axios.post(linkApiUrl, linkBody, {
-                    headers: headers,
-                    validateStatus: () => true
+                const linkResponse = await fetch(linkApiUrl, {
+                    method: 'POST',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(linkBody)
                 });
-                const linkErr = this.validateResponse(linkResponse);
+                const linkErr = await this.validateResponse(linkResponse);
                 if (linkErr) {
                     return {success: false, platform: this.id, message: `Failed linking ${fileName}: ${linkErr}`};
                 }
