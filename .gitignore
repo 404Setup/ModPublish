@@ -8,6 +8,7 @@ build/
 ### IntelliJ IDEA ###
 .idea/*.xml
 .idea/*/*.xml
+.idea/dataSources
 .idea/libraries/
 *.iws
 *.iml
@@ -48,3 +49,8 @@ bin/
 *.pem
 *.ps1
 *.txt
+
+*.exe
+*.db
+*.db-shm
+*.db-wal

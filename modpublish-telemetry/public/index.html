@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModPublish Telemetry Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --primary: #bb86fc;
+            --text: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border: #333;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-start;
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 4px;
+            outline: none;
+            width: 150px;
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 22px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 22px;
+            margin-left: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .stat-huge {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: auto 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: auto;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        .choices {
+            margin-bottom: 0;
+            width: 100% !important;
+        }
+        .choices__inner {
+            background-color: var(--bg) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 4px !important;
+            min-height: 0 !important;
+            max-height: 120px !important;
+            padding: 8px 12px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            color: var(--text) !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        .choices__inner::-webkit-scrollbar,
+        .choices__list--dropdown .choices__list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .choices__inner::-webkit-scrollbar-track,
+        .choices__list--dropdown .choices__list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .choices__inner::-webkit-scrollbar-thumb,
+        .choices__list--dropdown .choices__list::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+        .choices__list--dropdown .choices__list {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        .choices__list--multiple {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 4px;
+            align-items: center !important;
+            width: 100%;
+        }
+        .choices__input {
+            background-color: transparent !important;
+            color: var(--text) !important;
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            max-width: 100% !important;
+        }
+        .choices__input::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
+        }
+        .choices__inner:has(.choices__item) .choices__input:placeholder-shown {
+            width: 1ch !important;
+        }
+        .choices__inner:has(.choices__item) .choices__input:placeholder-shown::placeholder {
+            color: transparent !important;
+        }
+        .choices__list--dropdown {
+            background-color: var(--bg) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+            z-index: 100 !important;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background-color: var(--surface) !important;
+            color: var(--primary) !important;
+        }
+        .choices__list--multiple .choices__item {
+            background-color: var(--primary) !important;
+            border: 1px solid var(--primary) !important;
+            color: #000 !important;
+            margin: 0 !important;
+            padding: 2px 6px !important;
+            font-size: 0.8rem !important;
+            border-radius: 4px !important;
+            white-space: nowrap !important;
+        }
+        .choices[data-type*="select-multiple"] .choices__button, .choices[data-type*="text"] .choices__button {
+            border-left: 1px solid rgba(0, 0, 0, 0.2) !important;
+            margin: 0 0 0 4px !important;
+            padding-left: 4px !important;
+        }
+        .input-group {
+            flex: 1 1 220px;
+            min-width: 200px;
+            position: relative;
+        }
+        .controls .input-group:nth-child(1) { z-index: 3; }
+        .controls .input-group:nth-child(2) { z-index: 2; }
+        .controls .input-group:nth-child(3) { z-index: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ModPublish Telemetry Dashboard</h1>
+        </header>
+
+        <div class="controls">
+            <div class="input-group">
+                <label>Targets</label>
+                <select id="filter-target" multiple></select>
+            </div>
+            <div class="input-group">
+                <label>Loaders</label>
+                <select id="filter-loader" multiple></select>
+            </div>
+            <div class="input-group">
+                <label>MC Versions</label>
+                <select id="filter-mc" multiple></select>
+            </div>
+            <button onclick="fetchStats()">Apply Filter</button>
+            <button onclick="clearFilters()" style="background: var(--surface); color: var(--text); border: 1px solid var(--border);">Clear</button>
+            <div class="toggle-group">
+                <input type="checkbox" id="auto-refresh" checked>
+                <label for="auto-refresh">Auto Refresh (5s)</label>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Total Requests</h3>
+                <div class="stat-huge" id="total-requests">0</div>
+            </div>
+            <div class="card">
+                <h3>Publish Targets</h3>
+                <div class="chart-container">
+                    <canvas id="targetsChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Loaders</h3>
+                <div class="chart-container">
+                    <canvas id="loadersChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Minecraft Versions (Top 10)</h3>
+                <div class="chart-container">
+                    <canvas id="mcChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#e0e0e0' } }
+            }
+        };
+
+        const barOptions = {
+            ...chartOptions,
+            scales: {
+                x: { ticks: { color: '#a0a0a0' }, grid: { color: '#333' } },
+                y: { ticks: { color: '#a0a0a0' }, grid: { color: '#333' } }
+            }
+        };
+
+        const colors = [
+            '#bb86fc', '#03dac6', '#cf6679', '#ffb74d', '#4fc3f7',
+            '#81c784', '#a1887f', '#f06292', '#ba68c8', '#4db6ac'
+        ];
+
+        const targetMap = { '0': 'modrinth', '1': 'curseforge', '2': 'github', '3': 'gitlab' };
+        const loaderMap = { '0': 'fabric', '1': 'quilt', '2': 'forge', '3': 'neoforge', '4': 'rift', '5': 'litemod', '6': 'javaagent' };
+
+        let targetsChart, loadersChart, mcChart;
+
+        function initCharts() {
+            const ctxT = document.getElementById('targetsChart').getContext('2d');
+            targetsChart = new Chart(ctxT, { type: 'pie', data: { labels: [], datasets: [] }, options: chartOptions });
+
+            const ctxL = document.getElementById('loadersChart').getContext('2d');
+            loadersChart = new Chart(ctxL, { type: 'bar', data: { labels: [], datasets: [] }, options: barOptions });
+
+            const ctxM = document.getElementById('mcChart').getContext('2d');
+            mcChart = new Chart(ctxM, { type: 'bar', data: { labels: [], datasets: [] }, options: barOptions });
+        }
+
+        function updateChart(chart, dataMap, type = 'bar', limit = null, labelMap = null) {
+            let entries = Object.entries(dataMap);
+            entries.sort((a, b) => b[1] - a[1]);
+            
+            if (limit) {
+                entries = entries.slice(0, limit);
+            }
+
+            const labels = entries.map(e => labelMap ? (labelMap[e[0]] || e[0]) : e[0]);
+            const data = entries.map(e => e[1]);
+
+            chart.data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Count',
+                    data: data,
+                    backgroundColor: type === 'pie' ? colors : '#bb86fc',
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            };
+            chart.update();
+        }
+
+        let targetChoices, loaderChoices, mcChoices;
+
+        function clearFilters() {
+            if (targetChoices) targetChoices.removeActiveItems();
+            if (loaderChoices) loaderChoices.removeActiveItems();
+            if (mcChoices) mcChoices.removeActiveItems();
+            fetchStats();
+        }
+
+        async function fetchStats() {
+            const target = targetChoices ? targetChoices.getValue(true).join(',') : '';
+            const loader = loaderChoices ? loaderChoices.getValue(true).join(',') : '';
+            const mc = mcChoices ? mcChoices.getValue(true).join(',') : '';
+
+            const params = new URLSearchParams();
+            if (target) params.append('target', target);
+            if (loader) params.append('loader', loader);
+            if (mc) params.append('mc_version', mc);
+
+            try {
+                const response = await fetch(`/api/stats?${params.toString()}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+
+                document.getElementById('total-requests').innerText = data.total_requests.toLocaleString();
+                
+                updateChart(targetsChart, data.publish_targets, 'pie', null, targetMap);
+                updateChart(loadersChart, data.loaders, 'bar', null, loaderMap);
+                updateChart(mcChart, data.minecraft_versions, 'bar', 10);
+            } catch (error) {
+                console.error("Failed to fetch stats:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+
+            const targetSelect = document.getElementById('filter-target');
+            Object.entries(targetMap).forEach(([val, label]) => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.text = label;
+                targetSelect.add(opt);
+            });
+            targetChoices = new Choices('#filter-target', { removeItemButton: true, searchEnabled: true, searchPlaceholderValue: 'Search target...', placeholderValue: 'Select targets' });
+
+            const loaderSelect = document.getElementById('filter-loader');
+            Object.entries(loaderMap).forEach(([val, label]) => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.text = label;
+                loaderSelect.add(opt);
+            });
+            loaderChoices = new Choices('#filter-loader', { removeItemButton: true, searchEnabled: true, searchPlaceholderValue: 'Search loader...', placeholderValue: 'Select loaders', shouldSort: false });
+
+            mcChoices = new Choices('#filter-mc', { removeItemButton: true, searchEnabled: true, searchPlaceholderValue: 'Search version...', placeholderValue: 'Select versions', shouldSort: false });
+
+            fetch('/api/mc_versions')
+                .then(res => res.json())
+                .then(versions => {
+                    if (versions) {
+                        const choices = versions.map(v => ({ value: v, label: v }));
+                        mcChoices.setChoices(choices, 'value', 'label', true);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch MC versions:", err));
+
+            fetchStats();
+            
+            setInterval(() => {
+                if (document.getElementById('auto-refresh').checked) {
+                    fetchStats();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
