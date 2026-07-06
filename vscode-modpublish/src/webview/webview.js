@@ -215,7 +215,34 @@ function loadPrefilledData() {
     const info = window.MOD_INFO || {};
     const config = window.CONFIG || {};
 
-    versionNameInput.value = info.name ? `${info.name} ${info.version}` : '';
+    let versionName = info.name ? `${info.name} ${info.version}` : '';
+    if (config.versionFormat) {
+        let nameFormat = config.versionFormat;
+        const v = info.version || '';
+        const modName = info.name || '';
+        
+        let loaders = '';
+        if (info.publishTypes && info.publishTypes.length > 0) {
+             loaders = info.publishTypes.join(', ');
+        }
+        
+        let lowVersion = '';
+        let highVersion = '';
+        const selectedMc = window.SELECTED_MC_VERSIONS || [];
+        if (selectedMc.length > 0) {
+             lowVersion = selectedMc[selectedMc.length - 1];
+             highVersion = selectedMc[0];
+        }
+
+        nameFormat = nameFormat.replace(/{version}/g, v)
+                               .replace(/{name}/g, modName)
+                               .replace(/{loader}/g, loaders)
+                               .replace(/{low-version}/g, lowVersion)
+                               .replace(/{high-version}/g, highVersion);
+        versionName = nameFormat;
+    }
+
+    versionNameInput.value = versionName;
     versionNumberInput.value = info.version || '';
 
     if (info.publishTypes && info.publishTypes.length > 0) {

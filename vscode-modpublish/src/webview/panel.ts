@@ -233,6 +233,7 @@ export class PublishModPanel {
             gitlabRepoAvailable: !!config.get('gitlab.repo'),
             releaseChannel: config.get('common.releaseChannel') || 'release',
             changelog: config.get('common.changelog') || '',
+            versionFormat: config.get('common.versionFormat') || '',
             dependencies: config.get('common.dependencies') || []
         };
 
