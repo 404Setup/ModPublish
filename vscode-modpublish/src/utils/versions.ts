@@ -363,7 +363,8 @@ export class VersionConstraintParser {
             throw new Error('Version constraint cannot be empty');
         }
 
-        const normalized = trimmed.replace(/([><=])\s+/g, '$1');
+        let normalized = trimmed.replace(/([><=])\s+/g, '$1');
+        normalized = normalized.replace(/([\[(]|,)\s+/g, '$1').replace(/\s+([,\])])/g, '$1');
 
         let matcher = normalized.match(this.SIMPLE_VERSION_PATTERN);
         if (matcher) return new ExactConstraint(matcher[1]);
@@ -419,31 +420,34 @@ export class VersionConstraintParser {
         const includeMin = original.startsWith('[');
         const includeMax = original.endsWith(']');
 
-        // Split by comma, mirroring the Java implementation's content.split(",")
-        const parts = content.split(',');
+        const normalizedContent = content.replace(/\s+/g, '');
+
+        const parts = normalizedContent.split(',');
 
         switch (parts.length) {
             case 1: {
-                // Single element: either unbounded range or exact version
-                if (original.endsWith(',)')) {
-                    const min = new Version(parts[0].trim());
+                // Single element: either an open-ended lower-bound range or exact version.
+                // An open-ended range has an empty part (e.g. content was "," with nothing after)
+                // or the original string signals it via ending with ',)'.
+                const part = parts[0].trim();
+                if (part.length === 0) {
+                    return new RangeConstraint(null, null, false, false);
+                } else if (original.endsWith(',)') || original.endsWith(', )') || original.replace(/\s+/g, '').endsWith(',)')) {
+                    const min = new Version(part);
                     return new RangeConstraint(min, null, includeMin, false);
                 } else {
-                    return new ExactConstraint(parts[0].trim());
+                    return new ExactConstraint(part);
                 }
             }
             case 2: {
-                // Two elements: standard Maven range [min, max]
                 const part1 = parts[0].trim();
                 const part2 = parts[1].trim();
-                const min = new Version(part1);
+                // If part1 is empty this is an upper-bound-only range, e.g. "(,26.3)"
+                const min = part1.length === 0 ? null : new Version(part1);
                 const max = part2.length === 0 ? null : new Version(part2);
                 return new RangeConstraint(min, max, includeMin, includeMax);
             }
             default: {
-                // Multiple elements: treat each non-empty part as an individual
-                // version option (OrConstraint), matching the original Java behavior
-                // where all parts are streamed, filtered for non-empty, and mapped to Version.
                 const versions = parts
                     .map(p => p.trim())
                     .filter(p => p.length > 0)

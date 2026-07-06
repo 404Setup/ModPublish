@@ -136,8 +136,7 @@ export class PublishModPanel {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         if (PublishModPanel.currentPanel) {
-            PublishModPanel.currentPanel._panel.reveal(column);
-            return;
+            PublishModPanel.currentPanel._panel.dispose();
         }
 
         const panel = vscode.window.createWebviewPanel(

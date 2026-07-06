@@ -40,7 +40,10 @@ export function parseToml(content: string): any {
                 currentTable = newMod;
             } else if (tableName.startsWith('dependencies.')) {
                 isUnderMods = false;
-                const modId = tableName.substring('dependencies.'.length).trim();
+                let modId = tableName.substring('dependencies.'.length).trim();
+                if ((modId.startsWith('"') && modId.endsWith('"')) || (modId.startsWith("'") && modId.endsWith("'"))) {
+                    modId = modId.slice(1, -1);
+                }
                 if (!result.dependencies) {
                     result.dependencies = {};
                 }
@@ -63,7 +66,10 @@ export function parseToml(content: string): any {
 
         const eqIdx = line.indexOf('=');
         if (eqIdx !== -1) {
-            const key = line.substring(0, eqIdx).trim();
+            let key = line.substring(0, eqIdx).trim();
+            if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+                key = key.slice(1, -1);
+            }
             let rawVal = line.substring(eqIdx + 1).trim();
 
             const commentIdx = rawVal.indexOf('#');
