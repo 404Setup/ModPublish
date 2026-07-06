@@ -419,52 +419,39 @@ export class VersionConstraintParser {
         const includeMin = original.startsWith('[');
         const includeMax = original.endsWith(']');
 
-        let end = content.length;
-        while (end > 0 && content.charAt(end - 1) === ',') {
-            end--;
-        }
-        const sliced = content.substring(0, end);
+        // Split by comma, mirroring the Java implementation's content.split(",")
+        const parts = content.split(',');
 
-        const commaIndex = sliced.indexOf(',');
-
-        if (commaIndex === -1) {
-            if (original.endsWith(',)')) {
-                const min = new Version(sliced.trim());
-                return new RangeConstraint(min, null, includeMin, false);
-            } else {
-                return new ExactConstraint(sliced.trim());
-            }
-        }
-
-        const nextCommaIndex = sliced.indexOf(',', commaIndex + 1);
-
-        if (nextCommaIndex === -1) {
-            const part1 = sliced.substring(0, commaIndex).trim();
-            const part2 = sliced.substring(commaIndex + 1).trim();
-
-            const min = new Version(part1);
-            const max = part2.length === 0 ? null : new Version(part2);
-            return new RangeConstraint(min, max, includeMin, includeMax);
-        } else {
-            const parts = sliced.split(',');
-            const part1 = parts[0].trim();
-            const partLast = parts[parts.length - 1].trim();
-
-            const min = new Version(part1);
-            const max = partLast.length === 0 ? null : new Version(partLast);
-            const range = new RangeConstraint(min, max, includeMin, includeMax);
-
-            const constraints: VersionConstraint[] = [];
-            constraints.push(range);
-
-            for (let i = 1; i < parts.length - 1; i++) {
-                const mid = parts[i].trim();
-                if (mid.length > 0) {
-                    constraints.push(new ExactConstraint(mid));
+        switch (parts.length) {
+            case 1: {
+                // Single element: either unbounded range or exact version
+                if (original.endsWith(',)')) {
+                    const min = new Version(parts[0].trim());
+                    return new RangeConstraint(min, null, includeMin, false);
+                } else {
+                    return new ExactConstraint(parts[0].trim());
                 }
             }
-
-            return new OrConstraint(constraints);
+            case 2: {
+                // Two elements: standard Maven range [min, max]
+                const part1 = parts[0].trim();
+                const part2 = parts[1].trim();
+                const min = new Version(part1);
+                const max = part2.length === 0 ? null : new Version(part2);
+                return new RangeConstraint(min, max, includeMin, includeMax);
+            }
+            default: {
+                // Multiple elements: treat each non-empty part as an individual
+                // version option (OrConstraint), matching the original Java behavior
+                // where all parts are streamed, filtered for non-empty, and mapped to Version.
+                const versions = parts
+                    .map(p => p.trim())
+                    .filter(p => p.length > 0)
+                    .map(p => new Version(p));
+                return new OrConstraint(versions.map(v =>
+                    new ExactConstraint(v.original.trim())
+                ));
+            }
         }
     }
 }
