@@ -389,40 +389,43 @@ export class PublishModPanel {
         };
 
         const publishPromises = data.targets.map(async (target: string) => {
-            this._panel.webview.postMessage({
-                command: 'publishProgress',
-                text: `${Lang.get('button.publishing')} [${target}]`
+            return vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: `${Lang.get('action.modpublish.action.publish.text')} [${target}]`,
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ message: Lang.get('button.publishing') });
+
+                let publisher;
+                if (target === 'modrinth') publisher = new ModrinthAPI();
+                else if (target === 'curseforge') publisher = new CurseForgeAPI();
+                else if (target === 'github') publisher = new GithubAPI();
+                else if (target === 'gitlab') publisher = new GitlabAPI();
+
+                if (publisher) {
+                    const res = await publisher.publish(publishData, tokens, publishConfigs);
+                    if (res.success) {
+                        vscode.window.showInformationMessage(`[${target}] ${Lang.get('message.success') || 'Publish successfully'}`);
+                    } else {
+                        const errMsg = Lang.get(res.message || '') || res.message;
+                        vscode.window.showErrorMessage(`[${target}] ${errMsg}`);
+                    }
+                    return { target, success: res.success, platform: res.platform, message: res.message };
+                }
+                return { target, success: true };
             });
-
-            let publisher;
-            if (target === 'modrinth') publisher = new ModrinthAPI();
-            else if (target === 'curseforge') publisher = new CurseForgeAPI();
-            else if (target === 'github') publisher = new GithubAPI();
-            else if (target === 'gitlab') publisher = new GitlabAPI();
-
-            if (publisher) {
-                const res = await publisher.publish(publishData, tokens, publishConfigs);
-                return { target, success: res.success, platform: res.platform, message: res.message };
-            }
-            return { target, success: true };
         });
 
         const results = await Promise.all(publishPromises);
         const failedResults = results.filter(r => !r.success);
 
-        if (failedResults.length > 0) {
-            const errorMsg = failedResults.map(r => `[${r.platform}] ${Lang.get(r.message || '') || r.message}`).join('\n');
-            this._panel.webview.postMessage({
-                command: 'publishResult',
-                success: false,
-                error: errorMsg
-            });
-        } else {
-            this._panel.webview.postMessage({
-                command: 'publishResult',
-                success: true
-            });
+        this._panel.webview.postMessage({
+            command: 'publishResult',
+            success: failedResults.length === 0,
+            silent: true
+        });
 
+        if (failedResults.length === 0) {
             setTimeout(() => {
                 this._panel.dispose();
             }, 2000);

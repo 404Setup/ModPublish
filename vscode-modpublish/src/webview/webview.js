@@ -762,9 +762,9 @@ window.addEventListener('message', event => {
         case 'publishResult':
             hideStatus();
             if (message.success) {
-                showNotification(t('message.success'));
+                if (!message.silent) showNotification(t('message.success'));
             } else {
-                showNotification(t('message.failed', message.error), 'error');
+                if (!message.silent) showNotification(t('message.failed', message.error), 'error');
             }
             break;
 
