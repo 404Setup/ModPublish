@@ -448,9 +448,9 @@ function setupEventListeners() {
                 projectId = `${mId},${cId}`;
             }
         } else if (isModrinthChecked) {
-            projectId = mId;
+            projectId = `${mId},`;
         } else {
-            projectId = cId;
+            projectId = `,${cId}`;
         }
 
         if (editingIndex >= 0) {
