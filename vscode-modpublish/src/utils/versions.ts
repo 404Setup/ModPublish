@@ -345,6 +345,18 @@ class OrConstraint implements VersionConstraint {
 }
 
 export class VersionConstraintParser {
+    private static readonly VERSION_PATTERN = '\\d+\\.\\d+\\.\\d+(?:-(?:pre|rc)\\d+)?|b\\d+\\.\\d+\\.\\d+|\\d{2}w\\d{2}[a-z](?:_or_[a-z])?|[\\w.-]+';
+
+    private static readonly SIMPLE_VERSION_PATTERN = new RegExp(`^(\\d+(?:\\.\\d+){1,2})$`);
+    private static readonly EXACT_PATTERN = new RegExp(`^(${this.VERSION_PATTERN})$`);
+    private static readonly RANGE_PATTERN = new RegExp(`^(${this.VERSION_PATTERN})-(${this.VERSION_PATTERN})$`);
+    private static readonly EQUAL_PATTERN = new RegExp(`^=(${this.VERSION_PATTERN})$`);
+    private static readonly TILDE_PATTERN = new RegExp(`^~(${this.VERSION_PATTERN})$`);
+    private static readonly CARET_PATTERN = new RegExp(`^\\^(${this.VERSION_PATTERN})$`);
+    private static readonly COMPARISON_PATTERN = new RegExp(`^(>=|<=|>|<)\\s*(${this.VERSION_PATTERN})$`);
+    private static readonly MAVEN_RANGE_PATTERN = /^([\[(])([\w.,\s-]+)([\])])$/;
+    private static readonly COMPOSITE_PATTERN = /^(.+?)\s+(.+)$/;
+
     public static parse(constraintStr: string): VersionConstraint {
         const trimmed = constraintStr.trim();
         if (!trimmed) {
@@ -353,37 +365,27 @@ export class VersionConstraintParser {
 
         const normalized = trimmed.replace(/([><=])\s+/g, '$1');
 
-        const spaceParts = normalized.split(/\s+|&&/);
-        if (spaceParts.length > 1) {
-            const subConstraints = spaceParts.filter(p => p.trim()).map(p => this.parseSingle(p));
-            return new CompositeConstraint(subConstraints);
+        let matcher = normalized.match(this.SIMPLE_VERSION_PATTERN);
+        if (matcher) return new ExactConstraint(matcher[1]);
+
+        matcher = normalized.match(this.EQUAL_PATTERN);
+        if (matcher) return new ExactConstraint(matcher[1]);
+
+        matcher = normalized.match(this.RANGE_PATTERN);
+        if (matcher) {
+            return new RangeConstraint(new Version(matcher[1]), new Version(matcher[2]), true, true);
         }
 
-        return this.parseSingle(normalized);
-    }
+        matcher = normalized.match(this.TILDE_PATTERN);
+        if (matcher) return new TildeConstraint(trimmed);
 
-    private static parseSingle(normalized: string): VersionConstraint {
-        if (/^=\d/.test(normalized)) {
-            return new ExactConstraint(normalized.substring(1));
-        }
+        matcher = normalized.match(this.CARET_PATTERN);
+        if (matcher) return new CaretConstraint(trimmed);
 
-        const rangeMatch = normalized.match(/^([\w.-]+)-([\w.-]+)$/);
-        if (rangeMatch) {
-            return new RangeConstraint(new Version(rangeMatch[1]), new Version(rangeMatch[2]), true, true);
-        }
-
-        if (normalized.startsWith('~')) {
-            return new TildeConstraint(normalized);
-        }
-
-        if (normalized.startsWith('^')) {
-            return new CaretConstraint(normalized);
-        }
-
-        const compMatch = normalized.match(/^(>=|<=|>|<)([\w.-]+)$/);
-        if (compMatch) {
-            const op = compMatch[1];
-            const verStr = compMatch[2];
+        matcher = normalized.match(this.COMPARISON_PATTERN);
+        if (matcher) {
+            const op = matcher[1];
+            const verStr = matcher[2];
             const ver = new Version(verStr);
             if (op === '>=') return new RangeConstraint(ver, null, true, false);
             if (op === '<=') return new RangeConstraint(null, ver, false, true);
@@ -391,30 +393,78 @@ export class VersionConstraintParser {
             if (op === '<') return new RangeConstraint(null, ver, false, false);
         }
 
-        if (/^[\[(].+?[\])]$/.test(normalized)) {
-            const includeMin = normalized.startsWith('[');
-            const includeMax = normalized.endsWith(']');
-            const content = normalized.substring(1, normalized.length - 1);
-
-            const parts = content.split(',').map(p => p.trim());
-            if (parts.length === 1) {
-                return new ExactConstraint(parts[0]);
-            }
-            if (parts.length === 2) {
-                const part1 = parts[0];
-                const part2 = parts[1];
-                const minVer = part1 ? new Version(part1) : null;
-                const maxVer = part2 ? new Version(part2) : null;
-                return new RangeConstraint(minVer, maxVer, includeMin, includeMax);
-            }
-            const exacts = parts.filter(p => p).map(p => new ExactConstraint(p));
-            return new OrConstraint(exacts);
+        matcher = normalized.match(this.MAVEN_RANGE_PATTERN);
+        if (matcher) {
+            return this.parseMavenRange(trimmed, matcher[2]);
         }
 
-        if (/^\d/.test(normalized)) {
-            return new ExactConstraint(normalized);
+        matcher = normalized.match(this.COMPOSITE_PATTERN);
+        if (matcher) {
+            try {
+                const first = this.parse(matcher[1]);
+                const second = this.parse(matcher[2]);
+                return new CompositeConstraint([first, second]);
+            } catch (e) {
+                throw new Error(`Unable to parse version constraint: ${constraintStr}`);
+            }
         }
 
-        throw new Error(`Unable to parse version constraint: ${normalized}`);
+        matcher = normalized.match(this.EXACT_PATTERN);
+        if (matcher) return new ExactConstraint(matcher[1]);
+
+        throw new Error(`Unable to parse version constraint: ${constraintStr}`);
+    }
+
+    private static parseMavenRange(original: string, content: string): VersionConstraint {
+        const includeMin = original.startsWith('[');
+        const includeMax = original.endsWith(']');
+
+        let end = content.length;
+        while (end > 0 && content.charAt(end - 1) === ',') {
+            end--;
+        }
+        const sliced = content.substring(0, end);
+
+        const commaIndex = sliced.indexOf(',');
+
+        if (commaIndex === -1) {
+            if (original.endsWith(',)')) {
+                const min = new Version(sliced.trim());
+                return new RangeConstraint(min, null, includeMin, false);
+            } else {
+                return new ExactConstraint(sliced.trim());
+            }
+        }
+
+        const nextCommaIndex = sliced.indexOf(',', commaIndex + 1);
+
+        if (nextCommaIndex === -1) {
+            const part1 = sliced.substring(0, commaIndex).trim();
+            const part2 = sliced.substring(commaIndex + 1).trim();
+
+            const min = new Version(part1);
+            const max = part2.length === 0 ? null : new Version(part2);
+            return new RangeConstraint(min, max, includeMin, includeMax);
+        } else {
+            const parts = sliced.split(',');
+            const part1 = parts[0].trim();
+            const partLast = parts[parts.length - 1].trim();
+
+            const min = new Version(part1);
+            const max = partLast.length === 0 ? null : new Version(partLast);
+            const range = new RangeConstraint(min, max, includeMin, includeMax);
+
+            const constraints: VersionConstraint[] = [];
+            constraints.push(range);
+
+            for (let i = 1; i < parts.length - 1; i++) {
+                const mid = parts[i].trim();
+                if (mid.length > 0) {
+                    constraints.push(new ExactConstraint(mid));
+                }
+            }
+
+            return new OrConstraint(constraints);
+        }
     }
 }

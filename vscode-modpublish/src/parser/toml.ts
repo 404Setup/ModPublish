@@ -22,7 +22,7 @@
 export function parseToml(content: string): any {
     const result: any = {mods: []};
     const lines = content.split(/\r?\n/);
-    let currentMod: any = null;
+    let currentTable: any = result;
     let isUnderMods = false;
 
     for (let line of lines) {
@@ -35,14 +35,29 @@ export function parseToml(content: string): any {
             const tableName = line.slice(2, -2).trim();
             if (tableName === 'mods') {
                 isUnderMods = true;
-                currentMod = {};
-                result.mods.push(currentMod);
+                const newMod = {};
+                result.mods.push(newMod);
+                currentTable = newMod;
+            } else if (tableName.startsWith('dependencies.')) {
+                isUnderMods = false;
+                const modId = tableName.substring('dependencies.'.length).trim();
+                if (!result.dependencies) {
+                    result.dependencies = {};
+                }
+                if (!result.dependencies[modId]) {
+                    result.dependencies[modId] = [];
+                }
+                const newDep = {};
+                result.dependencies[modId].push(newDep);
+                currentTable = newDep;
             } else {
                 isUnderMods = false;
+                currentTable = result;
             }
             continue;
         } else if (line.startsWith('[') && line.endsWith(']')) {
             isUnderMods = false;
+            currentTable = result;
             continue;
         }
 
@@ -71,10 +86,8 @@ export function parseToml(content: string): any {
                 val = Number(rawVal);
             }
 
-            if (isUnderMods && currentMod) {
-                currentMod[key] = val;
-            } else if (!isUnderMods) {
-                result[key] = val;
+            if (currentTable) {
+                currentTable[key] = val;
             }
         }
     }
