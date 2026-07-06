@@ -145,7 +145,7 @@ export class ModParser {
                     if (typeof mc === 'string') {
                         versionRange = mc;
                     } else if (Array.isArray(mc)) {
-                        versionRange = mc.join(', ');
+                        versionRange = mc.join(' ');
                     }
                 }
 
