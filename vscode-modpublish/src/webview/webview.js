@@ -277,6 +277,10 @@ function loadPrefilledData() {
     if (config.releaseChannel) {
         releaseChannelSelect.value = config.releaseChannel;
     }
+
+    if (config.changelog) {
+        changelogTextarea.value = config.changelog;
+    }
 }
 
 function showNotification(text, type = 'info') {

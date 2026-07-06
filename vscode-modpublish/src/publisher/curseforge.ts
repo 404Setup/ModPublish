@@ -89,10 +89,14 @@ export class CurseForgeAPI extends API {
 
                     metadata.gameVersions = gameVersions;
 
-                    metadata.relations = data.dependencies.map(dep => ({
-                        slug: dep.curseforgeModInfo?.slug || dep.projectId,
-                        type: this.mapDependencyType(dep.type, DEP_TYPE_MAP)
-                    }));
+                    if (data.dependencies && data.dependencies.length > 0) {
+                        metadata.relations = {
+                            projects: data.dependencies.map(dep => ({
+                                slug: dep.curseforgeModInfo?.slug || dep.projectId,
+                                type: this.mapDependencyType(dep.type, DEP_TYPE_MAP)
+                            }))
+                        };
+                    }
                 }
 
                 form.append('metadata', JSON.stringify(metadata));

@@ -59,7 +59,7 @@ export class PublishModPanel {
                         break;
                     case 'saveConfig':
                         await this._saveConfig(message.data);
-                        vscode.window.showInformationMessage(Lang.get('message.success'));
+                        vscode.window.showInformationMessage(Lang.get('title.success'));
                         break;
                     case 'resolveDependency':
                         await this._resolveDependency(message.dependency);
@@ -232,6 +232,7 @@ export class PublishModPanel {
             githubRepoAvailable: !!config.get('github.repo'),
             gitlabRepoAvailable: !!config.get('gitlab.repo'),
             releaseChannel: config.get('common.releaseChannel') || 'release',
+            changelog: config.get('common.changelog') || '',
             dependencies: config.get('common.dependencies') || []
         };
 
@@ -285,6 +286,7 @@ export class PublishModPanel {
     private async _saveConfig(data: any) {
         const config = this._getConfig();
         await config.update('common.releaseChannel', data.releaseChannel, vscode.ConfigurationTarget.WorkspaceFolder);
+        await config.update('common.changelog', data.changelog, vscode.ConfigurationTarget.WorkspaceFolder);
 
         const savedDeps = data.dependencies.map((d: any) => ({
             projectId: d.projectId,
@@ -386,10 +388,7 @@ export class PublishModPanel {
             files: sortedFiles
         };
 
-        let failedPlatform = '';
-        let failedMessage = '';
-
-        for (const target of data.targets) {
+        const publishPromises = data.targets.map(async (target: string) => {
             this._panel.webview.postMessage({
                 command: 'publishProgress',
                 text: `${Lang.get('button.publishing')} [${target}]`
@@ -403,19 +402,20 @@ export class PublishModPanel {
 
             if (publisher) {
                 const res = await publisher.publish(publishData, tokens, publishConfigs);
-                if (!res.success) {
-                    failedPlatform = res.platform;
-                    failedMessage = res.message || 'Unknown error';
-                    break;
-                }
+                return { target, success: res.success, platform: res.platform, message: res.message };
             }
-        }
+            return { target, success: true };
+        });
 
-        if (failedPlatform) {
+        const results = await Promise.all(publishPromises);
+        const failedResults = results.filter(r => !r.success);
+
+        if (failedResults.length > 0) {
+            const errorMsg = failedResults.map(r => `[${r.platform}] ${Lang.get(r.message || '') || r.message}`).join('\n');
             this._panel.webview.postMessage({
                 command: 'publishResult',
                 success: false,
-                error: `[${failedPlatform}] ${Lang.get(failedMessage) || failedMessage}`
+                error: errorMsg
             });
         } else {
             this._panel.webview.postMessage({

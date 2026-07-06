@@ -146,6 +146,12 @@
           "description": "Default release channel for publishing.",
           "scope": "resource"
         },
+        "modpublish.common.changelog": {
+          "type": "string",
+          "default": "",
+          "description": "Saved changelog.",
+          "scope": "resource"
+        },
         "modpublish.common.dependencies": {
           "type": "array",
           "default": [],
