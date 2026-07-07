@@ -1,6 +1,9 @@
 # ModPublish VS Code Extension
 
-This is the VS Code port of the ModPublish JetBrains plugin.
+This is the VS Code port of the ModPublish IntelliJ plugin.
+
+Quickly publish your Minecraft mods to multiple mod hosting sites using Visual Studio Code.
+
 
 ## Features
 
@@ -61,5 +64,6 @@ The more Stars, the happier I am, and the more motivated I am to continue workin
 Thanks to everyone who uses and supports ModPublish.
 
 ## License
+2025 - 2026 404Setup. All rights reserved.
 
 The source code is licensed under the LGPL-3.0 license.

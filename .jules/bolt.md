@@ -1,3 +1,0 @@
-## 2024-05-19 - Removed intermediate collections on the EDT
-**Learning:** In IntelliJ plugin development, UI component processing steps like `.filter{}.forEach{}` or `.asSequence().mapNotNull{}.toList()` can be problematic if they introduce extra memory allocation for small lists on the Event Dispatch Thread.
-**Action:** Replace `filter/forEach` combinations with a direct `forEach` and an `if` statement to avoid allocating temporary `ArrayList` instances, and remove `.asSequence()` for very small lists (e.g., 6 enum values) where eager evaluation is actually faster and allocates fewer objects than sequence wrappers.
