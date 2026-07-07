@@ -19,10 +19,9 @@ package one.pkg.modpublish.api
 import com.google.gson.JsonObject
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
@@ -37,10 +36,10 @@ import one.pkg.modpublish.util.io.JsonParser.toJson
 import java.io.File
 import java.io.IOException
 
-class GithubAPI : API() {
+class GithubAPI : GitPlatformAPI() {
     override val id: String = "Github"
 
-    override fun createVersion(data: PublishData, project: Project): PublishResult {
+    override suspend fun createVersion(data: PublishData, project: Project): PublishResult {
         return runCatching {
             val tagName = if (data.versionNumber.startsWith("v")) data.versionNumber else "v${data.versionNumber}"
             val existingRelease = checkExistingRelease(tagName, project)?.asJsonObject ?: run {
@@ -60,69 +59,70 @@ class GithubAPI : API() {
         }.getOrElse { PublishResult.create(this, "Failed to create GitHub release: ${it.message}") }
     }
 
-    private fun createRelease(data: PublishData, project: Project): Result = runCatching {
-        val request = request(RELEASES_URL, project).json()
-            .post(createJsonBody(data, project).toRequestBody("application/json".toMediaType()))
-            .build()
-
-        client.newCall(request).execute().use { resp ->
-            resp.status()?.let { return PublishResult.create(this, "Failed to create release: $it") }
-            BackResult.result(resp.body.string())
-        }
-    }.getOrElse { PublishResult.create(this, "Network error: ${it.message}") }
-
-    private fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = runCatching {
-        val assetUrl = "$uploadUrl?name=${file.name}"
-        val fileBody = file.asRequestBody("application/java-archive".toMediaType())
-        val request = request(assetUrl, project)
-            .header("Content-Type", "application/java-archive")
-            .post(fileBody)
-            .build()
-
-        client.newCall(request).execute().use { resp ->
-            resp.status()?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
-            PublishResult.EMPTY
-        }
-    }.getOrElse { PublishResult.create(this, "Failed to upload asset: ${it.message}") }
-
-    private fun checkExistingRelease(tagName: String, project: Project): JsonObject? = runCatching {
-        val url = "$RELEASES_URL/tags/$tagName"
-        val request = request(url, project).get().build()
-        client.newCall(request).execute()
-            .use { resp -> if (resp.isSuccessful) resp.body.string().fromJson() else null }
-    }.getOrNull()
-
-    private fun getTargetCommitish(branch: String, project: Project): String = try {
-        branch.takeIf { it.isNotBlank() }?.let { getLatestCommitHash(it, project) } ?: getDefaultBranch(project)
-    } catch (_: Exception) {
-        branch.takeIf { it.isNotBlank() } ?: "main"
+    private fun HttpRequestBuilder.github(project: Project) {
+        header("Accept", "application/vnd.github+json")
+        header("X-GitHub-Api-Version", "2022-11-28")
+        header("Authorization", "Bearer ${PID.GithubToken.getProtect(project).data}")
     }
 
-    @Throws(IOException::class)
-    private fun getDefaultBranch(project: Project): String {
-        val request = request(REPO_INFO_URL, project).get().build()
-        client.newCall(request).execute().use { resp ->
-            if (resp.isSuccessful) return resp.body.string().fromJson().get("default_branch").asString
+    private suspend fun createRelease(data: PublishData, project: Project): Result = runCatching {
+        val repo = PID.GithubRepo.get(project)
+        val resp = client.post(RELEASES_URL.replace("{path}", repo)) {
+            github(project)
+            contentType(ContentType.Application.Json)
+            //json()
+            setBody(createJsonBodyAsync(data, project))
         }
+
+        resp.statusString()?.let { return PublishResult.create(this, "Failed to create release: $it") }
+        BackResult.result(resp.bodyAsText())
+    }.getOrElse { PublishResult.create(this, "Network error: ${it.message}") }
+
+    private suspend fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = runCatching {
+        val assetUrl = "$uploadUrl?name=${file.name}"
+        val resp = client.post(assetUrl) {
+            github(project)
+            header("Content-Type", "application/java-archive")
+            setBody(file.readBytes())
+        }
+
+        resp.statusString()?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
+        PublishResult.EMPTY
+    }.getOrElse { PublishResult.create(this, "Failed to upload asset: ${it.message}") }
+
+    private suspend fun checkExistingRelease(tagName: String, project: Project): JsonObject? = runCatching {
+        val url = "$RELEASES_URL/tags/$tagName".replace("{path}", PID.GithubRepo.get(project))
+        val resp = client.get(url) { github(project) }
+        if (resp.status.isSuccess()) resp.bodyAsText().fromJson() else null
+    }.getOrNull()
+
+    @Throws(IOException::class)
+    override suspend fun getDefaultBranch(project: Project): String {
+        val repo = PID.GithubRepo.get(project)
+        val resp = client.get(REPO_INFO_URL.replace("{path}", repo)) { github(project) }
+        if (resp.status.isSuccess()) return resp.bodyAsText().fromJson().get("default_branch").asString
         return "main"
     }
 
     @Throws(IOException::class)
-    private fun getLatestCommitHash(branch: String, project: Project): String {
-        val url = BRANCH_COMMIT_URL.replace("{branch}", branch)
-        val request = request(url, project).get().build()
-        client.newCall(request).execute().use { resp ->
-            if (resp.isSuccessful) {
-                val commit = resp.body.string().fromJson().getAsJsonObject("commit")
-                return commit.get("sha").asString
-            }
+    override suspend fun getLatestCommitHash(branch: String, project: Project): String {
+        val repo = PID.GithubRepo.get(project)
+        val url = BRANCH_COMMIT_URL.replace("{path}", repo).replace("{branch}", branch)
+        val resp = client.get(url) { github(project) }
+        if (resp.status.isSuccess()) {
+            val commit = resp.bodyAsText().fromJson().getAsJsonObject("commit")
+            return commit.get("sha").asString
         }
         return branch
     }
 
-    override fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.empty()
+    override suspend fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.empty()
 
     override fun createJsonBody(data: PublishData, project: Project): String {
+        return ""
+    }
+
+    private suspend fun createJsonBodyAsync(data: PublishData, project: Project): String {
         val branch = PID.GithubBranch.get(project).ifEmpty { project.getBrach() }
         val targetCommitish = getTargetCommitish(branch, project)
 
@@ -139,14 +139,6 @@ class GithubAPI : API() {
             LOG.info("now run $id publish: $this")
         }
     }
-
-    private fun request(url: String, project: Project): Request.Builder =
-        baseRequestBuilder.apply {
-            header("Accept", "application/vnd.github+json")
-            header("X-GitHub-Api-Version", "2022-11-28")
-            header("Authorization", "Bearer ${PID.GithubToken.getProtect(project).data}")
-            url(url.replace("{path}", PID.GithubRepo.get(project)))
-        }
 
     companion object {
         private const val RELEASES_URL = "https://api.github.com/repos/{path}/releases"

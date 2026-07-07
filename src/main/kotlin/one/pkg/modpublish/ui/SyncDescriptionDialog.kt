@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.data.internal.Info
 import one.pkg.modpublish.data.internal.PublishTarget
 import one.pkg.modpublish.settings.properties.PID
@@ -88,7 +89,9 @@ class SyncDescriptionDialog(
             return
         }
 
-        val result = selectedType.api.patchDescription(modrinthID, file.toFile().readText(Charsets.UTF_8), project)
+        val result = runBlocking {
+            selectedType.api.patchDescription(modrinthID, file.toFile().readText(Charsets.UTF_8), project)
+        }
         if (result.isFailure) {
             showFailedDialogRaw(
                 result.result!!,

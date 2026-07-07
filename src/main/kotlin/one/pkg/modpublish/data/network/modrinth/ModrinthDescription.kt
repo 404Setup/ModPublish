@@ -17,14 +17,11 @@
 
 package one.pkg.modpublish.data.network.modrinth
 
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import one.pkg.modpublish.util.io.JsonParser.toJson
 
 data class ModrinthDescription(val body: String) {
     companion object {
-        fun request(body: String): RequestBody =
-            ModrinthDescription(body).toJson().toRequestBody("application/json; charset=utf-8".toMediaType())
+        fun request(body: String): String =
+            ModrinthDescription(body).toJson()
     }
 }

@@ -32,16 +32,19 @@ import javax.net.ssl.*
  */
 @Suppress("UNUSED")
 internal object SSLSocketClient {
-    val sslSocketFactory: SSLSocketFactory
+    val sslContext: SSLContext
         get() {
             try {
-                val sslContext = SSLContext.getInstance("SSL")
-                sslContext.init(null, trustManager, SecureRandom())
-                return sslContext.socketFactory
+                val context = SSLContext.getInstance("SSL")
+                context.init(null, trustManager, SecureRandom())
+                return context
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
         }
+
+    val sslSocketFactory: SSLSocketFactory
+        get() = sslContext.socketFactory
 
     private val trustManager
         get() = arrayOf<TrustManager>(object : X509TrustManager {

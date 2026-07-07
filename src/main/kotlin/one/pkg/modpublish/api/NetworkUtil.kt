@@ -16,49 +16,64 @@
  */
 package one.pkg.modpublish.api
 
-import okhttp3.Authenticator
-import okhttp3.Credentials.basic
-import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.Route
+import io.ktor.client.*
+import io.ktor.client.plugins.*
+import io.ktor.client.engine.*
+import io.ktor.client.engine.java.Java
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
 import one.pkg.modpublish.settings.ModPublishSettings
 import one.tranic.t.proxy.ProxyConfigReader
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.concurrent.TimeUnit
 
 object NetworkUtil {
-    val client: OkHttpClient
+    val client: HttpClient
 
     init {
         val state = requireNotNull(ModPublishSettings.getInstance().state)
         val proxy = getProxy(state)
 
-        client = OkHttpClient.Builder().apply {
-            proxy(proxy)
-            connectTimeout(state.networkConnectTimeout.toLong(), TimeUnit.SECONDS)
-            readTimeout(state.networkReadTimeout.toLong(), TimeUnit.SECONDS)
-            writeTimeout(state.networkWriteTimeout.toLong(), TimeUnit.SECONDS)
-
-            if (!state.networkEnableSSLCheck) {
-                hostnameVerifier(SSLSocketClient.hostnameVerifier)
-                sslSocketFactory(SSLSocketClient.sslSocketFactory, SSLSocketClient.x509TrustManager)
-            }
-
-            (state.proxyUsername.takeIf { it.isNotEmpty() }?.let { username ->
-                state.proxyPassword.takeIf { it.isNotEmpty() }?.let { password ->
-                    proxy.takeIf { it != Proxy.NO_PROXY || state.proxyAddress.isNotBlank() && state.proxyPort > 0 }?.let {
-                        Authenticator { _: Route?, response: Response ->
-                            response.request.header("Proxy-Authorization")?.let {
-                                response.request.newBuilder()
-                                    .header("Proxy-Authorization", basic(username, password))
-                                    .build()
-                            }
-                        }
+        client = HttpClient(Java) {
+            engine {
+                if (!state.networkEnableSSLCheck) {
+                    config {
+                        sslContext(SSLSocketClient.sslContext)
                     }
                 }
-            })?.also { proxyAuthenticator(it) }
-        }.build()
+
+                if (proxy.type() != Proxy.Type.DIRECT) {
+                    val address = proxy.address() as InetSocketAddress
+                    val host = address.hostString
+                    val port = address.port
+                    
+                    val username = state.proxyUsername
+                    val password = state.proxyPassword
+                    
+                    val authStr = if (username.isNotEmpty() && password.isNotEmpty()) {
+                        "$username:$password@"
+                    } else ""
+
+                    val proxyUrl = when (proxy.type()) {
+                        Proxy.Type.HTTP -> "http://$authStr$host:$port"
+                        Proxy.Type.SOCKS -> "socks://$authStr$host:$port"
+                        else -> null
+                    }
+                    if (proxyUrl != null) {
+                        this.proxy = ProxyBuilder.http(proxyUrl)
+                    }
+                }
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = state.networkReadTimeout.toLong() * 1000
+                connectTimeoutMillis = state.networkConnectTimeout.toLong() * 1000
+            }
+
+            defaultRequest {
+                header(HttpHeaders.UserAgent, "modpublish/v1 (github.com/404Setup/ModPublish)")
+            }
+        }
     }
 
     private fun isValidIpAddress(ip: String): Boolean = runCatching {

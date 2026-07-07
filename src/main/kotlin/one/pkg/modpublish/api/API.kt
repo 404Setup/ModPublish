@@ -17,8 +17,9 @@
 package one.pkg.modpublish.api
 
 import com.intellij.openapi.project.Project
-import okhttp3.Request
-import okhttp3.Response
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
 import one.pkg.modpublish.data.result.PublishResult
@@ -28,28 +29,25 @@ import java.util.*
 abstract class API {
     abstract val id: String
 
-    internal fun Request.Builder.json(): Request.Builder {
-        return header("Accept", "application/json")
+    internal fun HttpRequestBuilder.json() {
+        header(HttpHeaders.Accept, "application/json")
+        contentType(ContentType.Application.Json)
     }
 
-    internal fun Request.Builder.form(): Request.Builder {
-        return header("Content-Type", "multipart/form-data")
-    }
-
-    internal fun Response.contentType(): Optional<String> {
-        return Optional.ofNullable<String>(header("Content-Type"))
+    internal fun HttpResponse.contentTypeOpt(): Optional<String> {
+        return Optional.ofNullable(headers[HttpHeaders.ContentType])
     }
 
     internal abstract fun createJsonBody(data: PublishData, project: Project): String
 
-    internal fun Response.status(): String? {
-        return when (code) {
-            403, 404, 500 -> Lang.get("api.common.err.$code")
+    internal suspend fun HttpResponse.statusString(): String? {
+        return when (status.value) {
+            403, 404, 500 -> Lang.get("api.common.err.${status.value}")
             302 -> "Duplicate resource"
             400, 401, 422 -> try {
-                body.string()
+                bodyAsText()
             } catch (_: Exception) {
-                "HTTP $code"
+                "HTTP ${status.value}"
             }
 
             204 -> null
@@ -57,8 +55,8 @@ abstract class API {
         }
     }
 
-    private fun Response.validateContentType(): String? {
-        val type = contentType()
+    private fun HttpResponse.validateContentType(): String? {
+        val type = contentTypeOpt()
         return if (type.isEmpty || !type.get().contains("application/json")) {
             Lang.get("api.common.err.format", type.orElse("Unknown"))
         } else {
@@ -66,15 +64,10 @@ abstract class API {
         }
     }
 
-    abstract fun createVersion(data: PublishData, project: Project): PublishResult
+    abstract suspend fun createVersion(data: PublishData, project: Project): PublishResult
 
-    abstract fun getModInfo(modid: String, project: Project): ModInfo
+    abstract suspend fun getModInfo(modid: String, project: Project): ModInfo
 
-    open fun patchDescription(modid: String, body: String, project: Project): PublishResult =
+    open suspend fun patchDescription(modid: String, body: String, project: Project): PublishResult =
         PublishResult.create(this, "Unsupported operation: patchDescription")
-
-    companion object {
-        internal val baseRequestBuilder: Request.Builder
-            get() = Request.Builder().header("User-Agent", "modpublish/v1 (github.com/404Setup/ModPublish)")
-    }
 }

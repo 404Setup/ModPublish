@@ -4,7 +4,7 @@ plugins {
     id("java")
     kotlin("jvm") version "2.4.0"
 
-    id("org.jetbrains.intellij.platform") version "2.16.0"
+    id("org.jetbrains.intellij.platform") version "2.17.0"
 }
 
 group = "one.pkg"
@@ -50,9 +50,6 @@ dependencies {
         bundledPlugin("Git4Idea")
     }
 
-    implementation("com.squareup.okhttp3:okhttp:5.4.0") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
 
     implementation("one.tranic:t-proxy:1.0.1")
     implementation("one.pkg:tiny-utils:2.4.0")
@@ -62,8 +59,24 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    implementation("com.vladsch.flexmark:flexmark:0.64.8")
-    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
+    implementation("com.vladsch.flexmark:flexmark:0.64.8") {
+        exclude("com.vladsch.flexmark", "flexmark-jira-converter")
+        exclude("com.vladsch.flexmark", "flexmark-ext-emoji")
+        exclude("com.vladsch.flexmark", "flexmark-ext-gfm-strikethrough")
+        exclude("com.vladsch.flexmark", "flexmark-ext-ins")
+        exclude("com.vladsch.flexmark","flexmark-ext-superscript")
+        exclude("com.vladsch.flexmark", "flexmark-ext-tables")
+        exclude("com.vladsch.flexmark", "flexmark-ext-wikilink")
+    }
+    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8") {
+        exclude("com.vladsch.flexmark", "flexmark-jira-converter")
+        exclude("com.vladsch.flexmark", "flexmark-ext-emoji")
+        exclude("com.vladsch.flexmark", "flexmark-ext-gfm-strikethrough")
+        exclude("com.vladsch.flexmark", "flexmark-ext-ins")
+        exclude("com.vladsch.flexmark","flexmark-ext-superscript")
+        exclude("com.vladsch.flexmark", "flexmark-ext-tables")
+        exclude("com.vladsch.flexmark", "flexmark-ext-wikilink")
+    }
 }
 
 intellijPlatform {

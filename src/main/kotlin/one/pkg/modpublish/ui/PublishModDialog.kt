@@ -258,7 +258,7 @@ class PublishModDialog(
                         async {
                             isEnabled = false
                             setButtonLoading(this)
-                            if (VersionProcessor.updateVersions()) {
+                            if (runBlocking { VersionProcessor.updateVersions() }) {
                                 minecraftVersions = null
                                 showSuccessDialog("message.update.success", "title.success")
                                 updateMinecraftVersions()

@@ -19,6 +19,7 @@ package one.pkg.modpublish.ui
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.runBlocking
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.ModInfos
 import one.pkg.modpublish.data.internal.PublishTarget
@@ -162,46 +163,46 @@ class AddDependencyDialog(
         super.doOKAction()
     }
 
-    private fun validateDependency(dependency: DependencyInfo): ModInfos {
+    private fun validateDependency(dependency: DependencyInfo): ModInfos = runBlocking {
         val projectId = dependency.projectId
-        if (projectId.isNullOrBlank()) return ModInfos(ModInfo.of("Project ID cannot be empty"), null)
+        if (projectId.isNullOrBlank()) return@runBlocking ModInfos(ModInfo.of("Project ID cannot be empty"), null)
 
         if (projectId.contains(",")) {
             val parts = projectId.split(",", limit = 2)
-            if (parts.size != 2) return ModInfos(ModInfo.of("Invalid project ID format"), null)
+            if (parts.size != 2) return@runBlocking ModInfos(ModInfo.of("Invalid project ID format"), null)
 
             val modrinthInfo = if (selector.modrinth && parts[0].isNotBlank()) {
                 PublishTarget.Modrinth.api.getModInfo(parts[0], requireNotNull(project)).also {
-                    if (it.failed != null) return ModInfos(it, null)
+                    if (it.failed != null) return@runBlocking ModInfos(it, null)
                 }
             } else null
 
             val curseforgeInfo = if (selector.curseForge && parts[1].isNotBlank()) {
                 if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
-                    return ModInfos(null, ModInfo.of(get("failed.11")))
+                    return@runBlocking ModInfos(null, ModInfo.of(get("failed.11")))
                 }
                 PublishTarget.CurseForge.api.getModInfo(parts[1], requireNotNull(project)).also {
-                    if (it.failed != null) return ModInfos(null, it)
+                    if (it.failed != null) return@runBlocking ModInfos(null, it)
                 }
             } else null
 
-            return ModInfos(modrinthInfo, curseforgeInfo)
+            return@runBlocking ModInfos(modrinthInfo, curseforgeInfo)
         } else {
             val modrinthInfo = if (selector.modrinth) {
                 PublishTarget.Modrinth.api.getModInfo(projectId, requireNotNull(project))
-                    .also { if (it.failed != null) return ModInfos(it, null) }
+                    .also { if (it.failed != null) return@runBlocking ModInfos(it, null) }
             } else null
 
             val curseforgeInfo = if (selector.curseForge) {
                 if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
-                    return ModInfos(null, ModInfo.of(get("failed.11")))
+                    return@runBlocking ModInfos(null, ModInfo.of(get("failed.11")))
                 }
                 PublishTarget.CurseForge.api.getModInfo(projectId, requireNotNull(project)).also {
-                    if (it.failed != null) return ModInfos(null, it)
+                    if (it.failed != null) return@runBlocking ModInfos(null, it)
                 }
             } else null
 
-            return ModInfos(modrinthInfo, curseforgeInfo)
+            return@runBlocking ModInfos(modrinthInfo, curseforgeInfo)
         }
     }
 

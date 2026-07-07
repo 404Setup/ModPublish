@@ -14,21 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package one.pkg.modpublish.api
 
 import com.intellij.openapi.project.Project
-import one.pkg.modpublish.data.internal.ModInfo
-import one.pkg.modpublish.data.internal.PublishData
-import one.pkg.modpublish.data.result.PublishResult
-import one.pkg.modpublish.util.resources.Lang
 
-class EmptyAPI : API() {
-    override val id: String = Lang.get("failed.10")
+abstract class GitPlatformAPI : API() {
+    protected abstract suspend fun getDefaultBranch(project: Project): String
+    protected abstract suspend fun getLatestCommitHash(branch: String, project: Project): String
 
-    override fun createJsonBody(data: PublishData, project: Project): String = "{}"
-
-    override suspend fun createVersion(data: PublishData, project: Project): PublishResult = PublishResult.EMPTY
-
-    override suspend fun getModInfo(modid: String, project: Project): ModInfo = ModInfo.EMPTY
+    protected suspend fun getTargetCommitish(branch: String, project: Project): String = try {
+        branch.takeIf { it.isNotBlank() }?.let { getLatestCommitHash(it, project) } ?: getDefaultBranch(project)
+    } catch (_: Exception) {
+        branch.takeIf { it.isNotBlank() } ?: "main"
+    }
 }

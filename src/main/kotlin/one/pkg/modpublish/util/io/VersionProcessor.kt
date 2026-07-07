@@ -19,8 +19,10 @@ package one.pkg.modpublish.util.io
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.intellij.openapi.diagnostic.Logger
-import one.pkg.modpublish.api.API
-import one.pkg.modpublish.api.NetworkUtil
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
@@ -36,37 +38,37 @@ object VersionProcessor {
     private const val MOJANG_URL = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"
     private const val CURSEFORGE_URL = "https://api.curseforge.com/v1/minecraft/version"
 
-    private fun fetchMinecraftVersions(): List<ProcessedVersion>? {
+    private suspend fun fetchMinecraftVersions(): List<ProcessedVersion>? {
         return runCatching {
             LOG.info("Fetching Minecraft version data from Mojang API..")
-            val request = API.baseRequestBuilder.url(MOJANG_URL).build()
-            NetworkUtil.client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    LOG.error("Network request error: ${response.code}")
-                    return null
-                }
-                val manifest = response.body.charStream().fromJson<MojangManifest>(MojangManifest::class.java)
-                val processedVersions = manifest.versions.mapTo(ArrayList(manifest.versions.size)) { version ->
-                    var releaseTime = version.releaseTime
-                    if (releaseTime.endsWith("+00:00")) {
-                        releaseTime = releaseTime.substring(0, releaseTime.length - 6) + "Z"
-                    }
-                    ProcessedVersion(
-                        version = version.id,
-                        type = version.type,
-                        id = -1,
-                        date = releaseTime
-                    )
-                }
-
-                LOG.info("Successfully processed ${processedVersions.size} versions")
-
-                val latestInfo = manifest.latest
-                LOG.info("Latest version info:")
-                LOG.info("   Release: " + latestInfo["release"])
-                LOG.info("   Snapshot: " + latestInfo["snapshot"])
-                return processedVersions
+            val resp = client.get(MOJANG_URL) {
+                header("Accept", "application/json")
             }
+            if (!resp.status.isSuccess()) {
+                LOG.error("Network request error: ${resp.status.value}")
+                return null
+            }
+            val manifest = resp.bodyAsText().fromJson(MojangManifest::class.java)
+            val processedVersions = manifest.versions.mapTo(ArrayList(manifest.versions.size)) { version ->
+                var releaseTime = version.releaseTime
+                if (releaseTime.endsWith("+00:00")) {
+                    releaseTime = releaseTime.substring(0, releaseTime.length - 6) + "Z"
+                }
+                ProcessedVersion(
+                    version = version.id,
+                    type = version.type,
+                    id = -1,
+                    date = releaseTime
+                )
+            }
+
+            LOG.info("Successfully processed ${processedVersions.size} versions")
+
+            val latestInfo = manifest.latest
+            LOG.info("Latest version info:")
+            LOG.info("   Release: " + latestInfo["release"])
+            LOG.info("   Snapshot: " + latestInfo["snapshot"])
+            return processedVersions
         }.onFailure {
             when (it) {
                 is IOException -> LOG.error("Network request error", it)
@@ -76,21 +78,21 @@ object VersionProcessor {
         }.getOrNull()
     }
 
-    private fun fetchCurseforgeVersions(): List<CurseForgeVersion>? {
+    private suspend fun fetchCurseforgeVersions(): List<CurseForgeVersion>? {
         return runCatching {
             LOG.info("Fetching version data from CurseForge API...")
-            val request = API.baseRequestBuilder.url(CURSEFORGE_URL).build()
-            NetworkUtil.client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    LOG.error("Network request error: ${response.code}")
-                    return null
-                }
-                val data = response.body.charStream().fromJson<CurseForgeResponse>(CurseForgeResponse::class.java)
-                val parsed = data.data ?: emptyList()
-
-                LOG.info("Successfully got CurseForge API data with ${parsed.size} versions")
-                return parsed
+            val resp = client.get(CURSEFORGE_URL) {
+                header("Accept", "application/json")
             }
+            if (!resp.status.isSuccess()) {
+                LOG.error("Network request error: ${resp.status.value}")
+                return null
+            }
+            val data = resp.bodyAsText().fromJson(CurseForgeResponse::class.java)
+            val parsed = data.data ?: emptyList()
+
+            LOG.info("Successfully got CurseForge API data with ${parsed.size} versions")
+            return parsed
         }.onFailure {
             when (it) {
                 is IOException -> LOG.error("Network request error", it)
@@ -178,7 +180,7 @@ object VersionProcessor {
         LOG.info("   Match Rate: " + String.format("%.1f", matchRate) + "%")
     }
 
-    fun updateVersions(): Boolean {
+    suspend fun updateVersions(): Boolean {
         val mojang = fetchMinecraftVersions() ?: return false
         val curseforge = fetchCurseforgeVersions() ?: return false
         val mapping = createVersionMapping(curseforge)
