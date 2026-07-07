@@ -16,6 +16,7 @@
  */
 
 import {API, ModRef, PublishData, PublishResult} from './api';
+import {markdownToHtml} from '../utils/markdownToHtml';
 
 const DEP_TYPE_MAP = {
     required: 'requiredDependency',
@@ -55,8 +56,8 @@ export class CurseForgeAPI extends API {
                 form.append('file', blob, fileName);
 
                 const metadata: any = {
-                    changelog: data.changelog,
-                    changelogType: 'markdown',
+                    changelog: markdownToHtml(data.changelog),
+                    changelogType: 'html',
                     displayName: data.versionName,
                     releaseType: data.releaseChannel
                 };

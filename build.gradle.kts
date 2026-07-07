@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "one.pkg"
-version = "1.11.3"
+version = "1.12.0"
 val targetJavaVersion = 21
 
 repositories {
@@ -62,8 +62,8 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    compileOnly("com.vladsch.flexmark:flexmark:0.64.8")
-    compileOnly("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
+    implementation("com.vladsch.flexmark:flexmark:0.64.8")
+    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
 }
 
 intellijPlatform {

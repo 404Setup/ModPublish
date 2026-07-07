@@ -35,6 +35,7 @@ import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.getJsonObject
 import one.pkg.modpublish.util.io.JsonParser.toJson
+import one.pkg.modpublish.util.io.markdownToHtml
 import java.io.File
 
 class CurseForgeAPI : API() {
@@ -90,7 +91,7 @@ class CurseForgeAPI : API() {
     private fun createJsonBody(data: PublishData, bResult: BackResult?): String {
         return CurseForgeData().apply {
             this.releaseType(data.releaseChannel)
-            this.markdownChangelog(data.changelog)
+            this.htmlChangelog(data.changelog.markdownToHtml())
 
             this.displayName = data.versionName
             bResult?.let { this.parentFileID = it.asCurseForgePublishResult().id } ?: run {
