@@ -6,18 +6,18 @@ build/
 !**/src/test/**/build/
 
 ### IntelliJ IDEA ###
-.idea/*.xml
-.idea/*/*.xml
-.idea/dataSources
-.idea/libraries/
+**/.idea/*.xml
+**/.idea/*/*.xml
+**/.idea/dataSources
+**/.idea/libraries/
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-!.idea/*.svg
-!.idea/copyright/*
+!**/idea/*.svg
+!**/idea/copyright/*
 
 ### Eclipse ###
 .apt_generated

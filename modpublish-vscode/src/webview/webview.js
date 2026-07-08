@@ -94,6 +94,17 @@ function localizeUI() {
     document.getElementById('btn-add-dependency').textContent = t('title.add-dependency');
     document.getElementById('lbl-changelog').textContent = t('component.name.changelog');
     
+    document.getElementById('lbl-environment').textContent = t('dialog.modpublish.publish.environment.title');
+    document.getElementById('env_client_and_server').textContent = t('environment.client_and_server');
+    document.getElementById('env_client_only').textContent = t('environment.client_only');
+    document.getElementById('env_client_only_server_optional').textContent = t('environment.client_only_server_optional');
+    document.getElementById('env_singleplayer_only').textContent = t('environment.singleplayer_only');
+    document.getElementById('env_server_only').textContent = t('environment.server_only');
+    document.getElementById('env_server_only_client_optional').textContent = t('environment.server_only_client_optional');
+    document.getElementById('env_dedicated_server_only').textContent = t('environment.dedicated_server_only');
+    document.getElementById('env_client_or_server').textContent = t('environment.client_or_server');
+    document.getElementById('env_client_or_server_prefers_both').textContent = t('environment.client_or_server_prefers_both');
+    
     const tabEdit = document.getElementById('tab-edit');
     if (tabEdit) tabEdit.textContent = t('tab.edit') || 'Edit';
     const tabPreview = document.getElementById('tab-preview');
@@ -308,6 +319,11 @@ function loadPrefilledData() {
     if (config.changelog) {
         changelogTextarea.value = config.changelog;
     }
+
+    if (config.environment) {
+        const envSelect = document.getElementById('environment');
+        if (envSelect) envSelect.value = config.environment;
+    }
 }
 
 function showNotification(text, type = 'info') {
@@ -375,6 +391,39 @@ function openDependencyModal(index) {
 function setupEventListeners() {
     searchInput.addEventListener('input', filterAndRenderVersions);
     showSnapshotsCheckbox.addEventListener('change', filterAndRenderVersions);
+
+    const updateVisibility = () => {
+        const isModrinth = document.getElementById('target-modrinth').checked;
+        const isCurseForge = document.getElementById('target-curseforge').checked;
+        const isGitHub = document.getElementById('target-github').checked;
+        const isGitLab = document.getElementById('target-gitlab').checked;
+        
+        const onlyModrinth = isModrinth && !isCurseForge && !isGitHub && !isGitLab;
+        
+        const containerSupport = document.getElementById('container-support-target');
+        const containerEnvironment = document.getElementById('container-environment');
+        
+        if (onlyModrinth) {
+            containerSupport.style.display = 'none';
+            document.getElementById('support-client').checked = true;
+            document.getElementById('support-server').checked = true;
+        } else {
+            containerSupport.style.display = 'block';
+        }
+        
+        if (isModrinth) {
+            containerEnvironment.style.display = 'block';
+        } else {
+            containerEnvironment.style.display = 'none';
+        }
+    };
+    
+    document.getElementById('target-modrinth').addEventListener('change', updateVisibility);
+    document.getElementById('target-curseforge').addEventListener('change', updateVisibility);
+    document.getElementById('target-github').addEventListener('change', updateVisibility);
+    document.getElementById('target-gitlab').addEventListener('change', updateVisibility);
+    
+    updateVisibility();
 
     const btnUpdate = document.getElementById('btn-update-versions');
     const btnClear = document.getElementById('btn-clear-version-cache');
@@ -583,6 +632,7 @@ function getFormData() {
         minecraftVersions: window.SELECTED_MC_VERSIONS || [],
         changelog: changelogTextarea.value,
         dependencies: dependencyList,
+        environment: document.getElementById('environment').value,
         targets: targets
     };
 }

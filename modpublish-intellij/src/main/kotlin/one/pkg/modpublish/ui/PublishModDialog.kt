@@ -39,6 +39,7 @@ import one.pkg.modpublish.data.internal.PublishType.Companion.toModTypes
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
+import one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment
 import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.settings.properties.Properties
@@ -99,6 +100,11 @@ class PublishModDialog(
     private lateinit var showSnapshotsCheckBox: JBCheckBox
     private lateinit var changelogField: EditorTextField
     private lateinit var dependencyPanel: DependencyManagerPanel
+    private lateinit var supportLabel: JLabel
+    private lateinit var supportPanel: JPanel
+    private lateinit var envLabel: JLabel
+    private lateinit var envPanel: JPanel
+    private lateinit var modrinthEnvironmentComboBox: ComboBox<one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment>
 
     private var minecraftVersions: List<MinecraftVersion>? = null
     private lateinit var supportedInfo: SupportedInfo
@@ -169,10 +175,28 @@ class PublishModDialog(
         formBuilder.addLabeledComponent(get("component.name.version-name"), versionNameField)
         formBuilder.addLabeledComponent(get("component.name.version-number"), versionNumberField)
 
-        githubCheckBox = JBCheckBox("GitHub")
-        gitlabCheckBox = JBCheckBox("GitLab")
-        modrinthCheckBox = JBCheckBox("Modrinth")
-        curseforgeCheckBox = JBCheckBox("CurseForge")
+        val updateVisibility = {
+            val onlyModrinth = modrinthCheckBox.isSelected && !curseforgeCheckBox.isSelected && !githubCheckBox.isSelected && !gitlabCheckBox.isSelected
+            val hasModrinth = modrinthCheckBox.isSelected
+
+            if (onlyModrinth) {
+                supportLabel.isVisible = false
+                supportPanel.isVisible = false
+                clientCheckBox.isSelected = true
+                serverCheckBox.isSelected = true
+            } else {
+                supportLabel.isVisible = true
+                supportPanel.isVisible = true
+            }
+
+            envLabel.isVisible = hasModrinth
+            envPanel.isVisible = hasModrinth
+        }
+
+        githubCheckBox = JBCheckBox("GitHub").apply { addActionListener { updateVisibility() } }
+        gitlabCheckBox = JBCheckBox("GitLab").apply { addActionListener { updateVisibility() } }
+        modrinthCheckBox = JBCheckBox("Modrinth").apply { addActionListener { updateVisibility() } }
+        curseforgeCheckBox = JBCheckBox("CurseForge").apply { addActionListener { updateVisibility() } }
 
         formBuilder.addLabeledComponent(
             get("component.name.targets"),
@@ -187,13 +211,21 @@ class PublishModDialog(
         clientCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.client"))
         serverCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.server"))
 
-        formBuilder.addLabeledComponent(
-            get("dialog.modpublish.publish.support.title"),
-            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-                add(clientCheckBox)
-                add(serverCheckBox)
-            }
-        )
+        supportLabel = createFieldLabel(get("dialog.modpublish.publish.support.title"))
+        supportPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+            add(clientCheckBox)
+            add(serverCheckBox)
+        }
+        formBuilder.addLabeledComponent(supportLabel, supportPanel)
+
+        envLabel = createFieldLabel(get("dialog.modpublish.publish.environment.title"))
+        modrinthEnvironmentComboBox = ComboBox(ModrinthEnvironment.entries.toTypedArray())
+        envPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+            add(modrinthEnvironmentComboBox)
+        }
+        formBuilder.addLabeledComponent(envLabel, envPanel)
+
+        updateVisibility()
 
         loaderCheckBoxes = PublishType.valuesList.map { launcher ->
             launcher to JBCheckBox(launcher.displayName).apply {
@@ -432,6 +464,13 @@ class PublishModDialog(
             emptyList()
         }
         dependencyPanel.setDependencies(savedDependencies.toMutableList())
+
+        val savedEnv = properties.getValue("modpublish.environment", "")
+        if (savedEnv.isNotEmpty()) {
+            ModrinthEnvironment.entries.find { it.id == savedEnv }?.let {
+                modrinthEnvironmentComboBox.selectedItem = it
+            }
+        }
     }
 
     private fun savePersistedData() {
@@ -440,6 +479,8 @@ class PublishModDialog(
         val dependencies = dependencyPanel.getDependencies()
         val dependenciesJson = dependencies.toJson()
         properties.setValue("modpublish.dependencies", dependenciesJson)
+        val env = modrinthEnvironmentComboBox.selectedItem as? ModrinthEnvironment
+        properties.setValue("modpublish.environment", env?.id ?: "")
     }
 
     private fun doOKActionFirst(): PublishResult? {
@@ -546,6 +587,7 @@ class PublishModDialog(
             selectedMinecraftVersions,
             changelogField.text,
             dependencyPanel.getDependencies(),
+            modrinthEnvironmentComboBox.selectedItem as? one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment,
             files
         )
     }

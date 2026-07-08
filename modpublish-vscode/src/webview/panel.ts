@@ -232,6 +232,7 @@ export class PublishModPanel {
             gitlabRepoAvailable: !!config.get('gitlab.repo'),
             releaseChannel: config.get('common.releaseChannel') || 'release',
             changelog: config.get('common.changelog') || '',
+            environment: config.get('common.environment') || 'client_and_server',
             versionFormat: config.get('common.versionFormat') || '',
             dependencies: config.get('common.dependencies') || []
         };
@@ -287,6 +288,7 @@ export class PublishModPanel {
         const config = this._getConfig();
         await config.update('common.releaseChannel', data.releaseChannel, vscode.ConfigurationTarget.WorkspaceFolder);
         await config.update('common.changelog', data.changelog, vscode.ConfigurationTarget.WorkspaceFolder);
+        await config.update('common.environment', data.environment, vscode.ConfigurationTarget.WorkspaceFolder);
 
         const savedDeps = data.dependencies.map((d: any) => ({
             projectId: d.projectId,
@@ -385,6 +387,7 @@ export class PublishModPanel {
             minecraftVersions: data.minecraftVersions,
             changelog: data.changelog,
             dependencies: data.dependencies,
+            environment: data.environment,
             files: sortedFiles
         };
 

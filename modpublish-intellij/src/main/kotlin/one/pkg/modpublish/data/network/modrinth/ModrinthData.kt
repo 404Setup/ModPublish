@@ -45,6 +45,8 @@ data class ModrinthData(
 
     @SerializedName("game_versions")
     var gameVersions: MutableList<String?>? = null,
+    
+    var environment: String? = null,
 
     /**
      * The release channel for this version

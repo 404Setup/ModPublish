@@ -59,7 +59,7 @@
                     <option value="alpha">Alpha</option>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="container-support-target">
                 <label id="lbl-support-target">Support Target</label>
                 <div class="checkbox-row" style="margin-top: 6px;">
                     <label class="checkbox-container">
@@ -71,6 +71,20 @@
                         <span class="checkbox-label" id="lbl-server">Server</span>
                     </label>
                 </div>
+            </div>
+            <div class="form-group" id="container-environment" style="display: none;">
+                <label for="environment" id="lbl-environment">Environment</label>
+                <select id="environment" class="form-control">
+                    <option value="client_and_server" id="env_client_and_server">Client and Server</option>
+                    <option value="client_only" id="env_client_only">Client Only</option>
+                    <option value="client_only_server_optional" id="env_client_only_server_optional">Client Only, Server Optional</option>
+                    <option value="singleplayer_only" id="env_singleplayer_only">Singleplayer Only</option>
+                    <option value="server_only" id="env_server_only">Server Only</option>
+                    <option value="server_only_client_optional" id="env_server_only_client_optional">Server Only, Client Optional</option>
+                    <option value="dedicated_server_only" id="env_dedicated_server_only">Dedicated Server Only</option>
+                    <option value="client_or_server" id="env_client_or_server">Client or Server</option>
+                    <option value="client_or_server_prefers_both" id="env_client_or_server_prefers_both">Client or Server, Prefers Both</option>
+                </select>
             </div>
         </div>
 

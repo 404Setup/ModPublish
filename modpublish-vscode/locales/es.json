@@ -99,5 +99,15 @@
   "tooltip.modrinth.disable": "El token o modID de Modrinth no está configurado.",
   "tooltip.missing.token": "El token API no está configurado",
   "tooltip.missing.modid": "ModID no está configurado",
-  "tooltip.missing.repo": "El repositorio no está configurado"
+  "tooltip.missing.repo": "El repositorio no está configurado",
+  "dialog.modpublish.publish.environment.title": "Environment:",
+  "environment.client_and_server": "Client and Server",
+  "environment.client_only": "Client Only",
+  "environment.client_only_server_optional": "Client Only, Server Optional",
+  "environment.singleplayer_only": "Singleplayer Only",
+  "environment.server_only": "Server Only",
+  "environment.server_only_client_optional": "Server Only, Client Optional",
+  "environment.dedicated_server_only": "Dedicated Server Only",
+  "environment.client_or_server": "Client or Server",
+  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both"
 }

@@ -152,6 +152,12 @@
           "description": "Saved changelog.",
           "scope": "resource"
         },
+        "modpublish.common.environment": {
+          "type": "string",
+          "default": "client_and_server",
+          "description": "Saved environment selection.",
+          "scope": "resource"
+        },
         "modpublish.common.dependencies": {
           "type": "array",
           "default": [],

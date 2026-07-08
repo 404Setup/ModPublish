@@ -47,6 +47,7 @@ export interface PublishData {
     minecraftVersions: string[];
     changelog: string;
     dependencies: DependencyInfo[];
+    environment?: string;
     files: string[];
 }
 

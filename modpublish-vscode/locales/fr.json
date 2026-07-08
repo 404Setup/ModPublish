@@ -99,5 +99,15 @@
   "tooltip.modrinth.disable": "Le jeton ou l'identifiant du module Modrinth n'est pas configuré.",
   "tooltip.missing.token": "Le jeton API n'est pas configuré",
   "tooltip.missing.modid": "ModID n'est pas configuré",
-  "tooltip.missing.repo": "Le dépôt n'est pas configuré"
+  "tooltip.missing.repo": "Le dépôt n'est pas configuré",
+  "dialog.modpublish.publish.environment.title": "Environment:",
+  "environment.client_and_server": "Client and Server",
+  "environment.client_only": "Client Only",
+  "environment.client_only_server_optional": "Client Only, Server Optional",
+  "environment.singleplayer_only": "Singleplayer Only",
+  "environment.server_only": "Server Only",
+  "environment.server_only_client_optional": "Server Only, Client Optional",
+  "environment.dedicated_server_only": "Dedicated Server Only",
+  "environment.client_or_server": "Client or Server",
+  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both"
 }

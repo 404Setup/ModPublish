@@ -99,5 +99,15 @@
   "tooltip.modrinth.disable": "Modrinth 토큰 또는 modID가 구성되지 않았습니다.",
   "tooltip.missing.token": "API 토큰이 구성되지 않았습니다",
   "tooltip.missing.modid": "ModID가 구성되지 않았습니다",
-  "tooltip.missing.repo": "저장소가 구성되지 않았습니다"
+  "tooltip.missing.repo": "저장소가 구성되지 않았습니다",
+  "dialog.modpublish.publish.environment.title": "Environment:",
+  "environment.client_and_server": "Client and Server",
+  "environment.client_only": "Client Only",
+  "environment.client_only_server_optional": "Client Only, Server Optional",
+  "environment.singleplayer_only": "Singleplayer Only",
+  "environment.server_only": "Server Only",
+  "environment.server_only_client_optional": "Server Only, Client Optional",
+  "environment.dedicated_server_only": "Dedicated Server Only",
+  "environment.client_or_server": "Client or Server",
+  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both"
 }

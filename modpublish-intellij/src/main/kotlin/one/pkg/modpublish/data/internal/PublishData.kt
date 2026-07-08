@@ -19,6 +19,7 @@ package one.pkg.modpublish.data.internal
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.MinecraftVersion
 import one.pkg.modpublish.data.local.SupportedInfo
+import one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment
 import java.io.File
 
 data class PublishData(
@@ -26,7 +27,7 @@ data class PublishData(
     val releaseChannel: ReleaseChannel, val loaders: List<PublishType>,
     val supportedInfo: SupportedInfo, val minecraftVersions: List<MinecraftVersion>,
     val changelog: String, val dependencies: List<DependencyInfo>,
-    val files: Array<File>
+    val environment: ModrinthEnvironment?, val files: Array<File>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -43,6 +44,7 @@ data class PublishData(
         if (minecraftVersions != other.minecraftVersions) return false
         if (changelog != other.changelog) return false
         if (dependencies != other.dependencies) return false
+        if (environment != other.environment) return false
         if (!files.contentEquals(other.files)) return false
 
         return true
@@ -58,6 +60,7 @@ data class PublishData(
         result = 31 * result + minecraftVersions.hashCode()
         result = 31 * result + changelog.hashCode()
         result = 31 * result + dependencies.hashCode()
+        result = 31 * result + (environment?.hashCode() ?: 0)
         result = 31 * result + files.contentHashCode()
         return result
     }

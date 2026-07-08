@@ -54,7 +54,8 @@ export class ModrinthAPI extends API {
                 loaders: data.loaders.map(l => l.toLowerCase()),
                 featured: true,
                 project_id: projectId,
-                file_parts: data.files.map(f => path.basename(f))
+                file_parts: data.files.map(f => path.basename(f)),
+                environment: data.environment
             };
 
             form.append('data', JSON.stringify(modrinthData));

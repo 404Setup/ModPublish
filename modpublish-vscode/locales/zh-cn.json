@@ -99,5 +99,15 @@
   "tooltip.modrinth.disable": "Modrinth API密钥或者modID未配置。",
   "tooltip.missing.token": "未设置API密钥",
   "tooltip.missing.modid": "未设置ModID",
-  "tooltip.missing.repo": "未设置仓库"
+  "tooltip.missing.repo": "未设置仓库",
+  "dialog.modpublish.publish.environment.title": "环境:",
+  "environment.client_and_server": "客户端和服务端均需要安装",
+  "environment.client_only": "仅客户端",
+  "environment.client_only_server_optional": "客户端可用，服务端可选",
+  "environment.singleplayer_only": "限单人游戏",
+  "environment.server_only": "仅限服务端",
+  "environment.server_only_client_optional": "服务端可用，客户端可选",
+  "environment.dedicated_server_only": "仅限专用服务器",
+  "environment.client_or_server": "客户端或服务端均可",
+  "environment.client_or_server_prefers_both": "两者皆可，推荐两侧均安装"
 }

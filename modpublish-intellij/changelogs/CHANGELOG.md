@@ -1,3 +1,16 @@
+## v1.12.0
+
+### Fix
+- Compatible with Modrinth's new Environment changes
+
+### Refactor
+- Removed okhttp, fully switched to ktor
+- When publishing from CurseForge, Markdown input will be automatically translated to HTML (testing)
+
+### Performance
+- Optimize regex compilation in ModVersion.kt
+- Optimize collection filtering in DependencyManagerPanel
+
 ## v1.11.3
 
 ### Refactor

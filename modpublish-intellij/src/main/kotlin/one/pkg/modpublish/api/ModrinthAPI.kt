@@ -76,6 +76,7 @@ class ModrinthAPI : API() {
             data.files.forEach { this.filePart(it) }
             data.loaders.forEach { this.loader(it) }
             data.minecraftVersions.forEach { this.gameVersion(it) }
+            this.environment = data.environment?.id
             data.dependencies.forEach { d ->
                 val info = d.modrinthModInfo
                 if (!info?.modid.isNullOrBlank() && !info.slug.isNullOrBlank()) {

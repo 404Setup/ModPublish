@@ -99,5 +99,15 @@
   "tooltip.modrinth.disable": "Токен Modrinth или modID не настроен.",
   "tooltip.missing.token": "Токен API не настроен",
   "tooltip.missing.modid": "ModID не настроен",
-  "tooltip.missing.repo": "Репозиторий не настроен"
+  "tooltip.missing.repo": "Репозиторий не настроен",
+  "dialog.modpublish.publish.environment.title": "Environment:",
+  "environment.client_and_server": "Client and Server",
+  "environment.client_only": "Client Only",
+  "environment.client_only_server_optional": "Client Only, Server Optional",
+  "environment.singleplayer_only": "Singleplayer Only",
+  "environment.server_only": "Server Only",
+  "environment.server_only_client_optional": "Server Only, Client Optional",
+  "environment.dedicated_server_only": "Dedicated Server Only",
+  "environment.client_or_server": "Client or Server",
+  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both"
 }
