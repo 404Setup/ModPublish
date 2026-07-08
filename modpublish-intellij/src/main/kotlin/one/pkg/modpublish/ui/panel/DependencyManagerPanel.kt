@@ -19,10 +19,11 @@ package one.pkg.modpublish.ui.panel
 import com.intellij.ui.components.JBLabel
 import com.intellij.ide.BrowserUtil
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.ui.AddDependencyDialog
 import one.pkg.modpublish.ui.PublishModDialog
-import one.pkg.modpublish.util.resources.Lang
 import one.pkg.modpublish.util.resources.Lang.translate
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -56,7 +57,11 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
         }
 
-        val scrollPane = JBScrollPane(dependencyListPanel).apply {
+        val wrapperPanel = JPanel(BorderLayout()).apply {
+            add(dependencyListPanel, BorderLayout.NORTH)
+        }
+
+        val scrollPane = JBScrollPane(wrapperPanel).apply {
             preferredSize = Dimension(600, 150)
             setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED)
             setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
@@ -123,37 +128,76 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
 
     private fun createDependencyPanel(dependency: DependencyInfo): JPanel {
         return JPanel(BorderLayout()).apply {
-            setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10))
-
-            val displayText = String.format(
-                "%s (%s) - %s",
-                if (!dependency.customTitle.isNullOrBlank()) dependency.customTitle else "Unknown Dependency",
-                dependency.projectId,
-                dependency.type.translationKey.translate()
+            border = BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, JBUI.CurrentTheme.CustomFrameDecorations.separatorForeground()),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)
             )
 
-            add(JBLabel(displayText), BorderLayout.CENTER)
+            val infoPanel = JPanel(java.awt.GridLayout(2, 1)).apply {
+                isOpaque = false
 
-            val actionPanel = JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
-                add(JButton("button.open".translate()).apply {
-                    addActionListener {
-                        dependency.modrinthModInfo?.slug?.let { BrowserUtil.browse("https://modrinth.com/mod/$it") }
-                        dependency.curseforgeModInfo?.slug?.let { BrowserUtil.browse("https://www.curseforge.com/minecraft/mc-mods/$it") }
+                var displayName = if (!dependency.customTitle.isNullOrBlank()) dependency.customTitle!! else dependency.projectId ?: "Unknown"
+                val mTitle = dependency.modrinthModInfo?.name
+                val cTitle = dependency.curseforgeModInfo?.name
+                if (mTitle != null || cTitle != null) {
+                    var resolvedName = if (mTitle != null && cTitle != null && mTitle != cTitle) "$mTitle / $cTitle" else (mTitle ?: cTitle!!)
+                    if (!dependency.customTitle.isNullOrBlank()) {
+                        resolvedName = "${dependency.customTitle} ($resolvedName)"
                     }
+                    displayName = resolvedName
+                }
+
+                add(JBLabel(displayName).apply {
+                    font = font.deriveFont(Font.BOLD)
                 })
-                add(JButton("button.edit".translate()).apply {
-                    addActionListener {
-                        onEditDependency(dependency)
-                    }
-                })
-                add(JButton("button.delete".translate()).apply {
-                    addActionListener {
-                        removeDependency(dependency)
-                    }
+
+                val platformIds = mutableListOf<String>()
+                dependency.modrinthModInfo?.modid?.let { platformIds.add("Modrinth: $it") }
+                dependency.curseforgeModInfo?.modid?.let { platformIds.add("CurseForge: $it") }
+                if (platformIds.isEmpty()) platformIds.add("Raw ID: ${dependency.projectId}")
+
+                add(JBLabel(platformIds.joinToString(" | ")).apply {
+                    font = JBUI.Fonts.smallFont()
+                    foreground = UIUtil.getContextHelpForeground()
                 })
             }
 
-            add(actionPanel, BorderLayout.EAST)
+            add(infoPanel, BorderLayout.CENTER)
+
+            val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT, 15, 0)).apply {
+                isOpaque = false
+
+                val typeLabel = JBLabel(dependency.type.translationKey.translate()).apply {
+                    font = JBUI.Fonts.smallFont()
+                    foreground = JBUI.CurrentTheme.Label.disabledForeground()
+                }
+                add(typeLabel)
+
+                val actionPanel = JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
+                    isOpaque = false
+                    if (dependency.modrinthModInfo?.slug != null || dependency.curseforgeModInfo?.slug != null) {
+                        add(JButton("button.open".translate()).apply {
+                            addActionListener {
+                                dependency.modrinthModInfo?.slug?.let { BrowserUtil.browse("https://modrinth.com/mod/$it") }
+                                dependency.curseforgeModInfo?.slug?.let { BrowserUtil.browse("https://www.curseforge.com/minecraft/mc-mods/$it") }
+                            }
+                        })
+                    }
+                    add(JButton("button.edit".translate()).apply {
+                        addActionListener {
+                            onEditDependency(dependency)
+                        }
+                    })
+                    add(JButton("button.delete".translate()).apply {
+                        addActionListener {
+                            removeDependency(dependency)
+                        }
+                    })
+                }
+                add(actionPanel)
+            }
+
+            add(rightPanel, BorderLayout.EAST)
         }
     }
 

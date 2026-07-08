@@ -6,6 +6,7 @@
 ### Refactor
 - Removed okhttp, fully switched to ktor
 - When publishing from CurseForge, Markdown input will be automatically translated to HTML (testing)
+- The appearance of the dependency manager has been redesigned
 
 ### Performance
 - Optimize regex compilation in ModVersion.kt
