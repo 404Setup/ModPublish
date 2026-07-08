@@ -49,7 +49,6 @@ import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.ui.panel.DependencyManagerPanel
 import one.pkg.modpublish.ui.renderer.CheckBoxListCellRenderer
 import one.pkg.modpublish.ui.renderer.JarFilesRenderer
-import one.pkg.modpublish.ui.renderer.LFRenderer
 import one.pkg.modpublish.util.io.Async
 import one.pkg.modpublish.util.io.Async.async
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
@@ -104,7 +103,7 @@ class PublishModDialog(
     private lateinit var supportPanel: JPanel
     private lateinit var envLabel: JLabel
     private lateinit var envPanel: JPanel
-    private lateinit var modrinthEnvironmentComboBox: ComboBox<one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment>
+    private lateinit var modrinthEnvironmentComboBox: ComboBox<ModrinthEnvironment>
 
     private var minecraftVersions: List<MinecraftVersion>? = null
     private lateinit var supportedInfo: SupportedInfo
@@ -176,7 +175,8 @@ class PublishModDialog(
         formBuilder.addLabeledComponent(get("component.name.version-number"), versionNumberField)
 
         val updateVisibility = {
-            val onlyModrinth = modrinthCheckBox.isSelected && !curseforgeCheckBox.isSelected && !githubCheckBox.isSelected && !gitlabCheckBox.isSelected
+            val onlyModrinth =
+                modrinthCheckBox.isSelected && !curseforgeCheckBox.isSelected && !githubCheckBox.isSelected && !gitlabCheckBox.isSelected
             val hasModrinth = modrinthCheckBox.isSelected
 
             if (onlyModrinth) {
@@ -331,7 +331,7 @@ class PublishModDialog(
                 minimumSize = Dimension(500, 100)
                 setOneLineMode(false)
 
-                addDocumentListener(LFRenderer())
+                //addDocumentListener(LFRenderer())
             }.also { changelogField = it }
         })
 
@@ -587,7 +587,7 @@ class PublishModDialog(
             selectedMinecraftVersions,
             changelogField.text,
             dependencyPanel.getDependencies(),
-            modrinthEnvironmentComboBox.selectedItem as? one.pkg.modpublish.data.network.modrinth.ModrinthEnvironment,
+            modrinthEnvironmentComboBox.selectedItem as? ModrinthEnvironment,
             files
         )
     }
