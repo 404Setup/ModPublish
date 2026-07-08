@@ -7,5 +7,9 @@
   "dependency.embedded": "嵌入",
   "dependency.required": "必選",
   "dependency.optional": "可選",
-  "dependency.incompatible": "不兼容"
+  "dependency.incompatible": "不兼容",
+  "environment.category.client_and_server": "用戶端和伺服器",
+  "environment.category.client_side_only": "僅用戶端",
+  "environment.category.singleplayer_only": "僅單機",
+  "environment.category.server_side_only": "僅伺服器"
 }

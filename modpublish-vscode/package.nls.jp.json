@@ -17,5 +17,9 @@
   "environment.server_only_client_optional": "サーバーのみ、クライアントは任意",
   "environment.dedicated_server_only": "専用サーバーのみ",
   "environment.client_or_server": "クライアントまたはサーバー",
-  "environment.client_or_server_prefers_both": "クライアントまたはサーバー、両方を推奨"
+  "environment.client_or_server_prefers_both": "クライアントまたはサーバー、両方を推奨",
+  "environment.category.client_and_server": "クライアントとサーバー",
+  "environment.category.client_side_only": "クライアントのみ",
+  "environment.category.singleplayer_only": "シングルプレイのみ",
+  "environment.category.server_side_only": "サーバーのみ"
 }

@@ -17,5 +17,9 @@
   "environment.server_only_client_optional": "Nur Server, Client Optional",
   "environment.dedicated_server_only": "Nur Dedizierter Server",
   "environment.client_or_server": "Client oder Server",
-  "environment.client_or_server_prefers_both": "Client oder Server, Beides Bevorzugt"
+  "environment.client_or_server_prefers_both": "Client oder Server, Beides Bevorzugt",
+  "environment.category.client_and_server": "Client und Server",
+  "environment.category.client_side_only": "Nur Client",
+  "environment.category.singleplayer_only": "Nur Einzelspieler",
+  "environment.category.server_side_only": "Nur Server"
 }

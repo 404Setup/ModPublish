@@ -17,5 +17,9 @@
   "environment.server_only_client_optional": "서버 전용, 클라이언트는 선택",
   "environment.dedicated_server_only": "전용 서버만",
   "environment.client_or_server": "클라이언트 또는 서버",
-  "environment.client_or_server_prefers_both": "클라이언트 또는 서버, 양쪽 모두 권장"
+  "environment.client_or_server_prefers_both": "클라이언트 또는 서버, 양쪽 모두 권장",
+  "environment.category.client_and_server": "클라이언트 및 서버",
+  "environment.category.client_side_only": "클라이언트 전용",
+  "environment.category.singleplayer_only": "싱글 플레이어 전용",
+  "environment.category.server_side_only": "서버 전용"
 }

@@ -17,5 +17,9 @@
   "environment.server_only_client_optional": "Solo Servidor, Cliente Opcional",
   "environment.dedicated_server_only": "Solo Servidor Dedicado",
   "environment.client_or_server": "Cliente o Servidor",
-  "environment.client_or_server_prefers_both": "Cliente o Servidor, Prefiere Ambos"
+  "environment.client_or_server_prefers_both": "Cliente o Servidor, Prefiere Ambos",
+  "environment.category.client_and_server": "Cliente y servidor",
+  "environment.category.client_side_only": "Solo cliente",
+  "environment.category.singleplayer_only": "Solo un jugador",
+  "environment.category.server_side_only": "Solo servidor"
 }

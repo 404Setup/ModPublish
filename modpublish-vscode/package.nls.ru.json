@@ -17,5 +17,9 @@
   "environment.server_only_client_optional": "Только Сервер, Клиент Опционально",
   "environment.dedicated_server_only": "Только Выделенный Сервер",
   "environment.client_or_server": "Клиент или Сервер",
-  "environment.client_or_server_prefers_both": "Клиент или Сервер, Предпочтительно Оба"
+  "environment.client_or_server_prefers_both": "Клиент или Сервер, Предпочтительно Оба",
+  "environment.category.client_and_server": "Клиент и сервер",
+  "environment.category.client_side_only": "Только клиент",
+  "environment.category.singleplayer_only": "Только одиночная игра",
+  "environment.category.server_side_only": "Только сервер"
 }

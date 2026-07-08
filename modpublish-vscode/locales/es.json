@@ -116,5 +116,9 @@
   "dependency.embedded": "Incorporado",
   "dependency.required": "Obligatorio",
   "dependency.optional": "Opcional",
-  "dependency.incompatible": "Incompatible"
+  "dependency.incompatible": "Incompatible",
+  "environment.category.client_and_server": "Cliente y servidor",
+  "environment.category.client_side_only": "Solo cliente",
+  "environment.category.singleplayer_only": "Solo un jugador",
+  "environment.category.server_side_only": "Solo servidor"
 }

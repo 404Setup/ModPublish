@@ -116,5 +116,9 @@
   "dependency.embedded": "Встроенный",
   "dependency.required": "Обязательный",
   "dependency.optional": "Необязательный",
-  "dependency.incompatible": "Несовместимый"
+  "dependency.incompatible": "Несовместимый",
+  "environment.category.client_and_server": "Клиент и сервер",
+  "environment.category.client_side_only": "Только клиент",
+  "environment.category.singleplayer_only": "Только одиночная игра",
+  "environment.category.server_side_only": "Только сервер"
 }

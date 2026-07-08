@@ -95,15 +95,15 @@ function localizeUI() {
     document.getElementById('lbl-changelog').textContent = t('component.name.changelog');
     
     document.getElementById('lbl-environment').textContent = t('dialog.modpublish.publish.environment.title');
-    document.getElementById('env_client_and_server').textContent = t('environment.client_and_server');
-    document.getElementById('env_client_only').textContent = t('environment.client_only');
-    document.getElementById('env_client_only_server_optional').textContent = t('environment.client_only_server_optional');
-    document.getElementById('env_singleplayer_only').textContent = t('environment.singleplayer_only');
-    document.getElementById('env_server_only').textContent = t('environment.server_only');
-    document.getElementById('env_server_only_client_optional').textContent = t('environment.server_only_client_optional');
-    document.getElementById('env_dedicated_server_only').textContent = t('environment.dedicated_server_only');
-    document.getElementById('env_client_or_server').textContent = t('environment.client_or_server');
-    document.getElementById('env_client_or_server_prefers_both').textContent = t('environment.client_or_server_prefers_both');
+    document.getElementById('env_client_only').textContent = `[${t('environment.category.client_side_only')}] ${t('environment.client_only')}`;
+    document.getElementById('env_client_and_server').textContent = `[${t('environment.category.client_and_server')}] ${t('environment.client_and_server')}`;
+    document.getElementById('env_server_only_client_optional').textContent = `[${t('environment.category.client_and_server')}] ${t('environment.server_only_client_optional')}`;
+    document.getElementById('env_client_only_server_optional').textContent = `[${t('environment.category.client_and_server')}] ${t('environment.client_only_server_optional')}`;
+    document.getElementById('env_client_or_server').textContent = `[${t('environment.category.client_and_server')}] ${t('environment.client_or_server')}`;
+    document.getElementById('env_client_or_server_prefers_both').textContent = `[${t('environment.category.client_and_server')}] ${t('environment.client_or_server_prefers_both')}`;
+    document.getElementById('env_server_only').textContent = `[${t('environment.category.server_side_only')}] ${t('environment.server_only')}`;
+    document.getElementById('env_dedicated_server_only').textContent = `[${t('environment.category.server_side_only')}] ${t('environment.dedicated_server_only')}`;
+    document.getElementById('env_singleplayer_only').textContent = `[${t('environment.category.singleplayer_only')}] ${t('environment.singleplayer_only')}`;
 
     document.getElementById('rc_release').textContent = t('release_channel.release');
     document.getElementById('rc_beta').textContent = t('release_channel.beta');
