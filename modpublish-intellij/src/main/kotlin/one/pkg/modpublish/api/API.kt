@@ -24,6 +24,7 @@ import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
 import one.pkg.modpublish.data.result.PublishResult
 import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.util.*
 
 abstract class API {
@@ -42,7 +43,7 @@ abstract class API {
 
     internal suspend fun HttpResponse.statusString(): String? {
         return when (status.value) {
-            403, 404, 500 -> Lang.get("api.common.err.${status.value}")
+            403, 404, 500 -> "api.common.err.${status.value}".translate()
             302 -> "Duplicate resource"
             400, 401, 422 -> try {
                 bodyAsText()
@@ -58,7 +59,7 @@ abstract class API {
     private fun HttpResponse.validateContentType(): String? {
         val type = contentTypeOpt()
         return if (type.isEmpty || !type.get().contains("application/json")) {
-            Lang.get("api.common.err.format", type.orElse("Unknown"))
+            "api.common.err.format".translate(type.orElse("Unknown"))
         } else {
             null
         }

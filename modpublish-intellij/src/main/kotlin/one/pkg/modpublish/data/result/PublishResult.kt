@@ -18,6 +18,7 @@ package one.pkg.modpublish.data.result
 
 import one.pkg.modpublish.api.API
 import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import org.jetbrains.annotations.PropertyKey
 
 data class PublishResult(val result: String?, val id: String) : Result {
@@ -31,11 +32,11 @@ data class PublishResult(val result: String?, val id: String) : Result {
         val EMPTY: PublishResult = PublishResult("", "")
 
         fun of(@PropertyKey(resourceBundle = Lang.FILE) result: String): PublishResult {
-            return PublishResult(Lang.get(result), "")
+            return PublishResult(result.translate(), "")
         }
 
         fun of(@PropertyKey(resourceBundle = Lang.FILE) result: String, vararg params: Any): PublishResult {
-            return PublishResult(Lang.get(result, *params), "")
+            return PublishResult(result.translate(*params), "")
         }
 
         fun create(result: String?): PublishResult {

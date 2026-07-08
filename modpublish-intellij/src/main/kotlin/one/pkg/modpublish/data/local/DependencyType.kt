@@ -16,16 +16,18 @@
  */
 package one.pkg.modpublish.data.local
 
-enum class DependencyType(val displayName: String, val curseForgeName: String) {
-    EMBEDDED("Embedded", "embeddedLibrary"),
-    REQUIRED("Required", "requiredDependency"),
-    OPTIONAL("Optional", "optionalDependency"),
-    INCOMPATIBLE("Incompatible", "incompatible");
+import one.pkg.modpublish.util.resources.Lang.translate
+
+enum class DependencyType(val translationKey: String, val curseForgeName: String) {
+    EMBEDDED("dependency.embedded", "embeddedLibrary"),
+    REQUIRED("dependency.required", "requiredDependency"),
+    OPTIONAL("dependency.optional", "optionalDependency"),
+    INCOMPATIBLE("dependency.incompatible", "incompatible");
 
     val modrinthName: String
-        get() = displayName.lowercase()
+        get() = name.lowercase()
 
     override fun toString(): String {
-        return displayName
+        return translationKey.translate()
     }
 }

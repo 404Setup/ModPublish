@@ -23,23 +23,25 @@ import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.ui.AddDependencyDialog
 import one.pkg.modpublish.ui.PublishModDialog
 import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
+import java.util.IdentityHashMap
 import javax.swing.*
 
 class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPanel(BorderLayout()) {
     private val dependencies: MutableList<DependencyInfo> = ArrayList()
-    private val dependencyPanels = java.util.IdentityHashMap<DependencyInfo, JPanel>()
+    private val dependencyPanels = IdentityHashMap<DependencyInfo, JPanel>()
     private val dependencyListPanel: JPanel
 
     init {
-        val titleLabel = JBLabel(Lang.get("component.name.depend-manager")).apply {
+        val titleLabel = JBLabel("component.name.depend-manager".translate()).apply {
             font = font.deriveFont(Font.BOLD, 14f)
         }
 
-        val addButton = JButton(Lang.get("title.add-dependency")).apply {
+        val addButton = JButton("title.add-dependency".translate()).apply {
             addActionListener {
                 onAddDependency()
             }
@@ -127,24 +129,24 @@ class DependencyManagerPanel(private val parentDialog: PublishModDialog) : JPane
                 "%s (%s) - %s",
                 if (!dependency.customTitle.isNullOrBlank()) dependency.customTitle else "Unknown Dependency",
                 dependency.projectId,
-                dependency.type.displayName
+                dependency.type.translationKey.translate()
             )
 
             add(JBLabel(displayText), BorderLayout.CENTER)
 
             val actionPanel = JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
-                add(JButton(Lang.get("button.open")).apply {
+                add(JButton("button.open".translate()).apply {
                     addActionListener {
                         dependency.modrinthModInfo?.slug?.let { BrowserUtil.browse("https://modrinth.com/mod/$it") }
                         dependency.curseforgeModInfo?.slug?.let { BrowserUtil.browse("https://www.curseforge.com/minecraft/mc-mods/$it") }
                     }
                 })
-                add(JButton(Lang.get("button.edit")).apply {
+                add(JButton("button.edit".translate()).apply {
                     addActionListener {
                         onEditDependency(dependency)
                     }
                 })
-                add(JButton(Lang.get("button.delete")).apply {
+                add(JButton("button.delete".translate()).apply {
                     addActionListener {
                         removeDependency(dependency)
                     }

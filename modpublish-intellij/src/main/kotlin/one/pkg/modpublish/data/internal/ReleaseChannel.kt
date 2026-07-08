@@ -16,6 +16,14 @@
  */
 package one.pkg.modpublish.data.internal
 
-enum class ReleaseChannel(val type: String) {
-    Release("release"), Beta("beta"), Alpha("alpha");
+import one.pkg.modpublish.util.resources.Lang
+
+enum class ReleaseChannel(val type: String, val translationKey: String) {
+    Release("release", "release_channel.release"), 
+    Beta("beta", "release_channel.beta"), 
+    Alpha("alpha", "release_channel.alpha");
+
+    override fun toString(): String {
+        return Lang.get(translationKey)
+    }
 }

@@ -27,6 +27,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import org.jetbrains.annotations.PropertyKey
 import java.awt.BorderLayout
 import java.awt.Color
@@ -130,15 +131,15 @@ abstract class BaseDialogWrapper(
     }
 
     override fun setTitle(@PropertyKey(resourceBundle = Lang.FILE) key: String) =
-        super.setTitle(get(key))
+        super.setTitle(key.translate())
 
     fun setTitle(@PropertyKey(resourceBundle = Lang.FILE) key: String, vararg params: Any) =
-        super.setTitle(get(key, *params))
+        super.setTitle(key.translate(*params))
 
-    fun getJBLabel(@PropertyKey(resourceBundle = Lang.FILE) key: String) = JBLabel(get(key))
+    fun getJBLabel(@PropertyKey(resourceBundle = Lang.FILE) key: String) = JBLabel(key.translate())
 
     fun getJBCheckBox(@PropertyKey(resourceBundle = Lang.FILE) key: String) =
-        getJBCheckBoxRaw(get(key))
+        getJBCheckBoxRaw(key.translate())
 
     fun getJBCheckBoxRaw(key: String) = getJBCheckBox().apply { text = key }
 
@@ -155,16 +156,16 @@ abstract class BaseDialogWrapper(
     fun setButtonLoading(button: JButton) = button.setIcon(Icons.Animated.Dashes)
 
     fun showMessageDialog(message: String, title: String, messageType: Int) =
-        showMessageDialogRaw(get(message), get(title), messageType)
+        showMessageDialogRaw(message.translate(), title.translate(), messageType)
 
     fun showMessageDialog(message: String, title: String, messageType: Int, icon: Icon) =
-        showMessageDialogRaw(get(message), get(title), messageType, icon)
+        showMessageDialogRaw(message.translate(), title.translate(), messageType, icon)
 
     fun showSuccessDialog(message: String, title: String) =
-        showSuccessDialogRaw(get(message), get(title))
+        showSuccessDialogRaw(message.translate(), title.translate())
 
     fun showFailedDialog(message: String, title: String) =
-        showFailedDialogRaw(get(message), get(title))
+        showFailedDialogRaw(message.translate(), title.translate())
 
     fun showMessageDialogRaw(message: String, title: String, messageType: Int, icon: Icon? = null) {
         JOptionPane.showMessageDialog(contentPanel, message, title, messageType, icon)
@@ -175,9 +176,6 @@ abstract class BaseDialogWrapper(
 
     fun showFailedDialogRaw(message: String, title: String) =
         showMessageDialogRaw(message, title, JOptionPane.ERROR_MESSAGE, Icons.Static.Failed)
-
-    fun get(@PropertyKey(resourceBundle = Lang.FILE) key: String): String = Lang.get(key)
-    fun get(@PropertyKey(resourceBundle = Lang.FILE) key: String, vararg params: Any): String = Lang.get(key, *params)
 
     protected fun FormBuilder.addPlatformSection(platformName: String, icon: Icon? = null, vararg fields: FieldConfig) {
         addComponent(createSectionLabel(platformName, icon))

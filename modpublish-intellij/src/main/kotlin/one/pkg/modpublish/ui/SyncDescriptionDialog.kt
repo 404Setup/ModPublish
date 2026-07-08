@@ -27,6 +27,7 @@ import one.pkg.modpublish.data.internal.PublishTarget
 import one.pkg.modpublish.settings.properties.PID
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
 import one.pkg.modpublish.util.io.FileAPI.toFile
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.awt.Component
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -84,7 +85,7 @@ class SyncDescriptionDialog(
         if (selectedType == PublishTarget.Empty) {
             showFailedDialogRaw(
                 selectedType.api.id,
-                get("title.failed")
+                "title.failed".translate()
             )
             return
         }
@@ -95,7 +96,7 @@ class SyncDescriptionDialog(
         if (result.isFailure) {
             showFailedDialogRaw(
                 result.result!!,
-                get("title.failed")
+                "title.failed".translate()
             )
         } else {
             showSuccessDialog("message.success", "title.success")

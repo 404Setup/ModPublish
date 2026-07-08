@@ -25,7 +25,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.isFile
 import one.pkg.modpublish.ui.SyncDescriptionDialog
 import one.pkg.modpublish.ui.icon.Icons
-import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import javax.swing.JOptionPane
 
 class SyncDescriptionAction : AnAction() {
@@ -36,7 +36,7 @@ class SyncDescriptionAction : AnAction() {
         } else {
             JOptionPane.showMessageDialog(
                 null,
-                Lang.get("message.invalid-file"), Lang.get("title.failed"), JOptionPane.WARNING_MESSAGE,
+                "message.invalid-file".translate(), "title.failed".translate(), JOptionPane.WARNING_MESSAGE,
                 Icons.Static.Warning
             )
         }

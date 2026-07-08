@@ -28,6 +28,7 @@ import one.pkg.modpublish.data.local.DependencyInfo
 import one.pkg.modpublish.data.local.DependencyType
 import one.pkg.modpublish.settings.properties.Properties.getProperties
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.JComponent
@@ -69,7 +70,7 @@ class AddDependencyDialog(
             modrinthIdField = JBTextField(30).apply {
                 if (modrinthTokenFailed) {
                     isEnabled = false
-                    toolTipText = get("tooltip.modrinth.disable")
+                    toolTipText = "tooltip.modrinth.disable".translate()
                 }
             }.also { panel.add(it, gbc) }
             row++
@@ -83,7 +84,7 @@ class AddDependencyDialog(
             curseforgeIdField = JBTextField(30).apply {
                 if (curseforgeStudioTokenFailed) {
                     isEnabled = false
-                    toolTipText = get("failed.11")
+                    toolTipText = "failed.11".translate()
                 }
             }.also { panel.add(it, gbc) }
             row++
@@ -147,11 +148,11 @@ class AddDependencyDialog(
 
         validateDependency(resultDependency).apply {
             modrinth?.failed?.let {
-                showFailedDialogRaw(it, get("title.failed"))
+                showFailedDialogRaw(it, "title.failed".translate())
                 return
             }
             curseForge?.failed?.let {
-                showFailedDialogRaw(it, get("title.failed"))
+                showFailedDialogRaw(it, "title.failed".translate())
                 return
             }
 
@@ -179,7 +180,7 @@ class AddDependencyDialog(
 
             val curseforgeInfo = if (selector.curseForge && parts[1].isNotBlank()) {
                 if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
-                    return@runBlocking ModInfos(null, ModInfo.of(get("failed.11")))
+                    return@runBlocking ModInfos(null, ModInfo.of("failed.11".translate()))
                 }
                 PublishTarget.CurseForge.api.getModInfo(parts[1], requireNotNull(project)).also {
                     if (it.failed != null) return@runBlocking ModInfos(null, it)
@@ -195,7 +196,7 @@ class AddDependencyDialog(
 
             val curseforgeInfo = if (selector.curseForge) {
                 if (getProperties(requireNotNull(project)).curseforge.studioToken.failed) {
-                    return@runBlocking ModInfos(null, ModInfo.of(get("failed.11")))
+                    return@runBlocking ModInfos(null, ModInfo.of("failed.11".translate()))
                 }
                 PublishTarget.CurseForge.api.getModInfo(projectId, requireNotNull(project)).also {
                     if (it.failed != null) return@runBlocking ModInfos(null, it)

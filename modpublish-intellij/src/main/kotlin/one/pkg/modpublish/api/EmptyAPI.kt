@@ -21,10 +21,10 @@ import com.intellij.openapi.project.Project
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
 import one.pkg.modpublish.data.result.PublishResult
-import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 
 class EmptyAPI : API() {
-    override val id: String = Lang.get("failed.10")
+    override val id: String = "failed.10".translate()
 
     override fun createJsonBody(data: PublishData, project: Project): String = "{}"
 

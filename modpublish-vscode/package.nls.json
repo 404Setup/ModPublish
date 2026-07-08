@@ -1,4 +1,11 @@
 {
   "modpublish.publish.title": "Publish Mod...",
-  "modpublish.setToken.title": "ModPublish: Set Platform API Token..."
+  "modpublish.setToken.title": "ModPublish: Set Platform API Token...",
+  "release_channel.release": "Release",
+  "release_channel.beta": "Beta",
+  "release_channel.alpha": "Alpha",
+  "dependency.embedded": "Embedded",
+  "dependency.required": "Required",
+  "dependency.optional": "Optional",
+  "dependency.incompatible": "Incompatible"
 }

@@ -27,4 +27,8 @@ object Lang : DynamicBundle(FILE) {
 
     fun get(@PropertyKey(resourceBundle = FILE) key: String, vararg params: Any): String =
         getMessage(key, *params)
+
+    fun String.translate(): String = getMessage(this)
+
+    fun String.translate(vararg params: Any): String = getMessage(this, *params)
 }

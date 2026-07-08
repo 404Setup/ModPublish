@@ -1,4 +1,11 @@
 {
   "modpublish.publish.title": "發佈Mod...",
-  "modpublish.setToken.title": "ModPublish: 設置平台 API Token..."
+  "modpublish.setToken.title": "ModPublish: 設置平台 API Token...",
+  "release_channel.release": "正式版",
+  "release_channel.beta": "測試版",
+  "release_channel.alpha": "開發版",
+  "dependency.embedded": "嵌入",
+  "dependency.required": "必選",
+  "dependency.optional": "可選",
+  "dependency.incompatible": "不兼容"
 }

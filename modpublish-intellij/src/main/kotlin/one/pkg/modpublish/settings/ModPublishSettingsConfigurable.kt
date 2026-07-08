@@ -18,6 +18,7 @@ package one.pkg.modpublish.settings
 
 import com.intellij.openapi.options.Configurable
 import one.pkg.modpublish.util.resources.Lang
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.util.*
 import javax.swing.JComponent
 
@@ -25,7 +26,7 @@ class ModPublishSettingsConfigurable : Configurable {
     private var component: ModPublishSettingsComponent? = null
 
     override fun getDisplayName(): String =
-        Lang.get("title.global-settings")
+        "title.global-settings".translate()
 
     override fun getPreferredFocusedComponent(): JComponent? =
         component?.preferredFocusedComponent

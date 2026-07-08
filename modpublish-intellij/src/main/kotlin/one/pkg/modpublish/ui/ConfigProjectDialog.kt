@@ -25,6 +25,7 @@ import one.pkg.modpublish.settings.properties.Properties.getProperties
 import one.pkg.modpublish.ui.base.BaseDialogWrapper
 import one.pkg.modpublish.ui.base.FieldConfig.Companion.of
 import one.pkg.modpublish.ui.icon.Icons
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.util.*
 import javax.swing.JComponent
 
@@ -51,22 +52,26 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
         isModal = true
 
         init()
-        setOKButtonText(get("button.save"))
-        setCancelButtonText(get("button.cancel"))
+        setOKButtonText("button.save".translate())
+        setCancelButtonText("button.cancel".translate())
     }
 
     override fun createCenterPanel(): JComponent {
         val formBuilder = FormBuilder.createFormBuilder()
 
-        val token = get("dialog.modpublish.config-project.token")
-        val studioToken = get("dialog.modpublish.config-project.studio-token")
+        val token = "dialog.modpublish.config-project.token".translate()
+        val studioToken = "dialog.modpublish.config-project.studio-token".translate()
         val modIdLabel = "Mod ID:"
-        val repoLabel = get("dialog.modpublish.config-project.repo")
-        val branchLabel = get("dialog.modpublish.config-project.branch")
+        val repoLabel = "dialog.modpublish.config-project.repo".translate()
+        val branchLabel = "dialog.modpublish.config-project.branch".translate()
 
         formBuilder.addPlatformSection(
             "Common", Icons.Static.Book,
-            of(get("component.name.common.version-format")) { createTextField().also { commonVersionFormatField = it } }
+            of("component.name.common.version-format".translate()) {
+                createTextField().also {
+                    commonVersionFormatField = it
+                }
+            }
         )
 
         formBuilder.addPlatformSection(
@@ -87,13 +92,13 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
             of(token) { createTextField().also { githubTokenField = it } },
             of(repoLabel) {
                 createTextField().also {
-                    it.setToolTipText(get("dialog.modpublish.config-project.repo.tooltips"))
+                    it.setToolTipText("dialog.modpublish.config-project.repo.tooltips".translate())
                     githubRepoField = it
                 }
             },
             of(branchLabel) {
                 createTextField().also {
-                    it.setToolTipText(get("dialog.modpublish.config-project.branch.tooltips"))
+                    it.setToolTipText("dialog.modpublish.config-project.branch.tooltips".translate())
                     githubBranchField = it
                 }
             }
@@ -125,25 +130,25 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
 
         commonVersionFormatField.text = p1.common.versionFormat
 
-        if (p1.modrinth.token.globalData) modrinthTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+        if (p1.modrinth.token.globalData) modrinthTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
         else modrinthTokenField.text = p1.modrinth.token.data
         modrinthModIDField.text = p1.modrinth.modid
 
         if (p1.curseforge.token.globalData) {
-            curseforgeTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+            curseforgeTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
         } else curseforgeTokenField.text = p1.curseforge.token.data
         if (p1.curseforge.studioToken.globalData) {
-            curseforgeStudioTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+            curseforgeStudioTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
         } else curseforgeStudioTokenField.text = p1.curseforge.studioToken.data
         curseforgeModIDField.text = p1.curseforge.modid
 
         githubTokenField.text = if (p1.github.token.globalData) "" else p1.github.token.data
-        if (p1.github.token.globalData) githubTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+        if (p1.github.token.globalData) githubTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
         githubRepoField.text = p1.github.repo
         githubBranchField.text = p1.github.branch
 
         gitlabTokenField.text = if (p1.gitlab.token.globalData) "" else p1.gitlab.token.data
-        if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText(get("dialog.modpublish.config-project.global"))
+        if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
         gitlabRepoField.text = p1.gitlab.repo
         gitlabBranchField.text = p1.gitlab.branch
     }

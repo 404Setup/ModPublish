@@ -54,9 +54,9 @@
             <div class="form-group">
                 <label for="release-channel" id="lbl-release-channel">Release Channel</label>
                 <select id="release-channel" class="form-control">
-                    <option value="release">Release</option>
-                    <option value="beta">Beta</option>
-                    <option value="alpha">Alpha</option>
+                    <option value="release" id="rc_release">Release</option>
+                    <option value="beta" id="rc_beta">Beta</option>
+                    <option value="alpha" id="rc_alpha">Alpha</option>
                 </select>
             </div>
             <div class="form-group" id="container-support-target">
@@ -224,10 +224,10 @@
         <div class="form-group">
             <label for="dep-type" id="lbl-dep-type">Dependency Type</label>
             <select id="dep-type" class="form-control">
-                <option value="required">Required</option>
-                <option value="optional">Optional</option>
-                <option value="embedded">Embedded</option>
-                <option value="incompatible">Incompatible</option>
+                <option value="required" id="dt_required">Required</option>
+                <option value="optional" id="dt_optional">Optional</option>
+                <option value="embedded" id="dt_embedded">Embedded</option>
+                <option value="incompatible" id="dt_incompatible">Incompatible</option>
             </select>
         </div>
 

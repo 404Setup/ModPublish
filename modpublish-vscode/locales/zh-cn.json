@@ -109,5 +109,12 @@
   "environment.server_only_client_optional": "服务端可用，客户端可选",
   "environment.dedicated_server_only": "仅限专用服务器",
   "environment.client_or_server": "客户端或服务端均可",
-  "environment.client_or_server_prefers_both": "两者皆可，推荐两侧均安装"
+  "environment.client_or_server_prefers_both": "两者皆可，推荐两侧均安装",
+  "release_channel.release": "正式版",
+  "release_channel.beta": "测试版",
+  "release_channel.alpha": "开发版",
+  "dependency.embedded": "嵌入",
+  "dependency.required": "必选",
+  "dependency.optional": "可选",
+  "dependency.incompatible": "不兼容"
 }

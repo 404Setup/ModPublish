@@ -104,6 +104,15 @@ function localizeUI() {
     document.getElementById('env_dedicated_server_only').textContent = t('environment.dedicated_server_only');
     document.getElementById('env_client_or_server').textContent = t('environment.client_or_server');
     document.getElementById('env_client_or_server_prefers_both').textContent = t('environment.client_or_server_prefers_both');
+
+    document.getElementById('rc_release').textContent = t('release_channel.release');
+    document.getElementById('rc_beta').textContent = t('release_channel.beta');
+    document.getElementById('rc_alpha').textContent = t('release_channel.alpha');
+
+    document.getElementById('dt_required').textContent = t('dependency.required');
+    document.getElementById('dt_optional').textContent = t('dependency.optional');
+    document.getElementById('dt_embedded').textContent = t('dependency.embedded');
+    document.getElementById('dt_incompatible').textContent = t('dependency.incompatible');
     
     const tabEdit = document.getElementById('tab-edit');
     if (tabEdit) tabEdit.textContent = t('tab.edit') || 'Edit';
@@ -680,7 +689,7 @@ function renderDependencies() {
 
         const badge = document.createElement('span');
         badge.className = 'dep-type-badge';
-        badge.textContent = dep.type;
+        badge.textContent = t('dependency.' + dep.type);
 
         const actions = document.createElement('div');
         actions.className = 'dep-actions';

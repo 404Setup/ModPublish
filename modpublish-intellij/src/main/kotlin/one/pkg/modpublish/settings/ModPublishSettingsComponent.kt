@@ -24,6 +24,7 @@ import one.pkg.modpublish.ui.base.BaseDialogWrapper
 import one.pkg.modpublish.ui.base.FieldConfig
 import one.pkg.modpublish.ui.icon.Icons
 import one.pkg.modpublish.util.protect.Protect
+import one.pkg.modpublish.util.resources.Lang.translate
 import java.net.Proxy
 import javax.swing.JComboBox
 import javax.swing.JComponent
@@ -114,38 +115,38 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
         )
 
         formBuilder.addPlatformSection(
-            get("setting.network.name"), Icons.Static.DataBar,
-            FieldConfig.of(get("setting.network.ssl-check.name")) {
+            "setting.network.name".translate(), Icons.Static.DataBar,
+            FieldConfig.of("setting.network.ssl-check.name".translate()) {
                 JBCheckBox().also {
                     networkEnableSSLCheckBox = it
                 }
             },
-            FieldConfig.of { createLabel(get("setting.network.ssl-check.desc")) },
-            FieldConfig.of(get("setting.network.read-timeout.name")) {
+            FieldConfig.of { createLabel("setting.network.ssl-check.desc".translate()) },
+            FieldConfig.of("setting.network.read-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = get("setting.network.read-timeout.desc")
+                    it.toolTipText = "setting.network.read-timeout.desc".translate()
                     networkReadTimeoutText = it
                 }
             },
-            FieldConfig.of(get("setting.network.write-timeout.name")) {
+            FieldConfig.of("setting.network.write-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = get("setting.network.write-timeout.desc")
+                    it.toolTipText = "setting.network.write-timeout.desc".translate()
                     networkWriteTimeoutText = it
                 }
             },
-            FieldConfig.of(get("setting.network.connect-timeout.name")) {
+            FieldConfig.of("setting.network.connect-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = get("setting.network.connect-timeout.desc")
+                    it.toolTipText = "setting.network.connect-timeout.desc".translate()
                     networkConnectTimeoutText = it
                 }
             }
         )
 
         formBuilder.addPlatformSection(
-            get("setting.proxy.name"), Icons.Static.Globe,
-            FieldConfig.of { createLabel(get("tips.2")) },
-            FieldConfig.of(get("setting.proxy.auto-proxy")) { JBCheckBox().also { autoProxyCheckBox = it } },
-            FieldConfig.of(get("setting.proxy.type")) {
+            "setting.proxy.name".translate(), Icons.Static.Globe,
+            FieldConfig.of { createLabel("tips.2".translate()) },
+            FieldConfig.of("setting.proxy.auto-proxy".translate()) { JBCheckBox().also { autoProxyCheckBox = it } },
+            FieldConfig.of("setting.proxy.type".translate()) {
                 JComboBox(
                     arrayOf(
                         Proxy.Type.SOCKS,
@@ -153,14 +154,14 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
                     )
                 ).also { proxyTypeComboBox = it }
             },
-            FieldConfig.of(get("setting.proxy.address")) { JBTextField().also { proxyAddressText = it } },
-            FieldConfig.of(get("setting.proxy.port")) {
+            FieldConfig.of("setting.proxy.address".translate()) { JBTextField().also { proxyAddressText = it } },
+            FieldConfig.of("setting.proxy.port".translate()) {
                 JBTextField().intField(1, 65535).also {
                     proxyPortText = it
                 }
             },
-            FieldConfig.of(get("setting.proxy.user")) { JBTextField().also { proxyUsernameText = it } },
-            FieldConfig.of(get("setting.proxy.pass")) { JBTextField().also { proxyPasswordText = it } }
+            FieldConfig.of("setting.proxy.user".translate()) { JBTextField().also { proxyUsernameText = it } },
+            FieldConfig.of("setting.proxy.pass".translate()) { JBTextField().also { proxyPasswordText = it } }
         )
 
         panel = formBuilder.addComponentFillVertically(JPanel(), 0).panel

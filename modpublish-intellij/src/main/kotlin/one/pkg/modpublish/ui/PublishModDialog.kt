@@ -57,6 +57,7 @@ import one.pkg.modpublish.util.io.JsonParser.fromJson
 import one.pkg.modpublish.util.io.JsonParser.toJson
 import one.pkg.modpublish.util.io.VersionProcessor
 import one.pkg.modpublish.util.metadata.ModVersion.extractVersionNumber
+import one.pkg.modpublish.util.resources.Lang.translate
 import one.pkg.modpublish.util.resources.LocalResources
 import one.pkg.modpublish.version.constraint.VersionConstraint
 import one.pkg.modpublish.version.constraint.VersionConstraintParser
@@ -116,8 +117,8 @@ class PublishModDialog(
 
         loadConfigData()
         init()
-        setOKButtonText(get("button.publish"))
-        setCancelButtonText(get("button.cancel"))
+        setOKButtonText("button.publish".translate())
+        setCancelButtonText("button.cancel".translate())
         setOKButtonDefault()
     }
 
@@ -171,8 +172,8 @@ class PublishModDialog(
 
         versionNameField = JBTextField()
         versionNumberField = JBTextField()
-        formBuilder.addLabeledComponent(get("component.name.version-name"), versionNameField)
-        formBuilder.addLabeledComponent(get("component.name.version-number"), versionNumberField)
+        formBuilder.addLabeledComponent("component.name.version-name".translate(), versionNameField)
+        formBuilder.addLabeledComponent("component.name.version-number".translate(), versionNumberField)
 
         val updateVisibility = {
             val onlyModrinth =
@@ -199,7 +200,7 @@ class PublishModDialog(
         curseforgeCheckBox = JBCheckBox("CurseForge").apply { addActionListener { updateVisibility() } }
 
         formBuilder.addLabeledComponent(
-            get("component.name.targets"),
+            "component.name.targets".translate(),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply {
                 add(githubCheckBox)
                 add(gitlabCheckBox)
@@ -208,17 +209,17 @@ class PublishModDialog(
             }
         )
 
-        clientCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.client"))
-        serverCheckBox = JBCheckBox(get("dialog.modpublish.publish.support.server"))
+        clientCheckBox = JBCheckBox("dialog.modpublish.publish.support.client".translate())
+        serverCheckBox = JBCheckBox("dialog.modpublish.publish.support.server".translate())
 
-        supportLabel = createFieldLabel(get("dialog.modpublish.publish.support.title"))
+        supportLabel = createFieldLabel("dialog.modpublish.publish.support.title".translate())
         supportPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(clientCheckBox)
             add(serverCheckBox)
         }
         formBuilder.addLabeledComponent(supportLabel, supportPanel)
 
-        envLabel = createFieldLabel(get("dialog.modpublish.publish.environment.title"))
+        envLabel = createFieldLabel("dialog.modpublish.publish.environment.title".translate())
         modrinthEnvironmentComboBox = ComboBox(ModrinthEnvironment.entries.toTypedArray())
         envPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             add(modrinthEnvironmentComboBox)
@@ -234,7 +235,7 @@ class PublishModDialog(
         }
 
         formBuilder.addLabeledComponent(
-            get("component.name.loaders"),
+            "component.name.loaders".translate(),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { loaderCheckBoxes.forEach { add(it.second) } }
         )
 
@@ -243,12 +244,12 @@ class PublishModDialog(
             renderer = JarFilesRenderer()
         }
         formBuilder.addLabeledComponent(
-            get("component.name.primary-file"),
+            "component.name.primary-file".translate(),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(primaryFile) })
 
         releaseType = ComboBox(ReleaseChannel.entries.toTypedArray())
         formBuilder.addLabeledComponent(
-            get("component.name.release-channel"),
+            "component.name.release-channel".translate(),
             JPanel(FlowLayout(FlowLayout.LEFT)).apply { add(releaseType) })
 
         minecraftVersionModel = DefaultListModel()
@@ -265,14 +266,14 @@ class PublishModDialog(
                 }
             })
         }
-        showSnapshotsCheckBox = JBCheckBox(get("component.name.snapshot")).apply {
+        showSnapshotsCheckBox = JBCheckBox("component.name.snapshot".translate()).apply {
             addActionListener { updateMinecraftVersions() }
         }
 
         updateMinecraftVersions()
 
         formBuilder.addPlatformSection(
-            get("component.name.mc-version"),
+            "component.name.mc-version".translate(),
             Icons.Static.ListBar,
             FieldConfig.of {
                 JPanel(BorderLayout()).apply {
@@ -283,9 +284,9 @@ class PublishModDialog(
                 }
             },
             FieldConfig.of {
-                val button1 = JButton(get("component.name.update-version-list")).apply {
+                val button1 = JButton("component.name.update-version-list".translate()).apply {
                     icon = Icons.Static.Sync
-                    toolTipText = get("component.tooltip.update-version-list")
+                    toolTipText = "component.tooltip.update-version-list".translate()
                     addActionListener { _ ->
                         async {
                             isEnabled = false
@@ -301,9 +302,9 @@ class PublishModDialog(
                     }
                 }
 
-                val button2 = JButton(get("component.name.reset-version-list")).apply {
+                val button2 = JButton("component.name.reset-version-list".translate()).apply {
                     icon = Icons.Static.WrenchScrewdriver
-                    toolTipText = get("component.tooltip.reset-version-list")
+                    toolTipText = "component.tooltip.reset-version-list".translate()
                     addActionListener { _ ->
                         async {
                             "minecraft.version.json".getUserDataFile().takeIf { it.exists() }?.delete()
@@ -322,7 +323,7 @@ class PublishModDialog(
             }
         )
 
-        formBuilder.addPlatformSection(get("component.name.changelog"), Icons.Static.Clipboard, FieldConfig.of {
+        formBuilder.addPlatformSection("component.name.changelog".translate(), Icons.Static.Clipboard, FieldConfig.of {
             EditorTextFieldProvider.getInstance().getEditorField(
                 Language.ANY, requireNotNull(project), arrayListOf(HorizontalScrollBarEditorCustomization.ENABLED)
             ).apply {
@@ -336,7 +337,7 @@ class PublishModDialog(
         })
 
         formBuilder.addPlatformSection(
-            get("component.name.dependencies"), Icons.Static.Library,
+            "component.name.dependencies".translate(), Icons.Static.Library,
             FieldConfig.of { DependencyManagerPanel(this).also { dependencyPanel = it } })
 
         autoFillFields()
@@ -420,7 +421,7 @@ class PublishModDialog(
     private fun JBCheckBox.setFailedSelect() {
         isEnabled = false
         setErrorStyle()
-        toolTipText = get("tooltip.decrypt.failed")
+        toolTipText = "tooltip.decrypt.failed".translate()
     }
 
     private fun loadPersistedData() {
@@ -429,28 +430,28 @@ class PublishModDialog(
 
         if (!p2.modrinth.isEnabled()) {
             modrinthCheckBox.isEnabled = false
-            modrinthCheckBox.toolTipText = get("tooltip.modrinth.disable")
+            modrinthCheckBox.toolTipText = "tooltip.modrinth.disable".translate()
         } else if (p2.modrinth.token.failed) {
             modrinthCheckBox.setFailedSelect()
         }
 
         if (!p2.curseforge.isEnabled()) {
             curseforgeCheckBox.isEnabled = false
-            curseforgeCheckBox.toolTipText = get("tooltip.curseforge.disable")
+            curseforgeCheckBox.toolTipText = "tooltip.curseforge.disable".translate()
         } else if (p2.curseforge.token.failed) {
             curseforgeCheckBox.setFailedSelect()
         }
 
         if (!p2.github.isEnabled()) {
             githubCheckBox.isEnabled = false
-            githubCheckBox.toolTipText = get("tooltip.git.disable", "Github")
+            githubCheckBox.toolTipText = "tooltip.git.disable".translate("Github")
         } else if (p2.github.token.failed) {
             githubCheckBox.setFailedSelect()
         }
 
         if (!p2.gitlab.isEnabled()) {
             gitlabCheckBox.isEnabled = false
-            gitlabCheckBox.toolTipText = get("tooltip.git.disable", "Gitlab")
+            gitlabCheckBox.toolTipText = "tooltip.git.disable".translate("Gitlab")
         } else if (p2.gitlab.token.failed) {
             gitlabCheckBox.setFailedSelect()
         }
@@ -525,13 +526,13 @@ class PublishModDialog(
 
     override fun doOKAction() {
         doOKActionFirst()?.let {
-            showFailedDialogRaw(get("message.failed", it.result!!), get("title.failed"))
+            showFailedDialogRaw("message.failed".translate(it.result!!), "title.failed".translate())
             return
         }
 
         okAction.isEnabled = false
         setOKButtonLoading()
-        setOKButtonText(get("button.publishing"))
+        setOKButtonText("button.publishing".translate())
 
         async {
             savePersistedData()
@@ -551,13 +552,13 @@ class PublishModDialog(
             async {
                 setOKButtonDefault()
                 okAction.isEnabled = true
-                setOKButtonText(get("button.publish"))
+                setOKButtonText("button.publish".translate())
 
                 if (isOk) {
                     showSuccessDialog("message.success", "title.success")
                     super.doOKAction()
                 } else {
-                    showFailedDialogRaw(get("message.failed", failureMessage), get("title.failed"))
+                    showFailedDialogRaw("message.failed".translate(failureMessage), "title.failed".translate())
                 }
             }
         }

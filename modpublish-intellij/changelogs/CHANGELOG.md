@@ -11,6 +11,10 @@
 - Optimize regex compilation in ModVersion.kt
 - Optimize collection filtering in DependencyManagerPanel
 
+### Chore
+- More i18n
+- Bump minecraft version list
+
 ## v1.11.3
 
 ### Refactor

@@ -109,5 +109,12 @@
   "environment.server_only_client_optional": "Server Only, Client Optional",
   "environment.dedicated_server_only": "Dedicated Server Only",
   "environment.client_or_server": "Client or Server",
-  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both"
+  "environment.client_or_server_prefers_both": "Client or Server, Prefers Both",
+  "release_channel.release": "Release",
+  "release_channel.beta": "Beta",
+  "release_channel.alpha": "Alpha",
+  "dependency.embedded": "Embedded",
+  "dependency.required": "Required",
+  "dependency.optional": "Optional",
+  "dependency.incompatible": "Incompatible"
 }
