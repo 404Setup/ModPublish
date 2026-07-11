@@ -1,4 +1,4 @@
-# ModPublish VS Code Extension
+<img src="https://github.com/404Setup/ModPublish/raw/master/image/banner_vscode.png" alt="Logo">
 
 This is the VS Code port of the ModPublish IntelliJ plugin.
 
@@ -66,4 +66,4 @@ Thanks to everyone who uses and supports ModPublish.
 ## License
 2025 - 2026 404Setup. All rights reserved.
 
-The source code is licensed under the LGPL-3.0 license.
+All source code and resource files of all subprojects under ModPublish are licensed under the LGPL-3.0 license.

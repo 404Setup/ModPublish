@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2025 - 2026 404Setup (https://github.com/404Setup)
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU Lesser General Public License as
+  - published by the Free Software Foundation, either version 3 of the
+  - License, or (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU Lesser General Public License for more details.
+  -
+  - You should have received a copy of the GNU Lesser General Public License
+  - along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<svg version="1.1" viewBox="0 0 1280 640" width="1280" height="640" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <radialGradient id="bgGlow" cx="25%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#4C1088" stop-opacity="0.5"/>
+            <stop offset="60%" stop-color="#0F0F12" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#0A0A0C" stop-opacity="1"/>
+        </radialGradient>
+        <linearGradient id="telemetryGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7C3AED"/>
+            <stop offset="60%" stop-color="#A78BFA"/>
+            <stop offset="100%" stop-color="#F472B6"/>
+        </linearGradient>
+        <linearGradient id="grassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#76C035"/>
+            <stop offset="100%" stop-color="#4C8620"/>
+        </linearGradient>
+        <linearGradient id="grassLeftGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#6AA830"/>
+            <stop offset="100%" stop-color="#45781E"/>
+        </linearGradient>
+        <linearGradient id="grassRightGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#5E962B"/>
+            <stop offset="100%" stop-color="#3D6B1B"/>
+        </linearGradient>
+        <linearGradient id="dirtLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#866043"/>
+            <stop offset="100%" stop-color="#593E2B"/>
+        </linearGradient>
+        <linearGradient id="dirtRight" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6E4E35"/>
+            <stop offset="100%" stop-color="#483120"/>
+        </linearGradient>
+        <radialGradient id="blockShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#000000" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+    </defs>
+    <rect width="1280" height="640" fill="url(#bgGlow)"/>
+    <g opacity="0.04">
+        <path d="M 0,50 L 1280,50 M 0,100 L 1280,100 M 0,150 L 1280,150 M 0,200 L 1280,200 M 0,250 L 1280,250 M 0,300 L 1280,300 M 0,350 L 1280,350 M 0,400 L 1280,400 M 0,450 L 1280,450 M 0,500 L 1280,500 M 0,550 L 1280,550 M 0,600 L 1280,600"
+              stroke="#FFFFFF" stroke-width="1"/>
+        <path d="M 100,0 L 100,640 M 200,0 L 200,640 M 300,0 L 300,640 M 400,0 L 400,640 M 500,0 L 500,640 M 600,0 L 600,640 M 700,0 L 700,640 M 800,0 L 800,640 M 900,0 L 900,640 M 1000,0 L 1000,640 M 1100,0 L 1100,640 M 1200,0 L 1200,640"
+              stroke="#FFFFFF" stroke-width="1"/>
+    </g>
+    <g transform="translate(100, 90) scale(3.6)">
+        <rect x="4" y="4" width="120" height="120" rx="24" fill="#1E1E24"/>
+        <rect x="4" y="4" width="120" height="120" rx="24" fill="none" stroke="url(#telemetryGradient)"
+              stroke-width="3"/>
+        <path d="M 32,80 L 54,55 L 76,75 L 98,48" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"
+              stroke-linejoin="round" opacity="0.08"/>
+        <circle cx="54" cy="55" r="4.5" fill="#FFFFFF" opacity="0.12"/>
+        <circle cx="76" cy="75" r="4.5" fill="#FFFFFF" opacity="0.12"/>
+        <circle cx="98" cy="48" r="4.5" fill="#FFFFFF" opacity="0.12"/>
+        <ellipse cx="64" cy="114" rx="32" ry="8" fill="url(#blockShadow)"/>
+        <path d="M 110,10 L 110,32 L 96,32 L 66,62 L 58,54 L 88,24 L 88,10 Z" fill="url(#telemetryGradient)"
+              filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.3))"/>
+        <path d="M 34,72 L 64,87 L 64,117 L 34,102 Z" fill="url(#dirtLeft)"/>
+        <path d="M 64,87 L 94,72 L 94,102 L 64,117 Z" fill="url(#dirtRight)"/>
+        <path d="M 40,87 L 45,89.5 L 45,94.5 L 40,92 Z" fill="#4E3625" opacity="0.6"/>
+        <path d="M 50,102 L 55,104.5 L 55,109.5 L 50,107 Z" fill="#4E3625" opacity="0.6"/>
+        <path d="M 80,87 L 85,84.5 L 85,89.5 L 80,92 Z" fill="#3D291A" opacity="0.6"/>
+        <path d="M 70,102 L 75,99.5 L 75,104.5 L 70,107 Z" fill="#3D291A" opacity="0.6"/>
+        <path d="M 34,72 L 34,80 L 44,85 L 44,91 L 54,96 L 54,90 L 64,95 L 64,87 Z" fill="url(#grassLeftGradient)"/>
+        <path d="M 64,87 L 64,99 L 74,94 L 74,88 L 84,83 L 84,87 L 94,82 L 94,72 Z" fill="url(#grassRightGradient)"/>
+        <path d="M 64,57 L 94,72 L 64,87 L 34,72 Z" fill="url(#grassGradient)"/>
+    </g>
+    <g font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+        <text x="600" y="320" font-size="100" font-weight="900" letter-spacing="-2" fill="#FFFFFF">Mod
+            <tspan fill="url(#telemetryGradient)">Publish</tspan>
+        </text>
+        <text x="600" y="380" font-size="28" font-weight="500" fill="#94A3B8" letter-spacing="-0.5">Anonymized Telemetry
+            Service for ModPublish
+        </text>
+    </g>
+</svg>

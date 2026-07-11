@@ -7,3 +7,4 @@ src/**/*.ts
 node_modules/**
 out/**
 *.vsix
+**/.idea

@@ -1,7 +1,4 @@
-<img src="./src/main/resources/META-INF/pluginIcon.svg" alt="Logo" align="right" width="150">
-
-ModPublish
-====
+<img src="../image/banner_intellij.svg" alt="Logo">
 
 **This plugin is completely free, please download it from Jetbrains Marketplace, Visual Studio Code Marketplace or the official GitHub page!
 Do not download this plugin from any untrusted third party pages!**
@@ -112,4 +109,4 @@ Thanks to everyone who uses and supports ModPublish.
 ## License
 2025 - 2026 404Setup. All rights reserved.
 
-The source code is licensed under the LGPL-3.0 license.
+All source code and resource files of all subprojects under ModPublish are licensed under the LGPL-3.0 license.

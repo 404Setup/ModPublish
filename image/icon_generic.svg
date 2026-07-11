@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (C) 2025 - 2026 404Setup (https://github.com/404Setup)
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU Lesser General Public License as
+  - published by the Free Software Foundation, either version 3 of the
+  - License, or (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU Lesser General Public License for more details.
+  -
+  - You should have received a copy of the GNU Lesser General Public License
+  - along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <svg version="1.1" viewBox="0 0 128 128" width="128" height="128" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <linearGradient id="jbGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#8A2BE2"/>
-            <stop offset="35%" stop-color="#FE2857"/>
-            <stop offset="70%" stop-color="#F97A12"/>
-            <stop offset="100%" stop-color="#FFD700"/>
+        <linearGradient id="genericGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#10B981"/>
+            <stop offset="50%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#06B6D4"/>
         </linearGradient>
         <linearGradient id="grassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#76C035"/>
@@ -32,14 +48,12 @@
             <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
         </radialGradient>
     </defs>
-    <rect x="4" y="4" width="120" height="120" rx="24" fill="#1E1F22"/>
-    <rect x="4" y="4" width="120" height="120" rx="24" fill="none" stroke="url(#jbGradient)" stroke-width="3"/>
-    <path d="M 28,34 L 18,34 L 18,94 L 28,94" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"
-          stroke-linejoin="round" opacity="0.08"/>
-    <path d="M 100,34 L 110,34 L 110,94 L 100,94" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"
-          stroke-linejoin="round" opacity="0.08"/>
+    <rect x="4" y="4" width="120" height="120" rx="24" fill="#1E1E24"/>
+    <rect x="4" y="4" width="120" height="120" rx="24" fill="none" stroke="url(#genericGradient)" stroke-width="3"/>
+    <path d="M 85,45 L 35,65 L 53,72 L 42,92 Z M 53,72 L 85,45" fill="none" stroke="#FFFFFF" stroke-width="4.5"
+          stroke-linecap="round" stroke-linejoin="round" opacity="0.08"/>
     <ellipse cx="64" cy="114" rx="32" ry="8" fill="url(#blockShadow)"/>
-    <path d="M 110,10 L 110,32 L 96,32 L 66,62 L 58,54 L 88,24 L 88,10 Z" fill="url(#jbGradient)"
+    <path d="M 110,10 L 110,32 L 96,32 L 66,62 L 58,54 L 88,24 L 88,10 Z" fill="url(#genericGradient)"
           filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.3))"/>
     <path d="M 34,72 L 64,87 L 64,117 L 34,102 Z" fill="url(#dirtLeft)"/>
     <path d="M 64,87 L 94,72 L 94,102 L 64,117 Z" fill="url(#dirtRight)"/>
