@@ -73,8 +73,6 @@ Build steps:
 #### Dependencies
 
 - [Gson](https://github.com/google/gson) - License [Apache 2.0](https://github.com/google/gson/blob/main/LICENSE)
-- [OKHttp](https://github.com/square/okhttp) -
-  License [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
 - [TProxy](https://github.com/404Setup/t-proxy) -
   License [Apache 2.0](https://github.com/404Setup/t-proxy/blob/master/LICENSE)
 - [TinyUtils](https://github.com/404Setup/tiny-utils) -
