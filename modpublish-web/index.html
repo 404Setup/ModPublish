@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModPublish - Minecraft Mod Publishing Suite</title>
+    <meta name="description"
+          content="Quickly publish your Minecraft mods to multiple mod hosting platforms including Modrinth, CurseForge, GitHub, and GitLab from IntelliJ IDEA and VS Code.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/config.js" defer></script>
+    <script src="js/pages/home.js" defer></script>
+    <script src="js/pages/intellij.js" defer></script>
+    <script src="js/pages/vscode.js" defer></script>
+    <script src="js/pages/telemetry.js" defer></script>
+    <script src="js/pages/docs.js" defer></script>
+    <script src="js/router.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container nav-container">
+        <a href="#home" class="navbar-brand">
+            <img src="image/icon_generic.svg" alt="ModPublish Icon" id="brand-logo">
+            <span id="brand-text">ModPublish</span>
+        </a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#intellij">IntelliJ</a></li>
+                <li><a href="#vscode">VS Code</a></li>
+                <li><a href="#telemetry">Telemetry</a></li>
+                <li><a href="#docs">Docs</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main id="app" class="container">
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2025 - 2026 <a href="https://github.com/404Setup" target="_blank" rel="noopener">404Setup</a>.
+            Licensed under the LGPL-3.0 License.</p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">
+            All brand logos, IDE trademarks, and marketplace graphics are property of their respective owners.
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>

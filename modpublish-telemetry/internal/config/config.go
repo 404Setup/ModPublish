@@ -18,20 +18,84 @@
 package config
 
 import (
+	"errors"
+	"io/fs"
+	"log"
 	"os"
+	"strings"
+
+	"github.com/bytedance/sonic"
 )
 
 type Config struct {
-	Port string
+	Port            string   `json:"port"`
+	ProxyWhitelist  []string `json:"proxy_whitelist"`
+	RateLimitLimit  int      `json:"rate_limit_limit"`
+	RateLimitPeriod string   `json:"rate_limit_period"`
 }
 
+const configFileName = "config.json"
+
 func LoadConfig() *Config {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
+	_, err := os.Stat(configFileName)
+	if errors.Is(err, fs.ErrNotExist) {
+		defaultConfig := &Config{
+			Port:            "3000",
+			ProxyWhitelist:  []string{"plugins.jetbrains.com", "marketplace.visualstudio.com"},
+			RateLimitLimit:  30,
+			RateLimitPeriod: "5m",
+		}
+
+		data, err := sonic.ConfigFastest.MarshalIndent(defaultConfig, "", "  ")
+		if err != nil {
+			log.Printf("Warning: failed to marshal default config: %v. Using hardcoded defaults.\n", err)
+			return defaultConfig
+		}
+
+		if err := os.WriteFile(configFileName, data, 0644); err != nil {
+			log.Printf("Warning: failed to write default config file: %v\n", err)
+		} else {
+			log.Printf("Generated default configuration file: %s\n", configFileName)
+		}
+
+		return defaultConfig
 	}
 
-	return &Config{
-		Port: port,
+	data, err := os.ReadFile(configFileName)
+	if err != nil {
+		log.Printf("Warning: failed to read config file %s: %v. Using hardcoded defaults.\n", configFileName, err)
+		return &Config{
+			Port:           "3000",
+			ProxyWhitelist: []string{"plugins.jetbrains.com", "marketplace.visualstudio.com"},
+		}
 	}
+
+	cfg := &Config{}
+	if err := sonic.ConfigFastest.Unmarshal(data, cfg); err != nil {
+		log.Printf("Warning: failed to parse config file %s: %v. Using hardcoded defaults.\n", configFileName, err)
+		return &Config{
+			Port:            "3000",
+			ProxyWhitelist:  []string{"plugins.jetbrains.com", "marketplace.visualstudio.com"},
+			RateLimitLimit:  30,
+			RateLimitPeriod: "5m",
+		}
+	}
+
+	if cfg.Port == "" {
+		cfg.Port = "3000"
+	}
+
+	if cfg.RateLimitLimit <= 0 {
+		cfg.RateLimitLimit = 30
+	}
+
+	if cfg.RateLimitPeriod == "" {
+		cfg.RateLimitPeriod = "5m"
+	}
+
+	for i, w := range cfg.ProxyWhitelist {
+		cfg.ProxyWhitelist[i] = strings.TrimSpace(strings.ToLower(w))
+	}
+
+	return cfg
 }

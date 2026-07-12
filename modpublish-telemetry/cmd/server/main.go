@@ -43,7 +43,7 @@ func main() {
 	mcFetcher := fetcher.NewMCFetcher()
 	go mcFetcher.Start()
 
-	app := api.SetupRouter(stats, worker, mcFetcher)
+	app := api.SetupRouter(cfg, stats, worker, mcFetcher)
 
 	log.Printf("Server listening on port %s", cfg.Port)
 	log.Fatal(app.Listen(":" + cfg.Port))
