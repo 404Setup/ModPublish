@@ -90,7 +90,13 @@ window.ModPublish.pages.docs = {
         this.showSection(this.activeSection);
     },
 
+    abortController: null,
+
     destroy: function() {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
     },
 
     showSection: function(sectionId) {
@@ -130,8 +136,18 @@ window.ModPublish.pages.docs = {
                 document.head.appendChild(style);
             }
 
-            fetch(`docs/${sectionId}.md`)
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+            this.abortController = new AbortController();
+            const signal = this.abortController.signal;
+            const timeoutId = setTimeout(() => {
+                if (this.abortController) this.abortController.abort();
+            }, 5000);
+
+            fetch(`docs/${sectionId}.md`, { signal })
                 .then(res => {
+                    clearTimeout(timeoutId);
                     if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to load "${sectionId}.md"`);
                     return res.text();
                 })
@@ -146,6 +162,11 @@ window.ModPublish.pages.docs = {
                     }
                 })
                 .catch(err => {
+                    clearTimeout(timeoutId);
+                    if (err.name === 'AbortError') {
+                        console.log('Docs load aborted');
+                        return;
+                    }
                     console.error(err);
                     if (this.activeSection !== sectionId) return;
                     contentPane.innerHTML = `

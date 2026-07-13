@@ -161,11 +161,13 @@ window.ModPublish.pages.intellij = {
 
         const apiBaseUrl = window.ModPublish?.config?.apiBaseUrl || 'http://localhost:3000';
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        this.abortController = new AbortController();
+        const timeoutId = setTimeout(() => {
+            if (this.abortController) this.abortController.abort();
+        }, 5000);
 
         fetch(`${apiBaseUrl}/api/proxy?url=${encodeURIComponent('https://plugins.jetbrains.com/plugins/list?pluginId=one.pkg.modpublish')}`, {
-            signal: controller.signal
+            signal: this.abortController.signal
         })
             .then(res => {
                 clearTimeout(timeoutId);
@@ -224,6 +226,12 @@ window.ModPublish.pages.intellij = {
             });
     },
 
+    abortController: null,
+
     destroy: function () {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
     }
 };

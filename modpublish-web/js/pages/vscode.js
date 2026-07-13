@@ -170,12 +170,14 @@ window.ModPublish.pages.vscode = {
             flags: 2151
         };
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        this.abortController = new AbortController();
+        const timeoutId = setTimeout(() => {
+            if (this.abortController) this.abortController.abort();
+        }, 5000);
 
         fetch('https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery', {
             method: 'POST',
-            signal: controller.signal,
+            signal: this.abortController.signal,
             headers: {
                 'Accept': 'application/json;api-version=7.2-preview.1;excludeUrls=true',
                 'Content-Type': 'application/json'
@@ -225,6 +227,12 @@ window.ModPublish.pages.vscode = {
         });
     },
 
+    abortController: null,
+
     destroy: function() {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
     }
 };

@@ -107,11 +107,140 @@ window.ModPublish.initImageZoom = function () {
     });
 };
 
+window.ModPublish.getCookie = function (name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+};
+
+window.ModPublish.setCookie = function (name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "; expires=" + date.toUTCString();
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+};
+
+window.ModPublish.fetchWithFallback = async function (url, options = {}) {
+    const apiBaseUrl = window.ModPublish.config?.apiBaseUrl || 'http://localhost:3000';
+    const proxyUrl = `${apiBaseUrl}/api/proxy?url=${encodeURIComponent(url)}`;
+
+    const fetchWithTimeout = async (targetUrl) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        if (options.signal) {
+            if (options.signal.aborted) {
+                clearTimeout(timeoutId);
+                throw new DOMException('Aborted', 'AbortError');
+            }
+            options.signal.addEventListener('abort', () => {
+                clearTimeout(timeoutId);
+                controller.abort();
+            });
+        }
+
+        try {
+            const response = await fetch(targetUrl, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
+        } catch (err) {
+            clearTimeout(timeoutId);
+            throw err;
+        }
+    };
+
+    try {
+        return await fetchWithTimeout(proxyUrl);
+    } catch (proxyError) {
+        if (proxyError.name === 'AbortError' && (!options.signal || options.signal.aborted)) {
+            throw proxyError;
+        }
+        console.warn(`CORS proxy failed for ${url}, falling back to direct request:`, proxyError);
+        return await fetchWithTimeout(url);
+    }
+};
+
+window.ModPublish.loadCommitHash = function () {
+    const cachedHash = window.ModPublish.getCookie('modpublish_commit_hash');
+    const footerRight = document.getElementById('footer-commit-info');
+    if (!footerRight) return;
+
+    if (cachedHash) {
+        const parts = cachedHash.split(':');
+        if (parts.length === 2) {
+            const sha = parts[0];
+            const shortSha = parts[1];
+            footerRight.innerHTML = `version <a href="https://github.com/404Setup/ModPublish/commit/${sha}" target="_blank" class="commit-link">${shortSha}</a>`;
+            footerRight.style.display = 'block';
+            return;
+        }
+    }
+
+    window.ModPublish.fetchWithFallback('https://api.github.com/repos/404Setup/ModPublish/commits')
+        .then(res => res.json())
+        .then(async (commits) => {
+            if (!Array.isArray(commits) || commits.length === 0) return;
+
+            const checkRunsPromises = commits.slice(0, 5).map(commit => {
+                const sha = commit.sha;
+                const checkRunsUrl = `https://api.github.com/repos/404Setup/ModPublish/commits/${sha}/check-runs`;
+                return window.ModPublish.fetchWithFallback(checkRunsUrl)
+                    .then(res => res.json())
+                    .then(data => ({ sha, commit, data }))
+                    .catch(err => {
+                        console.warn(`Failed to fetch check runs for commit ${sha}:`, err);
+                        return null;
+                    });
+            });
+
+            const results = await Promise.all(checkRunsPromises);
+
+            const match = results.find(res => {
+                if (!res || !res.data || !res.data.check_runs) return false;
+                return res.data.check_runs.some(cr =>
+                    cr.status === 'completed' &&
+                    cr.conclusion === 'success' &&
+                    cr.app &&
+                    cr.app.slug !== 'github-actions' &&
+                    cr.app.name !== 'GitHub Actions'
+                );
+            });
+
+            if (match) {
+                const sha = match.sha;
+                const shortSha = sha.substring(0, 7);
+                window.ModPublish.setCookie('modpublish_commit_hash', `${sha}:${shortSha}`, 1);
+                footerRight.innerHTML = `version <a href="https://github.com/404Setup/ModPublish/commit/${sha}" target="_blank" class="commit-link">${shortSha}</a>`;
+                footerRight.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load commit hash:', err);
+        });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     if (window.ModPublish.router && typeof window.ModPublish.router.init === 'function') {
         window.ModPublish.router.init();
     } else {
         console.error("Router not loaded successfully!");
+    }
+
+    try {
+        window.ModPublish.loadCommitHash();
+    } catch (e) {
+        console.error("Failed to trigger loadCommitHash:", e);
     }
 
     document.addEventListener('dragstart', (e) => {

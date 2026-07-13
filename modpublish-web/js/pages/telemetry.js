@@ -243,8 +243,47 @@ window.ModPublish.pages.telemetry = {
         });
     },
 
+    abortController: null,
+
+    getNewSignal: function() {
+        if (!this.abortController) {
+            this.abortController = new AbortController();
+        }
+        return this.abortController.signal;
+    },
+
+    fetchWithTimeout: function (url, options = {}) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, 5000);
+
+        const pageSignal = this.getNewSignal();
+        const onAbort = () => {
+            clearTimeout(timeoutId);
+            controller.abort();
+        };
+        pageSignal.addEventListener('abort', onAbort);
+
+        return fetch(url, { ...options, signal: controller.signal })
+            .then(res => {
+                clearTimeout(timeoutId);
+                pageSignal.removeEventListener('abort', onAbort);
+                return res;
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                pageSignal.removeEventListener('abort', onAbort);
+                throw err;
+            });
+    },
+
     destroy: function () {
         this.cleanupDashboard();
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
     },
 
     initChoices: function () {
@@ -366,7 +405,7 @@ window.ModPublish.pages.telemetry = {
     },
 
     fetchMCVersions: function () {
-        fetch(`${this.apiBaseUrl}/api/mc_versions`)
+        this.fetchWithTimeout(`${this.apiBaseUrl}/api/mc_versions`)
             .then(res => {
                 if (!res.ok) throw new Error('API offline');
                 return res.json();
@@ -379,6 +418,10 @@ window.ModPublish.pages.telemetry = {
                 }
             })
             .catch(err => {
+                if (err.name === 'AbortError') {
+                    console.log('fetchMCVersions aborted');
+                    return;
+                }
                 console.error("Failed to fetch MC versions:", err);
                 this.showApiStatus(false);
             });
@@ -395,7 +438,7 @@ window.ModPublish.pages.telemetry = {
         if (mc) params.append('mc_version', mc);
 
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/stats?${params.toString()}`);
+            const response = await this.fetchWithTimeout(`${this.apiBaseUrl}/api/stats?${params.toString()}`);
             if (!response.ok) throw new Error('API offline');
             const data = await response.json();
 
@@ -429,6 +472,10 @@ window.ModPublish.pages.telemetry = {
 
             this.showApiStatus(true);
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('fetchStats aborted');
+                return;
+            }
             console.error("Failed to fetch stats:", error);
             this.showApiStatus(false);
         }
