@@ -52,6 +52,10 @@ window.ModPublish.router = {
             brandText.innerHTML = brandConfig[hash].text;
         }
 
+        if (window.ModPublish && typeof window.ModPublish.closeLightbox === 'function') {
+            window.ModPublish.closeLightbox();
+        }
+
         if (this.currentPage && typeof this.currentPage.destroy === 'function') {
             try {
                 this.currentPage.destroy();
@@ -72,6 +76,36 @@ window.ModPublish.router = {
                     console.error("Error during page initialization:", e);
                 }
             }
+
+            if (window.ModPublish && typeof window.ModPublish.initCodeCopyButtons === 'function') {
+                window.ModPublish.initCodeCopyButtons();
+            }
+
+            if (hash === 'docs' && window.ModPublish && typeof window.ModPublish.initImageZoom === 'function') {
+                window.ModPublish.initImageZoom();
+            }
+
+            const bannerImages = appContainer.querySelectorAll('.project-banner-header img');
+            bannerImages.forEach(img => {
+                const header = img.closest('.project-banner-header');
+                if (header) {
+                    header.classList.add('banner-loading');
+                }
+
+                const handleLoad = () => {
+                    img.classList.add('loaded');
+                    if (header) {
+                        header.classList.remove('banner-loading');
+                        header.classList.add('banner-loaded');
+                    }
+                };
+
+                if (img.complete) {
+                    handleLoad();
+                } else {
+                    img.addEventListener('load', handleLoad);
+                }
+            });
 
             this.updateNavbarActiveLink(hash);
         }

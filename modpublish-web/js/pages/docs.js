@@ -140,6 +140,10 @@ window.ModPublish.pages.docs = {
 
                     const html = typeof marked !== 'undefined' ? marked.parse(markdown) : markdown;
                     contentPane.innerHTML = `<div class="docs-article animate-fade-in">${html}</div>`;
+                    
+                    if (window.ModPublish && typeof window.ModPublish.initCodeCopyButtons === 'function') {
+                        window.ModPublish.initCodeCopyButtons();
+                    }
                 })
                 .catch(err => {
                     console.error(err);

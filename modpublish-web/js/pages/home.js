@@ -28,10 +28,10 @@ window.ModPublish.pages.home = {
                     </div>
                 </section>
 
-                <section class="subprojects-section animate-fade-in" style="animation-delay: 0.1s;">
-                    <h2 class="section-title">Select Edition</h2>
+                <section class="subprojects-section">
+                    <h2 class="section-title animate-fade-in" style="animation-delay: 0.1s;">Select Edition</h2>
                     <div class="subprojects-grid">
-                        <div class="project-card intellij-card">
+                        <div class="project-card intellij-card animate-fade-in" style="animation-delay: 0.2s;">
                             <div class="card-body">
                                 <div class="card-header">
                                     <img src="image/icon_intellij.svg" alt="IntelliJ Icon" class="project-icon">
@@ -51,7 +51,7 @@ window.ModPublish.pages.home = {
                             </div>
                         </div>
 
-                        <div class="project-card vscode-card">
+                        <div class="project-card vscode-card animate-fade-in" style="animation-delay: 0.3s;">
                             <div class="card-body">
                                 <div class="card-header">
                                     <img src="image/icon_vscode.svg" alt="VS Code Icon" class="project-icon">
@@ -70,7 +70,7 @@ window.ModPublish.pages.home = {
                                 </div>
                             </div>
                         </div>
-                        <div class="project-card telemetry-card">
+                        <div class="project-card telemetry-card animate-fade-in" style="animation-delay: 0.4s;">
                             <div class="card-body">
                                 <div class="card-header">
                                     <img src="image/icon_telemetry.svg" alt="Telemetry Icon" class="project-icon">
