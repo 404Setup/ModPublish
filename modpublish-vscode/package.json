@@ -2,7 +2,7 @@
   "name": "modpublish-vsc",
   "displayName": "Minecraft ModPublish VSC Edition",
   "description": "Quickly publish your Minecraft mods to multiple mod hosting sites from VS Code.",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "preview": false,
   "publisher": "404Setup",
   "icon": "resources/icon.png",
