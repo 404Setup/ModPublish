@@ -17,7 +17,6 @@
 package one.pkg.modpublish.settings
 
 import com.intellij.openapi.options.Configurable
-import one.pkg.modpublish.util.resources.Lang
 import one.pkg.modpublish.util.resources.Lang.translate
 import java.util.*
 import javax.swing.JComponent

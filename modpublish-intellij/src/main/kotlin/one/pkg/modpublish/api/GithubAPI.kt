@@ -22,6 +22,9 @@ import com.intellij.openapi.project.Project
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
@@ -56,6 +59,10 @@ class GithubAPI : GitPlatformAPI() {
             data.files.fold(PublishResult.EMPTY) { acc, file ->
                 if (!acc.isSuccess) acc else uploadAsset(file, project, uploadUrl)
             }
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { PublishResult.create(this, "Failed to create GitHub release: ${it.message}") }
     }
 
@@ -76,6 +83,10 @@ class GithubAPI : GitPlatformAPI() {
 
         resp.statusString()?.let { return PublishResult.create(this, "Failed to create release: $it") }
         BackResult.result(resp.bodyAsText())
+    }.onFailure {
+        if (it is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
     }.getOrElse { PublishResult.create(this, "Network error: ${it.message}") }
 
     private suspend fun uploadAsset(file: File, project: Project, uploadUrl: String): PublishResult = runCatching {
@@ -88,12 +99,20 @@ class GithubAPI : GitPlatformAPI() {
 
         resp.statusString()?.let { return PublishResult.create(this, "Failed to upload asset: $it") }
         PublishResult.EMPTY
+    }.onFailure {
+        if (it is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
     }.getOrElse { PublishResult.create(this, "Failed to upload asset: ${it.message}") }
 
     private suspend fun checkExistingRelease(tagName: String, project: Project): JsonObject? = runCatching {
         val url = "$RELEASES_URL/tags/$tagName".replace("{path}", PID.GithubRepo.get(project))
         val resp = client.get(url) { github(project) }
         if (resp.status.isSuccess()) resp.bodyAsText().fromJson() else null
+    }.onFailure {
+        if (it is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
     }.getOrNull()
 
     @Throws(IOException::class)

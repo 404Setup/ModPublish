@@ -180,11 +180,11 @@ abstract class BaseDialogWrapper(
     protected fun FormBuilder.addPlatformSection(platformName: String, icon: Icon? = null, vararg fields: FieldConfig) {
         addComponent(createSectionLabel(platformName, icon))
         addComponent(SeparatorComponent(JBUI.scale(5)))
-        for (field in fields) {
-            if (field.label.isNullOrEmpty()) {
-                addComponent(field.fieldBlock())
+        for ((label, fieldBlock) in fields) {
+            if (label.isNullOrEmpty()) {
+                addComponent(fieldBlock())
             } else {
-                addLabeledComponent(createFieldLabel(field.label), field.fieldBlock())
+                addLabeledComponent(createFieldLabel(label), fieldBlock())
             }
         }
         addVerticalGap(JBUI.scale(15))

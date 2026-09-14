@@ -60,7 +60,7 @@ data class PublishData(
         result = 31 * result + minecraftVersions.hashCode()
         result = 31 * result + changelog.hashCode()
         result = 31 * result + dependencies.hashCode()
-        result = 31 * result + (environment?.hashCode() ?: 0)
+        result = 31 * result + environment.hashCode()
         result = 31 * result + files.contentHashCode()
         return result
     }

@@ -40,7 +40,7 @@ data class Property(
         val modid: String
     ) : PropertyBase {
         override fun isEnabled(): Boolean {
-            return !token.data.trim { it <= ' ' }.isEmpty() && !modid.trim { it <= ' ' }.isEmpty()
+            return token.data.trim { it <= ' ' }.isNotEmpty() && modid.trim { it <= ' ' }.isNotEmpty()
         }
 
         companion object {
@@ -59,7 +59,7 @@ data class Property(
         val branch: String
     ) : PropertyBase {
         override fun isEnabled(): Boolean {
-            return !token.data.trim { it <= ' ' }.isEmpty() && !repo.trim { it <= ' ' }.isEmpty()
+            return token.data.trim { it <= ' ' }.isNotEmpty() && repo.trim { it <= ' ' }.isNotEmpty()
         }
 
         companion object {
@@ -78,7 +78,7 @@ data class Property(
         val branch: String
     ) : PropertyBase {
         override fun isEnabled(): Boolean {
-            return !token.data.trim { it <= ' ' }.isEmpty() && !repo.trim { it <= ' ' }.isEmpty()
+            return token.data.trim { it <= ' ' }.isNotEmpty() && repo.trim { it <= ' ' }.isNotEmpty()
         }
 
         companion object {
@@ -94,7 +94,7 @@ data class Property(
 
     data class ModrinthProperty(val token: Info, val modid: String) : PropertyBase {
         override fun isEnabled(): Boolean {
-            return !token.data.trim { it <= ' ' }.isEmpty() && !modid.trim { it <= ' ' }.isEmpty()
+            return token.data.trim { it <= ' ' }.isNotEmpty() && modid.trim { it <= ' ' }.isNotEmpty()
         }
 
         companion object {

@@ -2,14 +2,14 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.4.0"
+    kotlin("jvm") version "2.4.20"
 
-    id("org.jetbrains.intellij.platform") version "2.17.0"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
 group = "one.pkg"
-version = "1.12.0"
-val targetJavaVersion = 21
+version = "1.13.0"
+val targetJavaVersion = 25
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ kotlin {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2025.2")
+        intellijIdea("2026.2.2")
         bundledPlugin("com.intellij.java")
         bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("org.intellij.plugins.markdown")
@@ -57,7 +57,7 @@ dependencies {
         exclude("*")
     }
 
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 
     implementation("com.vladsch.flexmark:flexmark:0.64.8") {
         exclude("com.vladsch.flexmark", "flexmark-jira-converter")
@@ -84,7 +84,7 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "252"
+            sinceBuild = "262"
         }
     }
     pluginVerification {

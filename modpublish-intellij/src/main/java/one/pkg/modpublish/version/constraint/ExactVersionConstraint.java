@@ -1,7 +1,6 @@
 package one.pkg.modpublish.version.constraint;
 
 import one.pkg.modpublish.version.Version;
-import one.pkg.modpublish.version.constraint.VersionConstraint;
 
 import java.util.Collections;
 import java.util.List;

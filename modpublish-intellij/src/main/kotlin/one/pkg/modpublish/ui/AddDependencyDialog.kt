@@ -16,7 +16,9 @@
  */
 package one.pkg.modpublish.ui
 
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.runBlocking
@@ -70,7 +72,7 @@ class AddDependencyDialog(
             modrinthIdField = JBTextField(30).apply {
                 if (modrinthTokenFailed) {
                     isEnabled = false
-                    toolTipText = "tooltip.modrinth.disable".translate()
+                    this.setToolTipText(HtmlChunk.text("tooltip.modrinth.disable".translate()))
                 }
             }.also { panel.add(it, gbc) }
             row++
@@ -84,7 +86,7 @@ class AddDependencyDialog(
             curseforgeIdField = JBTextField(30).apply {
                 if (curseforgeStudioTokenFailed) {
                     isEnabled = false
-                    toolTipText = "failed.11".translate()
+                    this.setToolTipText(HtmlChunk.text("failed.11".translate()))
                 }
             }.also { panel.add(it, gbc) }
             row++

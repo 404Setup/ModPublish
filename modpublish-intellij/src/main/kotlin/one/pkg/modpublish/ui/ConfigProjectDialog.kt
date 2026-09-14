@@ -16,8 +16,10 @@
  */
 package one.pkg.modpublish.ui
 
+import com.intellij.ide.setToolTipText
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import one.pkg.modpublish.settings.properties.PID
@@ -92,13 +94,13 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
             of(token) { createTextField().also { githubTokenField = it } },
             of(repoLabel) {
                 createTextField().also {
-                    it.setToolTipText("dialog.modpublish.config-project.repo.tooltips".translate())
+                    it.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.repo.tooltips".translate()))
                     githubRepoField = it
                 }
             },
             of(branchLabel) {
                 createTextField().also {
-                    it.setToolTipText("dialog.modpublish.config-project.branch.tooltips".translate())
+                    it.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.branch.tooltips".translate()))
                     githubBranchField = it
                 }
             }
@@ -130,25 +132,25 @@ class ConfigProjectDialog(project: Project) : BaseDialogWrapper(project) {
 
         commonVersionFormatField.text = p1.common.versionFormat
 
-        if (p1.modrinth.token.globalData) modrinthTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
+        if (p1.modrinth.token.globalData) modrinthTokenField.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.global".translate()))
         else modrinthTokenField.text = p1.modrinth.token.data
         modrinthModIDField.text = p1.modrinth.modid
 
         if (p1.curseforge.token.globalData) {
-            curseforgeTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
+            curseforgeTokenField.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.global".translate()))
         } else curseforgeTokenField.text = p1.curseforge.token.data
         if (p1.curseforge.studioToken.globalData) {
-            curseforgeStudioTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
+            curseforgeStudioTokenField.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.global".translate()))
         } else curseforgeStudioTokenField.text = p1.curseforge.studioToken.data
         curseforgeModIDField.text = p1.curseforge.modid
 
         githubTokenField.text = if (p1.github.token.globalData) "" else p1.github.token.data
-        if (p1.github.token.globalData) githubTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
+        if (p1.github.token.globalData) githubTokenField.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.global".translate()))
         githubRepoField.text = p1.github.repo
         githubBranchField.text = p1.github.branch
 
         gitlabTokenField.text = if (p1.gitlab.token.globalData) "" else p1.gitlab.token.data
-        if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText("dialog.modpublish.config-project.global".translate())
+        if (p1.gitlab.token.globalData) gitlabTokenField.setToolTipText(HtmlChunk.text("dialog.modpublish.config-project.global".translate()))
         gitlabRepoField.text = p1.gitlab.repo
         gitlabBranchField.text = p1.gitlab.branch
     }

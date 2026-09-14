@@ -22,6 +22,9 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
@@ -47,20 +50,24 @@ class ModrinthAPI : API() {
                 modrinth(project)
                 setBody(
                     MultiPartFormDataContent(
-                    formData {
-                        append("data", createJsonBody(data, project))
-                        data.files.forEachIndexed { i, file ->
-                            val key = if (i == 0) "${file.name}-primary" else "${file.name}-${i - 1}"
-                            append(key, file.readBytes(), Headers.build {
-                                append(HttpHeaders.ContentType, "application/java-archive")
-                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                            })
+                        formData {
+                            append("data", createJsonBody(data, project))
+                            data.files.forEachIndexed { i, file ->
+                                val key = if (i == 0) "${file.name}-primary" else "${file.name}-${i - 1}"
+                                append(key, file.readBytes(), Headers.build {
+                                    append(HttpHeaders.ContentType, "application/java-archive")
+                                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                                })
+                            }
                         }
-                    }
-                ))
+                    ))
             }
             resp.statusString()?.let { return PublishResult.create(this, it) }
             PublishResult.EMPTY
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { PublishResult.create(this, it.message) }
     }
 
@@ -97,6 +104,10 @@ class ModrinthAPI : API() {
             resp.statusString()?.let { return ModInfo.of(it) }
             val obj = resp.bodyAsText().fromJson()
             ModInfo.of(modid, obj.get("title").asString, obj.get("slug").asString)
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { ModInfo.of(it.message) }
     }
 
@@ -113,6 +124,10 @@ class ModrinthAPI : API() {
             }
             resp.statusString()?.let { return PublishResult.create(this, it) }
             PublishResult.EMPTY
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { PublishResult.create(this, it.message) }
     }
 

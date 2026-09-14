@@ -20,10 +20,10 @@ import com.intellij.openapi.project.Project
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
 import one.pkg.modpublish.data.result.PublishResult
-import one.pkg.modpublish.util.resources.Lang
 import one.pkg.modpublish.util.resources.Lang.translate
 import java.util.*
 
@@ -48,6 +48,7 @@ abstract class API {
             400, 401, 422 -> try {
                 bodyAsText()
             } catch (_: Exception) {
+                ensureActive()
                 "HTTP ${status.value}"
             }
 

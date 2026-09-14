@@ -22,6 +22,9 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
@@ -47,20 +50,24 @@ class CurseForgeAPI : API() {
                 header("X-Api-Token", PID.CurseForgeToken.getProtect(project).data)
                 setBody(
                     MultiPartFormDataContent(
-                    formData {
-                        append("file", file.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, "application/java-archive")
-                            append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
-                        })
-                        append("metadata", createJsonBody(data, bResult))
-                    }
-                ))
+                        formData {
+                            append("file", file.readBytes(), Headers.build {
+                                append(HttpHeaders.ContentType, "application/java-archive")
+                                append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                            })
+                            append("metadata", createJsonBody(data, bResult))
+                        }
+                    ))
             }
 
             resp.statusString()?.let { return PublishResult.create(this, it) }
             val bodyString = resp.bodyAsText()
             val result = bodyString.fromJson(CurseForgePublishResult::class.java)
             if (result.isSuccess) BackResult.result(result) else PublishResult.create(bodyString)
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { PublishResult.create(this, it.message) }
     }
 
@@ -84,6 +91,10 @@ class CurseForgeAPI : API() {
             resp.statusString()?.let { return ModInfo.of(it) }
             val dataObj = resp.bodyAsText().fromJson().getAsJsonObject("data")
             ModInfo.of(modid, dataObj.get("name").asString, dataObj.get("slug").asString)
+        }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
         }.getOrElse { ModInfo.of(it.message) }
     }
 

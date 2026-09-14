@@ -143,13 +143,13 @@ data class ModrinthData(
 
     fun gameVersion(gameVersion: String) {
         if (this.gameVersions == null) this.gameVersions = ArrayList()
-        if (!this.gameVersions!!.isEmpty() && this.gameVersions!!.contains(gameVersion)) return
+        if (this.gameVersions!!.isNotEmpty() && this.gameVersions!!.contains(gameVersion)) return
         this.gameVersions!!.add(gameVersion)
     }
 
     fun gameVersion(gameVersion: MinecraftVersion) {
         if (this.gameVersions == null) this.gameVersions = ArrayList()
-        if (!this.gameVersions!!.isEmpty() && this.gameVersions!!.contains(gameVersion.version)) return
+        if (this.gameVersions!!.isNotEmpty() && this.gameVersions!!.contains(gameVersion.version)) return
         this.gameVersions!!.add(gameVersion.version)
     }
 
@@ -171,7 +171,7 @@ data class ModrinthData(
 
     fun loader(loader: String) {
         if (this.loaders == null) this.loaders = ArrayList()
-        if (!this.loaders!!.isEmpty() && this.loaders!!.contains(loader)) return
+        if (this.loaders!!.isNotEmpty() && this.loaders!!.contains(loader)) return
         this.loaders!!.add(loader)
     }
 

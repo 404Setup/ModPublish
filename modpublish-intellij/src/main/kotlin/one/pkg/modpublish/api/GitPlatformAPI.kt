@@ -17,6 +17,8 @@
 package one.pkg.modpublish.api
 
 import com.intellij.openapi.project.Project
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 abstract class GitPlatformAPI : API() {
     protected abstract suspend fun getDefaultBranch(project: Project): String
@@ -25,6 +27,7 @@ abstract class GitPlatformAPI : API() {
     protected suspend fun getTargetCommitish(branch: String, project: Project): String = try {
         branch.takeIf { it.isNotBlank() }?.let { getLatestCommitHash(it, project) } ?: getDefaultBranch(project)
     } catch (_: Exception) {
+        currentCoroutineContext().ensureActive()
         branch.takeIf { it.isNotBlank() } ?: "main"
     }
 }

@@ -128,7 +128,7 @@ data class CurseForgeData(
 
     fun gameVersion(gameVersion: Int) {
         if (this.gameVersions == null) this.gameVersions = ArrayList()
-        if (!this.gameVersions!!.isEmpty() && this.gameVersions!!.contains(gameVersion)) return
+        if (this.gameVersions!!.isNotEmpty() && this.gameVersions!!.contains(gameVersion)) return
         this.gameVersions!!.add(gameVersion)
     }
 

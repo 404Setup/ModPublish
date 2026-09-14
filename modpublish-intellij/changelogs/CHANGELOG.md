@@ -1,3 +1,9 @@
+## v1.13.0
+Starting with this version, IntelliJ 2026.2.2 (262) is required.
+
+### Chore
+- Bump minecraft version list
+
 ## v1.12.0
 
 ### Fix

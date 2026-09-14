@@ -22,6 +22,9 @@ import com.intellij.openapi.diagnostic.Logger
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.util.io.FileAPI.getUserDataFile
 import one.pkg.modpublish.util.io.JsonParser.fromJson
@@ -70,6 +73,10 @@ object VersionProcessor {
             LOG.info("   Snapshot: " + latestInfo["snapshot"])
             return processedVersions
         }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
+        }.onFailure {
             when (it) {
                 is IOException -> LOG.error("Network request error", it)
                 is JsonParseException -> LOG.error("JSON parsing error", it)
@@ -94,6 +101,10 @@ object VersionProcessor {
             LOG.info("Successfully got CurseForge API data with ${parsed.size} versions")
             return parsed
         }.onFailure {
+            if (it is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
+        }.onFailure {
             when (it) {
                 is IOException -> LOG.error("Network request error", it)
                 is JsonParseException -> LOG.error("JSON parsing error", it)
@@ -104,9 +115,7 @@ object VersionProcessor {
 
     private fun createVersionMapping(curseforgeVersions: List<CurseForgeVersion>): Map<String, Int> {
         val versionMapping = HashMap<String, Int>()
-        for (version in curseforgeVersions) {
-            val versionString = version.versionString
-            val gameVersionId = version.gameVersionId
+        for ((versionString, gameVersionId) in curseforgeVersions) {
             if (!versionString.isNullOrEmpty() && gameVersionId != null) {
                 versionMapping[versionString] = gameVersionId
             }

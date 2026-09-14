@@ -16,6 +16,8 @@
  */
 package one.pkg.modpublish.settings
 
+import com.intellij.ide.setToolTipText
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
@@ -124,19 +126,19 @@ class ModPublishSettingsComponent : BaseDialogWrapper(null) {
             FieldConfig.of { createLabel("setting.network.ssl-check.desc".translate()) },
             FieldConfig.of("setting.network.read-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = "setting.network.read-timeout.desc".translate()
+                    it.setToolTipText(HtmlChunk.text("setting.network.read-timeout.desc".translate()))
                     networkReadTimeoutText = it
                 }
             },
             FieldConfig.of("setting.network.write-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = "setting.network.write-timeout.desc".translate()
+                    it.setToolTipText(HtmlChunk.text("setting.network.write-timeout.desc".translate()))
                     networkWriteTimeoutText = it
                 }
             },
             FieldConfig.of("setting.network.connect-timeout.name".translate()) {
                 JBTextField().intField(1, Int.MAX_VALUE.toLong()).also {
-                    it.toolTipText = "setting.network.connect-timeout.desc".translate()
+                    it.setToolTipText(HtmlChunk.text("setting.network.connect-timeout.desc".translate()))
                     networkConnectTimeoutText = it
                 }
             }

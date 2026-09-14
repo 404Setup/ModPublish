@@ -22,6 +22,9 @@ import com.intellij.openapi.project.Project
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import one.pkg.modpublish.api.NetworkUtil.client
 import one.pkg.modpublish.data.internal.ModInfo
 import one.pkg.modpublish.data.internal.PublishData
@@ -70,6 +73,9 @@ class GitlabAPI : GitPlatformAPI() {
 
             PublishResult.EMPTY
         } catch (e: Exception) {
+            if (e is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
             PublishResult.create(this, "Failed to create GitLab release: ${e.message}")
         }
     }
@@ -104,6 +110,10 @@ class GitlabAPI : GitPlatformAPI() {
             val response = resp.bodyAsText().fromJson().asJsonObject
             response.get("url")?.asString
         } else null
+    }.onFailure {
+        if (it is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
     }.getOrNull()
 
     private suspend fun linkAssetsToRelease(
@@ -142,6 +152,10 @@ class GitlabAPI : GitPlatformAPI() {
         val url = "$RELEASES_URL/$tagName".replace("{path}", PID.GitlabRepo.get(project))
         val resp = client.get(url) { gitlab(project) }
         if (resp.status.isSuccess()) resp.bodyAsText().fromJson() else null
+    }.onFailure {
+        if (it is CancellationException) {
+            currentCoroutineContext().ensureActive()
+        }
     }.getOrNull()
 
     private fun getExistingAssetNames(release: JsonObject?): Set<String> {

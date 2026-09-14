@@ -16,11 +16,13 @@
  */
 package one.pkg.modpublish.ui
 
+import com.intellij.ide.setToolTipText
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.lang.Language
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorTextField
 import com.intellij.ui.EditorTextFieldProvider
@@ -286,7 +288,7 @@ class PublishModDialog(
             FieldConfig.of {
                 val button1 = JButton("component.name.update-version-list".translate()).apply {
                     icon = Icons.Static.Sync
-                    toolTipText = "component.tooltip.update-version-list".translate()
+                    this.setToolTipText(HtmlChunk.text("component.tooltip.update-version-list".translate()))
                     addActionListener { _ ->
                         async {
                             isEnabled = false
@@ -304,7 +306,7 @@ class PublishModDialog(
 
                 val button2 = JButton("component.name.reset-version-list".translate()).apply {
                     icon = Icons.Static.WrenchScrewdriver
-                    toolTipText = "component.tooltip.reset-version-list".translate()
+                    this.setToolTipText(HtmlChunk.text("component.tooltip.reset-version-list".translate()))
                     addActionListener { _ ->
                         async {
                             "minecraft.version.json".getUserDataFile().takeIf { it.exists() }?.delete()
@@ -421,7 +423,7 @@ class PublishModDialog(
     private fun JBCheckBox.setFailedSelect() {
         isEnabled = false
         setErrorStyle()
-        toolTipText = "tooltip.decrypt.failed".translate()
+        this.setToolTipText(HtmlChunk.text("tooltip.decrypt.failed".translate()))
     }
 
     private fun loadPersistedData() {
@@ -430,28 +432,28 @@ class PublishModDialog(
 
         if (!p2.modrinth.isEnabled()) {
             modrinthCheckBox.isEnabled = false
-            modrinthCheckBox.toolTipText = "tooltip.modrinth.disable".translate()
+            modrinthCheckBox.setToolTipText(HtmlChunk.text("tooltip.modrinth.disable".translate()))
         } else if (p2.modrinth.token.failed) {
             modrinthCheckBox.setFailedSelect()
         }
 
         if (!p2.curseforge.isEnabled()) {
             curseforgeCheckBox.isEnabled = false
-            curseforgeCheckBox.toolTipText = "tooltip.curseforge.disable".translate()
+            curseforgeCheckBox.setToolTipText(HtmlChunk.text("tooltip.curseforge.disable".translate()))
         } else if (p2.curseforge.token.failed) {
             curseforgeCheckBox.setFailedSelect()
         }
 
         if (!p2.github.isEnabled()) {
             githubCheckBox.isEnabled = false
-            githubCheckBox.toolTipText = "tooltip.git.disable".translate("Github")
+            githubCheckBox.setToolTipText(HtmlChunk.text("tooltip.git.disable".translate("Github")))
         } else if (p2.github.token.failed) {
             githubCheckBox.setFailedSelect()
         }
 
         if (!p2.gitlab.isEnabled()) {
             gitlabCheckBox.isEnabled = false
-            gitlabCheckBox.toolTipText = "tooltip.git.disable".translate("Gitlab")
+            gitlabCheckBox.setToolTipText(HtmlChunk.text("tooltip.git.disable".translate("Gitlab")))
         } else if (p2.gitlab.token.failed) {
             gitlabCheckBox.setFailedSelect()
         }
