@@ -2,7 +2,7 @@ import org.jetbrains.intellij.platform.gradle.tasks.SignPluginTask
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.4.20"
+    kotlin("jvm") version "2.4.0"
 
     id("org.jetbrains.intellij.platform") version "2.19.0"
 }
@@ -57,7 +57,6 @@ dependencies {
         exclude("*")
     }
 
-    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 
     implementation("com.vladsch.flexmark:flexmark:0.64.8") {
         exclude("com.vladsch.flexmark", "flexmark-jira-converter")
