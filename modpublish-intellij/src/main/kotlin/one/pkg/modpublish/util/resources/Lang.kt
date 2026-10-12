@@ -20,7 +20,7 @@ import com.intellij.DynamicBundle
 import one.pkg.modpublish.util.resources.Lang.FILE
 import org.jetbrains.annotations.PropertyKey
 
-object Lang : DynamicBundle(Lang.javaClass, FILE) {
+object Lang : DynamicBundle(Lang::class.java, FILE) {
     const val FILE = "messages.ModPublish"
 
     fun get(@PropertyKey(resourceBundle = FILE) key: String): String = getMessage(key)

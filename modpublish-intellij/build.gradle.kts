@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "one.pkg"
-version = "1.13.0"
+version = "1.13.1"
 val targetJavaVersion = 25
 
 repositories {
@@ -43,7 +43,7 @@ kotlin {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2026.2.2")
+        intellijIdea("2026.2.3")
         bundledPlugin("com.intellij.java")
         bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("org.intellij.plugins.markdown")

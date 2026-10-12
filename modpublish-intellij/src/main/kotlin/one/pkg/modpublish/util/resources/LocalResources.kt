@@ -40,7 +40,7 @@ object LocalResources {
         NullPointerException::class
     )
     fun getSupportedInfo(): SupportedInfo =
-        LocalResources.javaClass.getResourceAsStream("/META-INF/supported.info.json")?.use { stream ->
+        LocalResources::class.java.getResourceAsStream("/META-INF/supported.info.json")?.use { stream ->
             InputStreamReader(stream).use { reader ->
                 reader.fromJson(SupportedInfo::class.java)
             }
@@ -59,7 +59,7 @@ object LocalResources {
 
         val localFile = "minecraft.version.json".getUserDataFile()
         val stream = if (localFile.exists()) FileInputStream(localFile)
-        else LocalResources.javaClass.getResourceAsStream("/META-INF/minecraft.version.json")
+        else LocalResources::class.java.getResourceAsStream("/META-INF/minecraft.version.json")
         return stream?.use {
             InputStreamReader(it).use { reader ->
                 reader.fromJson<List<MinecraftVersion>>(mvType)

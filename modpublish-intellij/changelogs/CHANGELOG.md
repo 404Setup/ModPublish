@@ -1,3 +1,6 @@
+## v1.13.1
+bug fix
+
 ## v1.13.0
 Starting with this version, IntelliJ 2026.2.2 (262) is required.
 
