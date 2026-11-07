@@ -16,27 +16,59 @@
  */
 package one.pkg.modpublish.util.io
 
+import com.intellij.openapi.diagnostic.Logger
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
 
 object MarkdownConverter {
-    private val options = MutableDataSet()
-    private val parser: Parser = Parser.builder(options).build()
-    private val renderer: HtmlRenderer = HtmlRenderer.builder(options).build()
+    private val LOG = Logger.getInstance(MarkdownConverter::class.java)
+    private val HEADING = Regex("^(#{1,6})\\s+(.+)$")
+    private val CODE = Regex("`([^`]+)`")
+    private val BOLD = Regex("""\*\*(.+?)\*\*""")
+    private val LINK = Regex("""\[([^\]]+)]\(([^)\s]+)\)""")
 
-    /**
-     * Converts a Markdown string to HTML.
-     *
-     * Double newlines in the input are normalised to single newlines before
-     * parsing so that CurseForge receives clean, compact HTML.
-     */
+    private val engine: Pair<Parser, HtmlRenderer>? by lazy {
+        runCatching {
+            val options = MutableDataSet()
+            Parser.builder(options).build() to HtmlRenderer.builder(options).build()
+        }.onFailure { LOG.warn("Markdown engine unavailable: ${it.message}") }
+            .getOrNull()
+    }
+
     fun markdownToHtml(markdown: String): String {
+        if (markdown.isBlank()) return ""
         val normalised = markdown.replace("\r\n", "\n").replace("\n\n", "\n")
-        val document = parser.parse(normalised)
-        return renderer.render(document).trimEnd()
+        val current = engine
+        if (current != null) {
+            val converted = runCatching {
+                current.second.render(current.first.parse(normalised)).trimEnd()
+            }
+            converted.getOrNull()?.let { return it }
+            LOG.warn("Markdown conversion failed: ${converted.exceptionOrNull()?.message}")
+        }
+        return fallback(normalised)
+    }
+
+    private fun fallback(markdown: String): String = buildString {
+        markdown.split('\n').forEach { line ->
+            val heading = HEADING.find(line)
+            if (heading != null) {
+                val level = heading.groupValues[1].length
+                append("<h$level>${inline(heading.groupValues[2])}</h$level>")
+            } else {
+                append(inline(line)).append("<br>")
+            }
+        }
+    }
+
+    private fun inline(raw: String): String {
+        val escaped = raw.replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;").replace("\"", "&quot;")
+        val withCode = CODE.replace(escaped, "<code>$1</code>")
+        val withBold = BOLD.replace(withCode, "<strong>$1</strong>")
+        return LINK.replace(withBold, "<a href=\"$2\">$1</a>")
     }
 }
 
-/** Convenience extension – converts this Markdown string to HTML. */
 fun String.markdownToHtml(): String = MarkdownConverter.markdownToHtml(this)
