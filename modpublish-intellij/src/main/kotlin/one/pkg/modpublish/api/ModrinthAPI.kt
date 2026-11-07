@@ -103,7 +103,7 @@ class ModrinthAPI : API() {
             }
             resp.statusString()?.let { return ModInfo.of(it) }
             val obj = resp.bodyAsText().fromJson()
-            ModInfo.of(modid, obj.get("title").asString, obj.get("slug").asString)
+            ModInfo.of(obj.get("id")?.asString ?: modid, obj.get("slug")?.asString, obj.get("title")?.asString)
         }.onFailure {
             if (it is CancellationException) {
                 currentCoroutineContext().ensureActive()
