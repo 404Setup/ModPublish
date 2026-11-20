@@ -90,7 +90,7 @@ class CurseForgeAPI : API() {
             }
             resp.statusString()?.let { return ModInfo.of(it) }
             val dataObj = resp.bodyAsText().fromJson().getAsJsonObject("data")
-            ModInfo.of(modid, dataObj.get("name").asString, dataObj.get("slug").asString)
+            ModInfo.of(dataObj.get("id")?.asString ?: modid, dataObj.get("slug")?.asString, dataObj.get("name")?.asString)
         }.onFailure {
             if (it is CancellationException) {
                 currentCoroutineContext().ensureActive()
